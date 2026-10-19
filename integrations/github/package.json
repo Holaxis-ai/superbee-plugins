@@ -48,15 +48,11 @@
       "work-items": "recipes/work-items"
     }
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "scripts": {
     "build": "node build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node --test --import tsx test/*.test.ts",
-    "prepublishOnly": "node -e \"console.error('@superbee/integration-github release and human bootstrap are not configured; do not run npm publish here'); process.exit(1)\""
+    "prepublishOnly": "node -e \"console.error('Integration npm publication is disabled; build and register a reviewed pinned repository folder'); process.exit(1)\""
   },
   "peerDependencies": {
     "@superbee/core": "0.2.0-pre.23"
@@ -69,5 +65,6 @@
   "homepage": "https://github.com/Holaxis-ai/superbee-plugins/tree/main/integrations/github",
   "bugs": {
     "url": "https://github.com/Holaxis-ai/superbee-plugins/issues"
-  }
+  },
+  "private": true
 }

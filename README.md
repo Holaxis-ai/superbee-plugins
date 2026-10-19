@@ -3,7 +3,7 @@
 Community recipes and independently versioned integrations for [Superbee](https://github.com/Holaxis-ai/superbee).
 
 - `recipes/` contains declarative models and Connector mappings.
-- `integrations/` contains provider packages, synthetic fixtures and their tests.
+- `integrations/` contains provider adapters, synthetic fixtures and their tests.
 - Core, the source engine and CLI loading belong in the Superbee repository.
 
 Recipes install as data. Code integrations require an explicit installation and trust decision;
@@ -11,46 +11,78 @@ contributing to this repository does not automatically enable code in a user's C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
-## GitHub reference package
+## GitHub reference integration
 
-[`integrations/github`](integrations/github) contains `@superbee/integration-github` version
-`0.1.0-pre.1`, a standalone issue-profile factory and generated recipe payloads. The canonical
-[`source-feeds`](recipes/source-feeds) and [`work-items`](recipes/work-items) recipes live here.
-The [GitHub example](examples/work-items-github) exercises the provider profile; the
-[Linear example](examples/work-items-linear) proves the shared Work Item model with an offline
-projection double. Linear is not an admitted runtime integration.
+[`integrations/github`](integrations/github) contains the independently versioned GitHub issue
+adapter and generated recipe payloads. Its private `package.json` supplies the existing loader
+identity `@superbee/integration-github`, compatibility and build metadata. Integrations are
+acquired from pinned Git checkouts; integration npm publication is disabled under the current
+policy. Core, CLI and development tools continue to use their existing npm channels.
 
-## Develop against the public Core contract
+The canonical [`source-feeds`](recipes/source-feeds) and [`work-items`](recipes/work-items)
+recipes live here. The [GitHub example](examples/work-items-github) exercises the provider profile;
+the [Linear example](examples/work-items-linear) proves the shared model with an offline projection
+double. Linear is not an admitted runtime integration.
 
-Use Node 26.8.2 for the recorded development checks. Install tools first, then the exact compatible
-Core artifact explicitly:
+## Install the GitHub integration from source
+
+Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
+before trusting and building it. The folder loader is merged in Superbee. CLI `0.4.3-pre.13`
+remains staged and unpublished pending guide and release reconciliation; these commands require
+a CLI build containing that merged loader. The integration requires embedded Core `0.2.0-pre.23`.
+Use Node 26.8.2 for these recorded build steps:
 
 ```sh
+git clone https://github.com/Holaxis-ai/superbee-plugins.git
+cd superbee-plugins
+git checkout --detach REVIEWED_FULL_COMMIT_SHA
+git rev-parse HEAD
+git status --short
 npm ci
 npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.23
 npm run build
+superbee source plugin register "$PWD/integrations/github"
+```
+
+The last command previews the exact local bytes and returns a proposal digest without importing
+the profile. Review the trusted-code statement, then accept that digest explicitly:
+
+```sh
+superbee source plugin register "$PWD/integrations/github" --accept PROPOSAL_DIGEST
+superbee source plugin list
+superbee recipe add github:source-feeds --dir YOUR_BUNDLE
+superbee recipe add github:work-items --dir YOUR_BUNDLE
+```
+
+These namespaced recipe commands install the accepted snapshot's inert definitions. Feed binding
+and execution remain explicit. Registration trusts the selected local bytes, not authenticated
+publisher origin, and approved code has ambient process authority. A later checkout or rebuild
+does not change the accepted snapshot. To update, select and review another full commit, rebuild,
+explicitly register/accept it, and rebind affected feeds; changed bindings reset observation and
+accepted overlay state for reacquisition.
+
+## Develop and verify
+
+After the same tool and public Core installation and build:
+
+```sh
 npm run typecheck
 npm run test:unit
 npm run test:packaged
 ```
 
-Core `0.2.0-pre.23` is the first compatible prerelease because it adds the host helper exports.
-The plugin declares it only as an optional exact peer, so `npm ci` works before that Core version
-is published. Build, typecheck and runtime tests require the explicit second installation step;
-CI fails there while the prerequisite release is unavailable. An older Core version cannot
-substitute for the helper contract. No Core source or sibling checkout is used.
+Core 0.2.0-pre.23 provides the public host helper exports. It remains an optional exact peer;
+build and typecheck require its explicit installation above. No Core source or sibling checkout
+is used. A maintainer testing a compatible Core candidate may install its tarball with
+`npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
+`SUPERBEE_CORE_TARBALL` to that exact archive for the packaged consumer proof. Local candidate
+paths never enter manifests or the lockfile.
 
-Before publication, a maintainer may test a locally packed Core candidate with the same version:
-install its tarball using `npm install --no-save --package-lock=false --ignore-scripts <tarball>`
-and run the checks above. For the packed consumer proof, set `SUPERBEE_CORE_TARBALL` to that exact
-candidate tarball. The override belongs to test invocation only; no local artifact path enters
-package manifests or the lockfile. Without it, the proof packs the exact public Core version.
-The proof installs packed Core and plugin bytes outside this checkout using an isolated environment,
-then checks public types, browser exports, recipes, normalization and the public source harness.
-
-This repository provides source CI. Package creation on npm, publisher configuration, retained
-release artifacts and maintainer approval remain separate work. `prepublishOnly` blocks direct
-publication while those controls are prepared; no release workflow or npm credentials are configured.
+Local `npm pack` tests are artifact portability checks, not an integration publication or required
+user acquisition route. They install packed test bytes outside this checkout with a clean explicit
+environment and check public types, browser exports, recipes and the source harness. Source CI
+uses the published Core artifact. Integration metadata is private and `prepublishOnly` refuses
+publication; no integration registry bootstrap, publisher setup or release workflow is planned.
 
 ## Shared verification tooling
 
