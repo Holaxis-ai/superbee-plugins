@@ -1,0 +1,27 @@
+{
+  "name": "superbee-plugins",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "integrations/*"
+  ],
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test:unit && npm run test:packaged",
+    "test:unit": "node --test --import tsx integrations/github/test/*.test.ts test/*.test.ts",
+    "test:packaged": "node --test scripts/*.test.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.0",
+    "es-module-lexer": "1.7.0",
+    "esbuild": "0.25.12",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}
