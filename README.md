@@ -27,11 +27,9 @@ double. Linear is not an admitted runtime integration.
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
-before trusting and building it. The folder loader is merged in Superbee. This checkout requires
-embedded Core `0.2.0-pre.24` exactly, matching the CLI `0.4.3-pre.14` candidate. Core 24 publication
-and the native artifact compatibility proof are pending; the public Core installation step below
-requires that release and fails while it is unavailable. Use a CLI build with the matching helper
-pin. Use Node 26.8.2 for these recorded build steps:
+before trusting and building it. This checkout requires embedded Core `0.2.0-pre.24` exactly.
+Install the published matching Core before building, and use a CLI with this helper pin.
+Use Node 26.8.2 for these recorded build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
