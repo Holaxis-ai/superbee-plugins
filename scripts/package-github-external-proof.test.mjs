@@ -8,7 +8,7 @@ import {build} from 'esbuild';
 import {init, parse} from 'es-module-lexer';
 import ts from 'typescript';
 const root = fileURLToPath(new URL('../',import.meta.url));
-import {createWorkspace, isolatedEnvironment, runProcess} from './consumer-harness.mjs';
+import {createWorkspace, isolatedEnvironment, runProcess} from './vendor/package-verification/src/harness.mjs';
 
 export function assertStandaloneModule(source) {
   const [imports] = parse(source);

@@ -51,3 +51,20 @@ then checks public types, browser exports, recipes, normalization and the public
 This repository provides source CI. Package creation on npm, publisher configuration, retained
 release artifacts and maintainer approval remain separate work. `prepublishOnly` blocks direct
 publication while those controls are prepared; no release workflow or npm credentials are configured.
+
+## Shared verification tooling
+
+The package proof imports a generated snapshot of Superbee's
+[owning package verification tools](https://github.com/Holaxis-ai/superbee/tree/50ebd89a3598d273e8966e72c66db36ab1fe9782/packages/package-verification).
+`scripts/vendor/package-verification/snapshot.json` records the public producer commit and file
+digests. CI checks those bytes against the producer's actual Git objects before installing tools.
+Do not edit snapshot files independently. From a clean producer checkout at the selected exact
+commit, refresh and check using the owning exporter:
+
+```sh
+node packages/package-verification/export.mjs --source . --target <plugins-checkout>/scripts/vendor/package-verification --commit <new-sha> --expected <previous-sha>
+node packages/package-verification/export.mjs --source . --target <plugins-checkout>/scripts/vendor/package-verification --check
+```
+
+A refresh requires both pinned commits in the producer's Git objects and a reviewed snapshot and
+CI pin update. These are build-time test tools; they do not provide plugin execution isolation.
