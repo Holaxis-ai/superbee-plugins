@@ -3,3 +3,5 @@ dist/
 .test-build/
 *.tgz
 out/
+.DS_Store
+/.package-verification-producer/
