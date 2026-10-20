@@ -1,14 +1,17 @@
 # Observation
 
-Synthetic schematic: the selected marker is at x={{observed_x}} px in a 64 px-wide diagram,
-{{offset}} px from the reference guide. Estimated reading uncertainty is ±1 px. This is an
-invented image-space observation, not a Blender render or a dimensional measurement. The separately
+Synthetic schematic: the selected marker is at x={{observed_x}} diagram units in a 64-unit-wide
+diagram, {{offset}} diagram units from the reference guide. Estimated reading uncertainty is
+±1 diagram unit. The authored 320 CSS px display is enlarged 5×, so one diagram unit spans 5 CSS px.
+These measurements use diagram coordinates, not screen/device pixels. This is an invented
+image-space observation, not a Blender render or a dimensional measurement. The separately
 captured camera label/lens are source facts, not proof of this schematic's production history.
 
 # Expected result
 
-The illustrative reference guide is at x=32 px. Compare the same marker and unscaled diagram;
-no geometric tolerance or actual house accuracy is inferred.
+The illustrative reference guide is at x=32 diagram units. Compare the same marker in the
+64-unit coordinate system; the readable 320 CSS px display does not change the recorded units.
+No geometric tolerance or actual house accuracy is inferred.
 
 # Evidence
 

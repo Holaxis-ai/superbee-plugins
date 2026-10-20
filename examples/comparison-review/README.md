@@ -59,8 +59,10 @@ Edit only that ordinary body copy: replace `{{artifact_id}}`, `{{artifact_entry}
 `{{artifact_entry_version}}` with the actual Artifact receipt. Replace `{{generation}}` with 1,
 `{{snapshot_sha256}}` with the exact snapshot SHA256 from input preview, `{{observed_x}}` with 35
 and `{{offset}}` with 3. These placeholders are authoring instructions, not executable recipe code.
-No unresolved placeholder is an evidence claim. The marker's uncertainty is ±1 px; this comparison
-says nothing about real geometry or dimensional accuracy.
+No unresolved placeholder is an evidence claim. Coordinates, offsets and the marker's ±1 uncertainty
+are in diagram units on a 64-unit coordinate system. Both SVGs display at 320 CSS px, a 5× enlargement:
+one diagram unit spans 5 CSS px, and the g1 offset of 3 diagram units appears as 15 CSS px. These
+are not screen/device-pixel measurements and say nothing about real geometry or dimensional accuracy.
 
 ```sh
 superbee new "Comparison Finding" comparison-findings/camera-g1 --title "Synthetic marker offset" --progress_status open --assignee process:comparison-review-example --body-file "$EXAMPLE_ROOT/camera-body.md" --dir "$BUNDLE"
@@ -99,7 +101,7 @@ original copy in an explicit map to obtain `stale`, or a missing original to obt
 neither check rewrites a finding. Keep original paths outside bundles/private state.
 
 Create an Artifact from `camera-g2.html`, copy `camera-finding.md` to a new ordinary body file, and
-fill its new Artifact receipt/generation 2/exact g2 SHA256. Use marker 32 and offset 0. Create
+fill its new Artifact receipt/generation 2/exact g2 SHA256. Use marker 32 and offset 0 in diagram units. Create
 `comparison-findings/camera-g2` with that body and `progress_status: open`, then link:
 
 ```sh
