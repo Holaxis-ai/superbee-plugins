@@ -4,11 +4,13 @@ One trusted local operation, `local.blender.compare-view.v1`, maps to the existi
 `SiteCapability` shape `blender_compare_view`. The repository folder is the distribution
 unit; npm publication is disabled. Build the reviewed pinned checkout before registration.
 The manifest declares one self-contained entry and two finite UTF-8 Python assets. Discovery
-reads metadata without importing the module or probing tools. Core remains exactly
-`0.2.0-pre.30`, helper contract 1.
+reads metadata without importing the module or probing tools. This prepared checkout pins Core
+exactly `0.2.0-pre.32`, helper contract 1.
 
-Prepared-image mode targets the local-operation host in CLI `0.4.3-pre.20` with exact
-Core `0.2.0-pre.30`; these are compatibility targets, not a registry publication claim.
+Prepared-image mode targets the local-operation host in CLI `0.4.3-pre.21` with exact
+Core `0.2.0-pre.32`; these are prepared compatibility targets, not a registry publication or native
+archive qualification claim. Install only after the matching public artifacts and reviewed companion
+qualification are available.
 Video mode additionally requires the reviewed host support for explicit tool
 `versionFlag: "-version"`; qualify the exact CLI artifact for that support before installing
 video bindings. A CLI version number alone does not qualify video host behavior. The GitHub
@@ -108,7 +110,8 @@ this change deletes no private dispatcher or history.
 
 ## Validation
 
-Run `npm ci`, install exact public Core29 as documented at repository root, then `npm run build`,
+Run `npm ci`, install exact Core32 after publication (or a retained local preparation archive for
+maintainer checks) as documented at repository root, then `npm run build`,
 `npm run typecheck` and `npm test --workspace integrations/blender`. Set `SUPERBEE_TEST_PYTHON`
 to an isolated Python with Pillow when necessary. Native synthetic media tests require ffmpeg
 and ffprobe (local 9.0.2; Ubuntu 24.04 CI targets its distro 6.1 family), and validate actual selected pixels plus integer PTS, VFR,

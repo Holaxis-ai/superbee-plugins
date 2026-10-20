@@ -7,10 +7,13 @@ The supplied target bodies contain human notes outside the source-owned fields.
 
 ## Prerequisites and checks
 
-The snapshot command family and `op run --export-output` require the reviewed **unreleased local
-snapshot capability**. CLI `0.4.3-pre.20` alone does not provide these commands. No next release
-version is implied here. Use the matching reviewed Core/CLI implementation after its independent
-review and qualification; the commands below describe that capability, not a completed native proof.
+The snapshot command family and `op run --export-output` target prepared Core `0.2.0-pre.32` and
+CLI `0.4.3-pre.21`. CLI `0.4.3-pre.20` alone does not provide these commands. These are compatibility
+preparation targets, not claims of registry availability or completed native archive qualification.
+Run the public installation commands only after those exact versions are published and the reviewed
+companion is qualified against their native artifacts. Maintainer preparation may use the root
+README's explicit local Core archive override. The commands below describe the capability, not a
+new execution or completed native consumer proof.
 This directory is an example, with no plugin registration or executable package. The existing
 Signal convention is a prerequisite of the shared record-overlay owner, including empty runs;
 install that one existing definition deliberately in the disposable bundle as shown below.
@@ -20,13 +23,14 @@ the repository root, use Node 26.8.2 and the root README's dependency setup:
 
 ```sh
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.30
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.32
 node --test examples/local-snapshots/wrap-camera.test.mjs
 ```
 
-Core30 supplies `@superbee/core/site-capabilities` `canonicalJson`; it does not qualify snapshot
-ingestion. Core is an existing optional peer, so `npm ci` alone does not install it. No build or
-typecheck is needed for these `.mjs` examples. The focused checks exercise the wrapper, not a copied
+The standalone Core32 installation supplies the existing `@superbee/core/site-capabilities`
+`canonicalJson` owner used by the wrapper. Wrapper checks do not qualify CLI21 ingestion or prove
+historical tool consumption. Core is an existing optional peer, so `npm ci` alone does not install
+it. No build or typecheck is needed for these `.mjs` examples. The focused checks exercise the wrapper, not a copied
 snapshot validator. Public Core's decoder, binder and freshness assessor remain authoritative.
 
 All checked-in values are invented. The scene/reference text files are hashable stand-ins, not

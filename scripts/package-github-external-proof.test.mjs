@@ -54,7 +54,7 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
     const artifacts = path.join(scratch,'artifacts'); await mkdir(artifacts);
     const packed = {};
     const coreVersion = JSON.parse(await readFile(path.join(root,'integrations/github/package.json'),'utf8')).superbeeIntegration.core;
-    const cliVersion = '0.4.3-pre.20';
+    const cliVersion = '0.4.3-pre.21';
     for (const name of ['core','integration-github','superbee']) {
       const target = name === 'core' ? [process.env.SUPERBEE_CORE_TARBALL ?? `@superbee/core@${coreVersion}`]
         : name === 'superbee' ? [process.env.SUPERBEE_CLI_TARBALL ?? `superbee@${cliVersion}`]
