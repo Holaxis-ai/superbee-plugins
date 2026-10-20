@@ -11,7 +11,9 @@ The snapshot command family and `op run --export-output` require the reviewed **
 snapshot capability**. CLI `0.4.3-pre.20` alone does not provide these commands. No next release
 version is implied here. Use the matching reviewed Core/CLI implementation after its independent
 review and qualification; the commands below describe that capability, not a completed native proof.
-This directory is an example, with no plugin registration, recipe installation or executable package.
+This directory is an example, with no plugin registration or executable package. The existing
+Signal convention is a prerequisite of the shared record-overlay owner, including empty runs;
+install that one existing definition deliberately in the disposable bundle as shown below.
 
 The wrapper imports only Node builtins and the existing public Core settings canonicalizer. From
 the repository root, use Node 26.8.2 and the root README's dependency setup:
@@ -36,7 +38,9 @@ Retain the original operation run and its Artifact evidence. During a deliberate
 Blender comparison, select the declared JSON role for ordinary export:
 
 ```sh
-superbee op run YOUR_BINDING --export-output camera=YOUR_ABSENT_CAMERA_JSON --dir YOUR_BUNDLE
+superbee op run local.blender.compare-view.v1 --local --binding YOUR_BINDING \
+  --input-file YOUR_ORIGINAL_RUN_INPUT_JSON --export-output camera=YOUR_ABSENT_CAMERA_JSON \
+  --dir YOUR_BUNDLE
 ```
 
 Follow that operation's existing binding, settings and execution authorization flow. Export does
@@ -148,6 +152,7 @@ BUNDLE="$EXAMPLE_ROOT/.superbee"
 superbee init --create-only --recipe none --dir "$BUNDLE"
 cp -R examples/local-snapshots/conventions examples/local-snapshots/sources \
   examples/local-snapshots/camera-observations examples/local-snapshots/benchmark-results "$BUNDLE/"
+cp recipes/source-feeds/conventions/signal.md "$BUNDLE/conventions/signal.md"
 superbee status --dir "$BUNDLE"
 superbee source snapshot bind sources/camera --dir "$BUNDLE"
 ```
@@ -168,7 +173,11 @@ binding and private state. Actual target changes can still be held by ownership 
 The target [`camera-observations/front.md`](camera-observations/front.md) was deliberately authored
 with resource+external ID. Ingestion can fill its empty owned fields and preserves its human body.
 Editing an owned field by hand instead raises the existing ownership conflict. Other unlinked
-records do not automatically become documents.
+records do not automatically become documents. The reused Signal definition declares a typed
+feed link only for `Source Feed`; these source documents are `Reference`, so the actual source
+Kind is passed through and no mismatched typed feed link is emitted. Signals retain the provider
+identity. A bundle may declare its own Signal link vocabulary for its actual source Kind.
+Installing a network Source Feed convention or inventing a URL is unnecessary.
 
 Equal generation and identical exact bytes replay without fresh missing counts. Equal generation
 with changed bytes refuses; lower generation refuses. A greater generation is a new observation
