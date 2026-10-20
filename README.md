@@ -27,16 +27,20 @@ double. Linear is not an admitted runtime integration.
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
-before trusting and building it. This checkout requires embedded Core `0.2.0-pre.24` exactly.
+before trusting and building it. This checkout requires embedded Core `0.2.0-pre.25` exactly.
 Install the published matching Core before building, and use a CLI with this helper pin.
 Use Node 26.8.2 for these recorded build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
-| This checkout | `0.2.0-pre.24` |
+| This checkout (Core25 companion preparation) | `0.2.0-pre.25` |
+| [`7484875919098720732be9fd3d96dc34fe016ffe`](https://github.com/Holaxis-ai/superbee-plugins/tree/7484875919098720732be9fd3d96dc34fe016ffe) — published CLI `0.4.3-pre.14` | `0.2.0-pre.24` |
 | [`7534c84fde8f18d46a625473eb7b6c7ba41401e1`](https://github.com/Holaxis-ai/superbee-plugins/tree/7534c84fde8f18d46a625473eb7b6c7ba41401e1) | `0.2.0-pre.23` |
 
-A Core 23 CLI refuses this checkout; use the reviewed Core 23 checkout above for that host.
+Current published CLI `0.4.3-pre.14` embeds Core24; use its pinned checkout above.
+This companion prepares for a CLI embedding Core25; it does not establish that CLI15 is
+published. Check the selected CLI’s embedded Core before registration. Core23 and Core24
+CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
 
 ```sh
 git clone https://github.com/Holaxis-ai/superbee-plugins.git
@@ -45,7 +49,7 @@ git checkout --detach REVIEWED_FULL_COMMIT_SHA
 git rev-parse HEAD
 git status --short
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.24
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.25
 npm run build
 superbee source plugin register "$PWD/integrations/github"
 ```
@@ -77,7 +81,7 @@ npm run test:unit
 npm run test:packaged
 ```
 
-Core 0.2.0-pre.24 provides the public host helper exports. It remains an optional exact peer;
+Core 0.2.0-pre.25 provides the public host helper exports. It remains an optional exact peer;
 build and typecheck require its explicit installation above. No Core source or sibling checkout
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
