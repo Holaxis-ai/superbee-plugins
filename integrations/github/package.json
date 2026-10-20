@@ -35,7 +35,7 @@
   "superbeeIntegration": {
     "contract": 1,
     "id": "github",
-    "core": "0.2.0-pre.27",
+    "core": "0.2.0-pre.28",
     "profiles": [
       {
         "id": "github-issues",
@@ -55,7 +55,7 @@
     "prepublishOnly": "node -e \"console.error('Integration npm publication is disabled; build and register a reviewed pinned repository folder'); process.exit(1)\""
   },
   "peerDependencies": {
-    "@superbee/core": "0.2.0-pre.27"
+    "@superbee/core": "0.2.0-pre.28"
   },
   "peerDependenciesMeta": {
     "@superbee/core": {
