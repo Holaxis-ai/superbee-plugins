@@ -1,0 +1,94 @@
+{
+  "name": "@superbee/integration-blender",
+  "version": "0.1.0-pre.1",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Explicit trusted local saved-camera comparison operation",
+  "files": [
+    "dist",
+    "assets",
+    "README.md"
+  ],
+  "superbeeLocalOperations": {
+    "contract": 1,
+    "id": "blender",
+    "core": "0.2.0-pre.27",
+    "helper": 1,
+    "entry": "dist/operation.mjs",
+    "assets": [
+      "assets/capture.py",
+      "assets/compare.py"
+    ],
+    "operations": [
+      {
+        "id": "local.blender.compare-view.v1",
+        "capability": {
+          "name": "blender_compare_view",
+          "implementationId": "blender-compare-view.v1",
+          "description": "Render a saved camera in a closed scene and compare an explicitly selected full reference frame. Diagnostic evidence, not geometric acceptance.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "camera",
+              "width",
+              "height",
+              "samples",
+              "unitSystem",
+              "scaleLength"
+            ],
+            "properties": {
+              "camera": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "width": {
+                "type": "integer",
+                "minimum": 16,
+                "maximum": 1600
+              },
+              "height": {
+                "type": "integer",
+                "minimum": 16,
+                "maximum": 1600
+              },
+              "samples": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 128
+              },
+              "unitSystem": {
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "METRIC",
+                  "IMPERIAL"
+                ]
+              },
+              "scaleLength": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1000000
+              }
+            }
+          },
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "maximumOutputBytes": 65536
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "node --check src/operation.mjs",
+    "test": "node --test test/*.test.mjs",
+    "prepublishOnly": "node -e \"process.exit(1)\""
+  }
+}
