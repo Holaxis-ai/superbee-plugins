@@ -25,54 +25,115 @@
         "id": "local.blender.compare-view.v1",
         "capability": {
           "name": "blender_compare_view",
-          "implementationId": "blender-compare-view.v1",
-          "description": "Render a saved camera in a closed scene and compare an explicitly selected full reference frame. Diagnostic evidence, not geometric acceptance.",
+          "implementationId": "blender-compare-view.v2",
+          "description": "Render a saved camera in a closed scene and compare a selected full image or an exact decoded video frame. Diagnostic evidence, not geometric acceptance.",
           "inputSchema": {
             "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "camera",
-              "width",
-              "height",
-              "samples",
-              "unitSystem",
-              "scaleLength"
-            ],
-            "properties": {
-              "camera": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 200
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "camera",
+                  "width",
+                  "height",
+                  "samples",
+                  "unitSystem",
+                  "scaleLength"
+                ],
+                "properties": {
+                  "camera": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 16,
+                    "maximum": 1600
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 16,
+                    "maximum": 1600
+                  },
+                  "samples": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 128
+                  },
+                  "unitSystem": {
+                    "type": "string",
+                    "enum": [
+                      "NONE",
+                      "METRIC",
+                      "IMPERIAL"
+                    ]
+                  },
+                  "scaleLength": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000000
+                  }
+                }
               },
-              "width": {
-                "type": "integer",
-                "minimum": 16,
-                "maximum": 1600
-              },
-              "height": {
-                "type": "integer",
-                "minimum": 16,
-                "maximum": 1600
-              },
-              "samples": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 128
-              },
-              "unitSystem": {
-                "type": "string",
-                "enum": [
-                  "NONE",
-                  "METRIC",
-                  "IMPERIAL"
-                ]
-              },
-              "scaleLength": {
-                "type": "number",
-                "exclusiveMinimum": 0,
-                "maximum": 1000000
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "camera",
+                  "width",
+                  "height",
+                  "samples",
+                  "unitSystem",
+                  "scaleLength",
+                  "referenceKind",
+                  "referenceTimeSeconds"
+                ],
+                "properties": {
+                  "camera": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 16,
+                    "maximum": 1600
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 16,
+                    "maximum": 1600
+                  },
+                  "samples": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 128
+                  },
+                  "unitSystem": {
+                    "type": "string",
+                    "enum": [
+                      "NONE",
+                      "METRIC",
+                      "IMPERIAL"
+                    ]
+                  },
+                  "scaleLength": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1000000
+                  },
+                  "referenceKind": {
+                    "const": "video"
+                  },
+                  "referenceTimeSeconds": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
               }
-            }
+            ]
           },
           "annotations": {
             "readOnlyHint": false,
