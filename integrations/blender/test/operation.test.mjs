@@ -36,8 +36,9 @@ test('actual full-frame image comparison creates self-contained diagnostic repor
  const before=await readFile(path.join(out,'reference.png'));
  execFileSync(python,['-I',script,path.join(out,'reference.png'),out]);
  assert.deepEqual(await readFile(path.join(out,'reference.png')),before);
- const html=await readFile(path.join(out,'review.html'),'utf8');assert.match(html,/data:image\/png;base64/);assert.match(html,/no geometric accuracy score/);assert.doesNotMatch(html,/https?:|<script[^>]+src=/);
- const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,1);
+ const html=await readFile(path.join(out,'review.html'),'utf8');assert.match(html,/data:image\/png;base64/);assert.match(html,/no geometric accuracy score/);const externalSource=/https?:|<script\b[^>]*\bsrc\s*=/i;
+ assert.doesNotMatch(html,externalSource);assert.match('<SCRIPT SRC = "external.js">',externalSource);
+ const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)];assert.equal(scripts.length,1);
  const hash=createHash('sha256').update(scripts[0][1]).digest('base64');assert.ok(html.includes('sha256-'+hash));
  for(const mode of ['side','overlay','wipe','blink','edges','difference'])assert.ok(html.includes('data-mode="'+mode+'"'));
  assert.match(html,/prefers-reduced-motion/);assert.match(html,/id="fallback"/);
