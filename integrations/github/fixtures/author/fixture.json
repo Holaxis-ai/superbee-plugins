@@ -203,6 +203,20 @@
         "target_kind": "Work Item",
         "missing_threshold": 2
       }
+    },
+    {
+      "id": "work-items/widgets-42",
+      "body": "Human notes stay local.\n",
+      "frontmatter": {
+        "type": "Work Item",
+        "title": "Synthetic issue 42",
+        "sources": [
+          {
+            "resource": "https://github.com/example-org/widgets",
+            "id": "I_synthetic_widgets_42"
+          }
+        ]
+      }
     }
   ],
   "scenarios": [
@@ -884,6 +898,1390 @@
               "facts": {
                 "outcome": "refused",
                 "reason": "address_refused",
+                "status": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "errors.malformed",
+      "runs": [
+        {
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "body": "not JSON"
+              }
+            }
+          ]
+        },
+        {
+          "budget": {
+            "maxBytes": 32
+          },
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "unsupported_content",
+            "reason": null,
+            "pages": 0,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": false,
+              "complete": false
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [],
+          "findings": [
+            {
+              "key": "source:issues:unsupported_content",
+              "title": "Source issues: unsupported content",
+              "summary": "the provider sent a body the profile cannot read; nothing from it was written. (https://api.github.com/repos/example-org/widgets/issues)",
+              "priority": "low",
+              "facts": {
+                "outcome": "unsupported_content",
+                "reason": null,
+                "status": null
+              }
+            }
+          ]
+        },
+        {
+          "receipt": {
+            "outcome": "too_large",
+            "reason": null,
+            "pages": 0,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": false,
+              "complete": false
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [],
+          "findings": [
+            {
+              "key": "source:issues:too_large",
+              "title": "Source issues: too large",
+              "summary": "the provider sent a body over the byte bound; nothing from it was written. (https://api.github.com/repos/example-org/widgets/issues)",
+              "priority": "low",
+              "facts": {
+                "outcome": "too_large",
+                "reason": null,
+                "status": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "complete.disappear",
+      "runs": [
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        },
+        {
+          "mode": "incremental",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[]"
+              }
+            }
+          ]
+        },
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[]"
+              }
+            }
+          ]
+        },
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[]"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 1,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "new",
+              "changed_fields": [
+                "assignees",
+                "item_type",
+                "key",
+                "labels",
+                "opened_at",
+                "scope",
+                "source_state",
+                "source_updated_at",
+                "state_category",
+                "title",
+                "url"
+              ],
+              "before": null,
+              "after": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-02T12:00:00Z"
+              },
+              "content_digest": "sha256:20fecdfec35b5f2b6305745b66a222670ca33d1b3dc2369caae9b5ddee989078"
+            }
+          ],
+          "findings": []
+        },
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": false
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [],
+          "findings": []
+        },
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [],
+          "findings": []
+        },
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 1
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "disappeared",
+              "changed_fields": [],
+              "before": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-02T12:00:00Z"
+              },
+              "after": null,
+              "content_digest": "sha256:20fecdfec35b5f2b6305745b66a222670ca33d1b3dc2369caae9b5ddee989078",
+              "missing_count": 2,
+              "first_missing_at": "2026-01-01T02:00:00.000Z"
+            }
+          ],
+          "findings": []
+        }
+      ]
+    },
+    {
+      "name": "fields.owned-conflict",
+      "runs": [
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        },
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Provider changed title\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-03T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ],
+          "edits": [
+            {
+              "id": "work-items/widgets-42",
+              "set": {
+                "title": "Human changed title"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 1,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "new",
+              "changed_fields": [
+                "assignees",
+                "item_type",
+                "key",
+                "labels",
+                "opened_at",
+                "scope",
+                "source_state",
+                "source_updated_at",
+                "state_category",
+                "title",
+                "url"
+              ],
+              "before": null,
+              "after": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-02T12:00:00Z"
+              },
+              "content_digest": "sha256:20fecdfec35b5f2b6305745b66a222670ca33d1b3dc2369caae9b5ddee989078"
+            }
+          ],
+          "findings": []
+        },
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 0,
+              "changed": 1,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "changed",
+              "changed_fields": [
+                "source_updated_at",
+                "title"
+              ],
+              "before": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-02T12:00:00Z"
+              },
+              "after": {
+                "title": "Provider changed title",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-03T12:00:00Z"
+              },
+              "content_digest": "sha256:24193eb5962d4969d4062f3031921b7f129c0fc9259cd272b36752b58e4e7da8"
+            }
+          ],
+          "findings": []
+        }
+      ]
+    },
+    {
+      "name": "fields.unmapped",
+      "runs": [
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        },
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"future-state\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-03T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 1,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "new",
+              "changed_fields": [
+                "assignees",
+                "item_type",
+                "key",
+                "labels",
+                "opened_at",
+                "scope",
+                "source_state",
+                "source_updated_at",
+                "state_category",
+                "title",
+                "url"
+              ],
+              "before": null,
+              "after": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-02T12:00:00Z"
+              },
+              "content_digest": "sha256:20fecdfec35b5f2b6305745b66a222670ca33d1b3dc2369caae9b5ddee989078"
+            }
+          ],
+          "findings": []
+        },
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 0,
+              "changed": 1,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "changed",
+              "changed_fields": [
+                "source_state",
+                "source_updated_at"
+              ],
+              "before": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-02T12:00:00Z"
+              },
+              "after": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "future-state",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-03T12:00:00Z"
+              },
+              "content_digest": "sha256:ee5ce25be5671aa8f5f0d6a8989789cbd87e5b600c36854700779ce821afb734"
+            }
+          ],
+          "findings": [
+            {
+              "key": "mapping:issues:state_category:VALUE_UNMAPPED:63d47c016c3af6b5",
+              "title": "Mapping VALUE_UNMAPPED on issues.state_category",
+              "summary": "state_category: value \"future-state\" has no row in the values table; the stored value was kept: 1 record (I_synthetic_widgets_42)",
+              "priority": "low",
+              "facts": {
+                "code": "VALUE_UNMAPPED",
+                "field": "state_category",
+                "native": "future-state"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fields.null",
+      "runs": [
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"closed\",\"state_reason\":\"completed\",\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-03T12:00:00Z\",\"closed_at\":\"2026-10-03T12:00:00Z\",\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        },
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\" \",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-04T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 1,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "new",
+              "changed_fields": [
+                "assignees",
+                "close_reason",
+                "closed_at",
+                "item_type",
+                "key",
+                "labels",
+                "opened_at",
+                "scope",
+                "source_state",
+                "source_updated_at",
+                "state_category",
+                "title",
+                "url"
+              ],
+              "before": null,
+              "after": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "closed",
+                "state_category": "done",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-03T12:00:00Z",
+                "close_reason": "completed",
+                "closed_at": "2026-10-03T12:00:00Z"
+              },
+              "content_digest": "sha256:21a074c337b47824821462a034fb3657abaed63bb8afd7aadd77bbaf65804720"
+            }
+          ],
+          "findings": []
+        },
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 0,
+              "changed": 1,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "changed",
+              "changed_fields": [
+                "close_reason",
+                "closed_at",
+                "source_state",
+                "source_updated_at",
+                "state_category"
+              ],
+              "before": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "closed",
+                "state_category": "done",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-03T12:00:00Z",
+                "close_reason": "completed",
+                "closed_at": "2026-10-03T12:00:00Z"
+              },
+              "after": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-04T12:00:00Z"
+              },
+              "content_digest": "sha256:4118aa39006b38417a10526f996de1f7a2d6edf2d8324c54803bca90661b1dc2"
+            }
+          ],
+          "findings": [
+            {
+              "key": "mapping:issues:title:VALUE_MISSING:empty",
+              "title": "Mapping VALUE_MISSING on issues.title",
+              "summary": "title: required, and the provider sent no value; the stored value was kept: 1 record (I_synthetic_widgets_42)",
+              "priority": "low",
+              "facts": {
+                "code": "VALUE_MISSING",
+                "field": "title",
+                "shape": "empty"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "identity.missing",
+      "runs": [
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\" \",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "observed",
+            "reason": null,
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": true,
+              "complete": true
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [],
+          "findings": [
+            {
+              "key": "mapping:issues:IDENTITY_MISSING",
+              "title": "Mapping IDENTITY_MISSING on issues.identity",
+              "summary": "records without a value for the identity template were skipped: records",
+              "priority": "normal",
+              "facts": {
+                "code": "IDENTITY_MISSING",
+                "field": "identity",
+                "native": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "identity.native-absent",
+      "runs": [
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "unsupported_content",
+            "reason": null,
+            "pages": 0,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": false,
+              "complete": false
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [],
+          "findings": [
+            {
+              "key": "source:issues:unsupported_content",
+              "title": "Source issues: unsupported content",
+              "summary": "the provider sent a body the profile cannot read; nothing from it was written. (https://api.github.com/repos/example-org/widgets/issues)",
+              "priority": "low",
+              "facts": {
+                "outcome": "unsupported_content",
+                "reason": null,
+                "status": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fields.native-null",
+      "runs": [
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {},
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":null,\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "unsupported_content",
+            "reason": null,
+            "pages": 0,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": false,
+              "complete": false
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [],
+          "findings": [
+            {
+              "key": "source:issues:unsupported_content",
+              "title": "Source issues: unsupported content",
+              "summary": "the provider sent a body the profile cannot read; nothing from it was written. (https://api.github.com/repos/example-org/widgets/issues)",
+              "priority": "low",
+              "facts": {
+                "outcome": "unsupported_content",
+                "reason": null,
+                "status": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hosts.redirect",
+      "runs": [
+        {
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 302,
+                "headers": {
+                  "location": "https://github.com/example-org/widgets/issues"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "refused",
+            "reason": "host_refused",
+            "pages": 0,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": false,
+              "complete": false
+            },
+            "changes": {
+              "new": 0,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": null,
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [],
+          "findings": [
+            {
+              "key": "source:issues:refused:host_refused",
+              "title": "Source issues: refused (host refused)",
+              "summary": "a request was refused before it was sent. (https://github.com/example-org/widgets/issues)",
+              "priority": "normal",
+              "facts": {
+                "outcome": "refused",
+                "reason": "host_refused",
+                "status": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hosts.undeclared",
+      "runs": [
+        {
+          "mode": "complete",
+          "exchanges": [
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+              },
+              "response": {
+                "status": 200,
+                "headers": {
+                  "link": "<https://github.com/example-org/widgets/issues?page=2>; rel=\"next\""
+                },
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        {
+          "receipt": {
+            "outcome": "refused",
+            "reason": "host_refused",
+            "pages": 1,
+            "held": 0,
+            "pending": 0,
+            "pass": {
+              "resumed": false,
+              "ended": false,
+              "complete": false
+            },
+            "changes": {
+              "new": 1,
+              "changed": 0,
+              "disappeared": 0
+            }
+          },
+          "cursor": {
+            "url": "https://github.com/example-org/widgets/issues?page=2",
+            "since": ""
+          },
+          "requests": [
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            }
+          ],
+          "changes": [
+            {
+              "external_id": "I_synthetic_widgets_42",
+              "change_kind": "new",
+              "changed_fields": [
+                "assignees",
+                "item_type",
+                "key",
+                "labels",
+                "opened_at",
+                "scope",
+                "source_state",
+                "source_updated_at",
+                "state_category",
+                "title",
+                "url"
+              ],
+              "before": null,
+              "after": {
+                "title": "Synthetic issue 42",
+                "key": "example-org/widgets#42",
+                "url": "https://github.com/example-org/widgets/issues/42",
+                "scope": "example-org/widgets",
+                "item_type": "Bug",
+                "source_state": "open",
+                "state_category": "todo",
+                "labels": [
+                  "bug",
+                  "help wanted"
+                ],
+                "assignees": [
+                  "github:octocat",
+                  "github:zebra"
+                ],
+                "opened_at": "2026-10-01T12:00:00Z",
+                "source_updated_at": "2026-10-02T12:00:00Z"
+              },
+              "content_digest": "sha256:20fecdfec35b5f2b6305745b66a222670ca33d1b3dc2369caae9b5ddee989078"
+            }
+          ],
+          "findings": [
+            {
+              "key": "source:issues:refused:host_refused",
+              "title": "Source issues: refused (host refused)",
+              "summary": "a request was refused before it was sent. (https://github.com/example-org/widgets/issues)",
+              "priority": "normal",
+              "facts": {
+                "outcome": "refused",
+                "reason": "host_refused",
                 "status": null
               }
             }

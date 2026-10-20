@@ -49,9 +49,33 @@ registry bootstrap or publisher configuration to complete. Local packed-artifact
 portability; the supported acquisition route is a reviewed full Git commit and direct folder
 registration.
 
-`fixtures/author/fixture.json` is an honest recorded subset for `source test`. Its six scenarios
-cover auth/server/rate-limit failures, incomplete paging, resume and a hostile cursor. The report
-still lists eight missing required scenarios: malformed content, disappearance, owned conflicts,
-unmapped/null fields, missing identity, redirects and undeclared hosts. The strict provider
-normalizer rejects malformed identity before generic mapping, so this subset is not full author
-qualification. Separate focused tests exercise normalization, overlay ownership and foreign paging.
+## Recorded author qualification
+
+After building and explicitly registering this folder with a matching Core27 CLI (published
+`superbee@0.4.3-pre.17`), run from the repository root:
+
+```sh
+superbee source test ./integrations/github/recipes/work-items --fixture ./integrations/github/fixtures/author --json
+```
+
+`fixtures/author/fixture.json` contains 16 synthetic scenarios and exact, committed expectations
+for receipts, requests, cursors, changes and findings. It covers all 14 existing public Core
+qualification categories without changing or exempting any harness rule. The packaged proof runs
+the same command with the exact packed integration and published CLI outside the checkout, with
+an isolated home and no provider credentials. It also proves that a wrong expectation and a
+missing required category fail.
+
+The native provider and generic mapper enforce different boundaries. The GitHub normalizer
+rejects absent `node_id` and null `title` as unsupported content, with no page committed. Separate
+`identity.native-absent` and `fields.native-null` scenarios preserve that behavior. A whitespace-only
+`node_id` reaches the generic mapper, which treats a blank identity as missing and skips the record
+with `IDENTITY_MISSING`; a whitespace-only required title produces `VALUE_MISSING` while keeping
+the previous title. These are actual existing mapper rules, not aliases for provider rejection.
+Optional null values clear previously observed close facts. An unknown state keeps the previous
+mapped category, while a human title edit survives a provider update and raises a conflict Signal.
+
+Expected normalized fields, removal/retention choices and change digests follow the declarative
+mapping; the fixture does not learn expectations from a qualification run. Core's invariant checks
+add independent requirements for disappearance thresholds, incomplete/resumed observations,
+ownership conflict Signals and host refusal. No live GitHub access, catalog admission, managed
+execution or integration npm publication is established by these recorded results.
