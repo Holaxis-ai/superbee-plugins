@@ -88,7 +88,9 @@ build and typecheck require its explicit installation above. No Core source or s
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
 `SUPERBEE_CORE_TARBALL` to that exact archive for the packaged consumer proof. Local candidate
-paths never enter manifests or the lockfile.
+paths never enter manifests or the lockfile. The packaged author journey defaults to the exact
+published CLI `superbee@0.4.3-pre.18`; before publication, `SUPERBEE_CLI_TARBALL` may select its
+retained native release archive. The proof requires the same package version and unchanged archive bytes.
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required
 user acquisition route. They install packed test bytes outside this checkout with a clean explicit

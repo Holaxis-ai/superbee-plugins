@@ -54,15 +54,20 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
     const artifacts = path.join(scratch,'artifacts'); await mkdir(artifacts);
     const packed = {};
     const coreVersion = JSON.parse(await readFile(path.join(root,'integrations/github/package.json'),'utf8')).superbeeIntegration.core;
-    for (const name of ['core','integration-github']) {
-      const target = name === 'core' ? [process.env.SUPERBEE_CORE_TARBALL ?? `@superbee/core@${coreVersion}`] : ['-w','@superbee/integration-github'];
+    const cliVersion = '0.4.3-pre.18';
+    for (const name of ['core','integration-github','superbee']) {
+      const target = name === 'core' ? [process.env.SUPERBEE_CORE_TARBALL ?? `@superbee/core@${coreVersion}`]
+        : name === 'superbee' ? [process.env.SUPERBEE_CLI_TARBALL ?? `superbee@${cliVersion}`]
+        : ['-w','@superbee/integration-github'];
       const {stdout} = await npm(['pack',...target,'--json','--ignore-scripts','--registry=https://registry.npmjs.org/','--pack-destination',artifacts],root);
       const [receipt] = JSON.parse(stdout);
-      assert.equal(receipt.name,`@superbee/${name}`);
+      assert.equal(receipt.name,name === 'superbee' ? 'superbee' : `@superbee/${name}`);
       if (name === 'core') assert.equal(receipt.version,coreVersion,'the exact compatible public Core artifact is required');
+      if (name === 'superbee') assert.equal(receipt.version,cliVersion,'the exact compatible public CLI artifact is required');
       packed[name] = {receipt,tarball:path.join(artifacts,receipt.filename)};
     }
     if (process.env.SUPERBEE_CORE_TARBALL) assert.deepEqual(await readFile(packed.core.tarball),await readFile(process.env.SUPERBEE_CORE_TARBALL),'native npm pack must retain the exact candidate Core bytes');
+    if (process.env.SUPERBEE_CLI_TARBALL) assert.deepEqual(await readFile(packed.superbee.tarball),await readFile(process.env.SUPERBEE_CLI_TARBALL),'native npm pack must retain the exact candidate CLI bytes');
     for (const artifact of Object.values(packed)) artifact.sha256 = createHash('sha256').update(await readFile(artifact.tarball)).digest('hex');
     const receipt = packed['integration-github'].receipt;
     for (const file of receipt.files) assert.ok(file.path === 'package.json' || file.path === 'README.md' || file.path === 'PROFILE.md' || /^(dist|recipes|fixtures)\//.test(file.path), `unexpected packed file ${file.path}`);
@@ -97,9 +102,10 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
       }
     }
     for (const id of ['source-feeds','work-items']) await agreement(id);
-    // The author journey uses the published CLI and the exact packed plugin outside this tree.
-    const cliVersion = '0.4.3-pre.17'; // embeds the selected public Core27 helper contract
-    await npm(['install',`superbee@${cliVersion}`,'--ignore-scripts','--no-audit','--no-fund','--prefer-offline']);
+    // The author journey uses the exact packed CLI and plugin outside this tree.
+    await npm(['install',packed.superbee.tarball,'--ignore-scripts','--no-audit','--no-fund','--prefer-offline']);
+    assert.equal(JSON.parse(await readFile(path.join(scratch,'node_modules/superbee/package.json'),'utf8')).version,cliVersion);
+    assert.equal(createHash('sha256').update(await readFile(packed.superbee.tarball)).digest('hex'),packed.superbee.sha256,'CLI installation must retain the exact packed bytes');
     const cli = path.join(scratch,'node_modules/superbee/dist/superbee.mjs');
     const command = args => run(process.execPath,[cli,...args]);
     const proposal = JSON.parse((await command(['source','plugin','register',installed,'--json'])).stdout);

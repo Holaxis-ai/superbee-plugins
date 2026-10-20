@@ -51,8 +51,8 @@ registration.
 
 ## Recorded author qualification
 
-After building and explicitly registering this folder with a matching Core27 CLI (published
-`superbee@0.4.3-pre.17`), run from the repository root:
+After building and explicitly registering this folder with a matching Core28 CLI (published
+`superbee@0.4.3-pre.18`), run from the repository root:
 
 ```sh
 superbee source test ./integrations/github/recipes/work-items --fixture ./integrations/github/fixtures/author --json
