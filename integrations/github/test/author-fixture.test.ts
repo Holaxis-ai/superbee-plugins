@@ -6,7 +6,7 @@ import {parseRecipeFiles} from '@superbee/core/recipes';
 import {recipeFiles} from '../dist/recipes.mjs';
 import {githubIssuesProfile} from './profile.js';
 const fixture = JSON.parse(await readFile(new URL('../fixtures/author/fixture.json',import.meta.url),'utf8'));
-test('recorded GitHub author subset retains explicit outcomes and reports missing qualification', async () => {
+test('complete GitHub author fixture satisfies unchanged public qualification and independent expectations', async () => {
   const recipe = parseRecipeFiles(recipeFiles('work-items'),'packed:work-items',{okfVersion:'0.2'});
   assert.ok(recipe.ok);
   const documents = [...recipe.recipe.docs,...fixture.documents];
@@ -14,6 +14,7 @@ test('recorded GitHub author subset retains explicit outcomes and reports missin
   for (const scenario of fixture.scenarios) {
     const result = await runSourceScenario({connector,profile:githubIssuesProfile,spec:connector.sources.find(source=>source.name===fixture.source),feed:fixture.feed,documents},scenario);
     assert.deepEqual(checkScenario(result),[],scenario.name);
+    assert.equal(result.runs.every(run=>run.unused.length===0),true,scenario.name+' consumes every exchange');
     for (const [index,run] of result.runs.entries()) {
       const expected = scenario.expect[index];
       for (const [key,value] of Object.entries(expected.receipt)) assert.deepEqual(run.receipt[key as keyof typeof run.receipt] ?? null,value,`${scenario.name} receipt.${key}`);
@@ -23,5 +24,5 @@ test('recorded GitHub author subset retains explicit outcomes and reports missin
       assert.deepEqual(run.receipt.cursor,expected.cursor);
     }
   }
-  assert.deepEqual(missingScenarios(fixture.scenarios.map((row:any)=>row.name)),['errors.malformed','complete.disappear','fields.owned-conflict','fields.unmapped','fields.null','identity.missing','hosts.redirect','hosts.undeclared']);
+  assert.deepEqual(missingScenarios(fixture.scenarios.map((row:any)=>row.name)),[]);
 });

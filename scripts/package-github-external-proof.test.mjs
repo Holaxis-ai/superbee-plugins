@@ -45,7 +45,7 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
   const scratch = workspace.root;
   const home = path.join(scratch,'home'); await mkdir(home);
   const env = isolatedEnvironment({home,values:{PATH:path.dirname(process.execPath)}});
-  const run = (command,args,cwd=scratch) => runProcess(command,args,{cwd,env,timeout:120_000,maxBuffer:10*1024*1024});
+  const run = (command,args,cwd=scratch,expected=0) => runProcess(command,args,{cwd,env,expected,timeout:120_000,maxBuffer:10*1024*1024});
   const npm = (args,cwd=scratch) => {
     assert.ok(process.env.npm_execpath,'run with npm exec or npm run test:scripts');
     return run(process.execPath,[process.env.npm_execpath,...args],cwd);
@@ -97,6 +97,37 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
       }
     }
     for (const id of ['source-feeds','work-items']) await agreement(id);
+    // The author journey uses the published CLI and the exact packed plugin outside this tree.
+    const cliVersion = '0.4.3-pre.17'; // embeds the selected public Core27 helper contract
+    await npm(['install',`superbee@${cliVersion}`,'--ignore-scripts','--no-audit','--no-fund','--prefer-offline']);
+    const cli = path.join(scratch,'node_modules/superbee/dist/superbee.mjs');
+    const command = args => run(process.execPath,[cli,...args]);
+    const proposal = JSON.parse((await command(['source','plugin','register',installed,'--json'])).stdout);
+    assert.equal(proposal.core,coreVersion);
+    assert.equal(proposal.accepted,false);
+    const accepted = JSON.parse((await command(['source','plugin','register',installed,'--accept',proposal.digest,'--json'])).stdout);
+    assert.equal(accepted.accepted,true);
+    const fixtureDir = path.join(installed,'fixtures/author');
+    const recipeDir = path.join(installed,'recipes/work-items');
+    const qualification = JSON.parse((await command(['source','test',recipeDir,'--fixture',fixtureDir,'--json'])).stdout);
+    assert.equal(qualification.ok,true);
+    assert.deepEqual(qualification.missing,[]);
+    assert.equal(qualification.scenarios.length,16);
+    assert.ok(qualification.scenarios.every(row=>row.ok));
+    // Red probe: the public command must reject a changed independent expectation.
+    const bad = JSON.parse(await readFile(path.join(fixtureDir,'fixture.json'),'utf8'));
+    bad.scenarios.find(row=>row.name==='identity.missing').expect[0].receipt.pages = 0;
+    const badDir = path.join(scratch,'bad-fixture'); await mkdir(badDir);
+    await writeFile(path.join(badDir,'fixture.json'),JSON.stringify(bad));
+    const rejected = JSON.parse((await run(process.execPath,[cli,'source','test',recipeDir,'--fixture',badDir,'--json'],scratch,2)).stdout);
+    assert.equal(rejected.ok,false);
+    assert.deepEqual(rejected.scenarios.filter(row=>!row.ok).map(row=>row.name),['identity.missing']);
+    // A native rejection must not silently count toward the engine's missing-identity rule.
+    bad.scenarios = bad.scenarios.filter(row=>row.name!=='identity.missing');
+    await writeFile(path.join(badDir,'fixture.json'),JSON.stringify(bad));
+    const incomplete = JSON.parse((await run(process.execPath,[cli,'source','test',recipeDir,'--fixture',badDir,'--json'],scratch,2)).stdout);
+    assert.equal(incomplete.ok,false);
+    assert.deepEqual(incomplete.missing,['identity.missing']);
     await writeFile(path.join(scratch,'consumer.mjs'),consumer);
     await run(process.execPath,['consumer.mjs']);
     await writeFile(path.join(scratch,'consumer.ts'),`import {createSourceProfile} from '@superbee/integration-github';\nimport {recipeFiles} from '@superbee/integration-github/recipes';\nimport {restJsonProfile,nextLinkTarget,type SourcePluginHelpers} from '@superbee/core/source-profiles';\nimport {unsupportedContent,type SourceProfile} from '@superbee/core/source-engine';\nconst helpers: SourcePluginHelpers = {restJsonProfile,nextLinkTarget,unsupportedContent};\nexport const profile: SourceProfile<any,any> = createSourceProfile(helpers);\nexport const files = recipeFiles('work-items');\n`);

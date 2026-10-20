@@ -28,8 +28,9 @@ API tests. Start with the [contribution checklist](.github/PULL_REQUEST_TEMPLATE
 Keep source-model examples under `examples/`. A fixture double is not runtime provider admission.
 Follow the pinned checkout and native tool/Core setup in [README.md](README.md) before
 build/typecheck/tests. The
-GitHub reference currently ships six passing author scenarios and reports eight missing; adding
-examples must not hide that qualification gap or weaken Core's invariant checks.
+GitHub reference includes a complete synthetic author fixture with exact expectations. Run the
+public `source test` command in its README and retain Core's invariant checks; scenario names alone
+are not qualification. Cover native provider refusals separately from generic mapper diagnostics.
 
 Generated integration recipe payloads and `dist/` are build outputs. Edit root recipes and source
 files; do not maintain a second authored recipe copy. Document compatibility and whether a change
