@@ -24,6 +24,10 @@ recipes live here. The [GitHub example](examples/work-items-github) exercises th
 the [Linear example](examples/work-items-linear) proves the shared model with an offline projection
 double. Linear is not an admitted runtime integration.
 
+The [local snapshot examples](examples/local-snapshots) demonstrate caller-associated camera and
+nested benchmark data with deliberately linked targets; ingestion requires the reviewed unreleased
+local snapshot capability described there.
+
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
