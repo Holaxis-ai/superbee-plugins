@@ -4,6 +4,13 @@ Adapted from the local comparison pilot's capture primitive; no domain lights or
 import json, math, sys
 from pathlib import Path
 import bpy
+def has_compositor_or_sequence(scene):
+    # Blender 5 uses compositing_node_group; legacy use_nodes may always be True.
+    # Inspect actual trees on both APIs, conservatively refusing either one.
+    return (getattr(scene, 'compositing_node_group', None) is not None
+            or getattr(scene, 'node_tree', None) is not None
+            or getattr(scene, 'sequence_editor', None) is not None)
+
 job_path, output = sys.argv[sys.argv.index('--') + 1:]
 job = json.loads(Path(job_path).read_text())
 out = Path(output)
@@ -35,7 +42,7 @@ for obj in bpy.data.objects:
     if any(mod.type in {'NODES','FLUID','CLOTH','SOFT_BODY','OCEAN','MESH_CACHE','MESH_SEQUENCE_CACHE','PARTICLE_SYSTEM','DYNAMIC_PAINT'} for mod in obj.modifiers):
         raise ValueError('Runtime modifiers unsupported; export evaluated geometry')
 s = bpy.context.scene
-if s.use_nodes or s.sequence_editor:
+if has_compositor_or_sequence(s):
     raise ValueError('Compositor and sequence dependencies unsupported')
 if s.unit_settings.system != job['unitSystem'] or not math.isclose(s.unit_settings.scale_length, job['scaleLength'], rel_tol=1e-7, abs_tol=1e-9):
     raise ValueError('Selected units do not match scene')

@@ -58,3 +58,23 @@ test('repository package contains finite runnable factory and declared assets wi
   const bundled=await readFile(entry,'utf8');assert.doesNotMatch(bundled,/house|filkins|node_modules|\.\.\/src/);
  }finally{await rm(out,{recursive:true,force:true});}
 });
+test('closure checks actual current and legacy compositor owners rather than deprecated use_nodes',()=>{
+ const python=process.env.SUPERBEE_TEST_PYTHON||'python3';
+ const capture=new URL('../assets/capture.py',import.meta.url).pathname;
+ execFileSync(python,['-I','-c',`
+import ast, sys
+from pathlib import Path
+from types import SimpleNamespace
+module=ast.parse(Path(sys.argv[1]).read_text())
+function=next(node for node in module.body if isinstance(node,ast.FunctionDef) and node.name=='has_compositor_or_sequence')
+namespace={}
+exec(compile(ast.Module(body=[function],type_ignores=[]),'<capture-closure>','exec'),namespace)
+check=namespace['has_compositor_or_sequence']
+assert not check(SimpleNamespace(use_nodes=True,compositing_node_group=None,node_tree=None,sequence_editor=None))
+assert check(SimpleNamespace(use_nodes=False,compositing_node_group=object(),node_tree=None,sequence_editor=None))
+assert check(SimpleNamespace(use_nodes=False,node_tree=object(),sequence_editor=None))
+assert not check(SimpleNamespace(use_nodes=False,node_tree=None,sequence_editor=None))
+assert check(SimpleNamespace(compositing_node_group=None,node_tree=object(),sequence_editor=None))
+assert check(SimpleNamespace(compositing_node_group=None,node_tree=None,sequence_editor=object()))
+`,capture]);
+});
