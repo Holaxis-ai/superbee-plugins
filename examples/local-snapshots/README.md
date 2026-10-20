@@ -7,13 +7,11 @@ The supplied target bodies contain human notes outside the source-owned fields.
 
 ## Prerequisites and checks
 
-The snapshot command family and `op run --export-output` target prepared Core `0.2.0-pre.32` and
-CLI `0.4.3-pre.21`. CLI `0.4.3-pre.20` alone does not provide these commands. These are compatibility
-preparation targets, not claims of registry availability or completed native archive qualification.
-Run the public installation commands only after those exact versions are published and the reviewed
-companion is qualified against their native artifacts. Maintainer preparation may use the root
-README's explicit local Core archive override. The commands below describe the capability, not a
-new execution or completed native consumer proof.
+The snapshot command family and `op run --export-output` are available in published Core
+`0.2.0-pre.32` and CLI `0.4.3-pre.21`, whose native archives passed companion consumer qualification.
+CLI `0.4.3-pre.20` alone does not provide these commands. Follow the root README's exact public
+installation or explicit archive override. These checked-in fixtures remain synthetic; running the
+commands is a new explicit action, not evidence that a tool already produced these values.
 This directory is an example, with no plugin registration or executable package. The existing
 Signal convention is a prerequisite of the shared record-overlay owner, including empty runs;
 install that one existing definition deliberately in the disposable bundle as shown below.
@@ -147,8 +145,7 @@ authentication, human verification or a claim of full environment reproducibilit
 
 ## Disposable linked-document journey
 
-After the reviewed capability is available, create a disposable local bundle and copy these
-ordinary authored documents into it. Execute from the repository root:
+Create a disposable local bundle and copy these ordinary authored documents into it. Execute from the repository root:
 
 ```sh
 EXAMPLE_ROOT=$(mktemp -d)
@@ -212,5 +209,8 @@ superbee source snapshot check examples/local-snapshots/benchmark/snapshot-g2.js
 ```
 
 This fixture declares no settings or tool identity requirement. It makes no claim about dimensions
-outside its descriptor. Native export, ingestion, freshness and ownership qualification belong to
-the later exact-head QA stage; wrapper test success does not claim that journey has run.
+outside its descriptor. Wrapper test success alone does not establish native export or ingestion
+qualification. Prior
+native qualification retains its own source/archive identities; these fixtures claim no real
+benchmark execution. The [comparison-review examples](../comparison-review) show how human findings
+and decisions can cite an exact Artifact/capture basis without changing these source mappings.
