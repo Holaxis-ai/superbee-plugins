@@ -27,20 +27,21 @@ double. Linear is not an admitted runtime integration.
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
-before trusting and building it. This checkout requires embedded Core `0.2.0-pre.26` exactly.
+before trusting and building it. This checkout requires embedded Core `0.2.0-pre.27` exactly.
 Install the published matching Core before building, and use a CLI with this helper pin.
 Use Node 26.8.2 for these recorded build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
-| This checkout | `0.2.0-pre.26` |
+| This checkout | `0.2.0-pre.27` |
+| [`91af04ecda6db0bd3f97245ed3e5c81152ab787c`](https://github.com/Holaxis-ai/superbee-plugins/tree/91af04ecda6db0bd3f97245ed3e5c81152ab787c) | `0.2.0-pre.26` |
 | [`e0186bf5b715895bcaab291877e98228719dab82`](https://github.com/Holaxis-ai/superbee-plugins/tree/e0186bf5b715895bcaab291877e98228719dab82) | `0.2.0-pre.25` |
 | [`7484875919098720732be9fd3d96dc34fe016ffe`](https://github.com/Holaxis-ai/superbee-plugins/tree/7484875919098720732be9fd3d96dc34fe016ffe) — published CLI `0.4.3-pre.14` | `0.2.0-pre.24` |
 | [`7534c84fde8f18d46a625473eb7b6c7ba41401e1`](https://github.com/Holaxis-ai/superbee-plugins/tree/7534c84fde8f18d46a625473eb7b6c7ba41401e1) | `0.2.0-pre.23` |
 
 CLI `0.4.3-pre.14` embeds Core24; use its full pinned checkout above.
 Build and register a checkout matching the selected CLI’s embedded Core version.
-Core23, Core24 and Core25 CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
+Core23, Core24, Core25 and Core26 CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
 
 ```sh
 git clone https://github.com/Holaxis-ai/superbee-plugins.git
@@ -49,7 +50,7 @@ git checkout --detach REVIEWED_FULL_COMMIT_SHA
 git rev-parse HEAD
 git status --short
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.26
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.27
 npm run build
 superbee source plugin register "$PWD/integrations/github"
 ```
@@ -81,7 +82,7 @@ npm run test:unit
 npm run test:packaged
 ```
 
-Core 0.2.0-pre.26 provides the public host helper exports. It remains an optional exact peer;
+Core 0.2.0-pre.27 provides the public host helper exports. It remains an optional exact peer;
 build and typecheck require its explicit installation above. No Core source or sibling checkout
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set

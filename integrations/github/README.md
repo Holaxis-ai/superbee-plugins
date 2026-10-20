@@ -21,7 +21,7 @@ bind a feed, grant a credential or contact GitHub.
 
 The `superbeeIntegration` contract-1 metadata identifies the single `dist/profile.mjs` module
 and exact compatible Core version. It has no runtime imports, executable sidecars, install hook
-or required runtime dependencies. Core 0.2.0-pre.26 is an optional exact peer for public types and host composition.
+or required runtime dependencies. Core 0.2.0-pre.27 is an optional exact peer for public types and host composition.
 Developers and programmatic callers explicitly install that Core artifact before building or using
 the adapter; it is not a mandatory development or runtime dependency. See [PROFILE.md](PROFILE.md)
 for normalization, paging and completeness behavior.
