@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   source:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -29,6 +29,18 @@ jobs:
       - run: npm ci
       # Core publishes the host helper contract first. An unavailable prerelease must fail here.
       - run: npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.29
+      - name: Provision native synthetic media test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg python3-venv
+          python3 -m venv --copies "$RUNNER_TEMP/blender-media-python"
+          "$RUNNER_TEMP/blender-media-python/bin/python" -I -m pip install Pillow==11.3.0
+          echo "SUPERBEE_TEST_PYTHON=$RUNNER_TEMP/blender-media-python/bin/python" >> "$GITHUB_ENV"
+      - name: Record native media test runtimes
+        run: |
+          ffmpeg -version
+          ffprobe -version
+          "$SUPERBEE_TEST_PYTHON" -I -c 'import sys, PIL; print(sys.version); print("Pillow", PIL.__version__)'
       - run: npm run build
       - run: npm run typecheck
       - run: npm run test:unit

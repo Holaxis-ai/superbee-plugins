@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {mkdtemp,readFile,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -17,7 +18,7 @@ test('manifest matches bundled factory; one explicit action with captured tools 
  assert.equal(calls.length,3);assert.deepEqual(calls.map(c=>c.tool),['python','blender','python']);
  assert.ok(calls[1].argv.includes('--factory-startup'));assert.ok(calls[1].argv.includes('--disable-autoexec'));
  assert.ok(calls[1].argv.includes('--python-exit-code'));assert.equal(writes[0][1].model,'/captured/model.blend');
- assert.equal(result.outputs.length,11);assert.equal(result.sourceFrame.actualPtsSeconds,null);
+ assert.equal(result.outputs.length,12);assert.equal(result.sourceFrame.actualPtsSeconds,null);
 });
 test('invalid settings refuse before tool execution',async()=>{
  let calls=0;const [cap]=createLocalCapabilities({port:{runTool:()=>calls++},resources:{},invocation:{}});
@@ -35,7 +36,11 @@ test('actual full-frame image comparison creates self-contained diagnostic repor
  const before=await readFile(path.join(out,'reference.png'));
  execFileSync(python,['-I',script,path.join(out,'reference.png'),out]);
  assert.deepEqual(await readFile(path.join(out,'reference.png')),before);
- const html=await readFile(path.join(out,'review.html'),'utf8');assert.match(html,/data:image\/png;base64/);assert.match(html,/no geometric accuracy score/);assert.doesNotMatch(html,/<script|https?:/);
+ const html=await readFile(path.join(out,'review.html'),'utf8');assert.match(html,/data:image\/png;base64/);assert.match(html,/no geometric accuracy score/);assert.doesNotMatch(html,/https?:|<script[^>]+src=/);
+ const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,1);
+ const hash=createHash('sha256').update(scripts[0][1]).digest('base64');assert.ok(html.includes('sha256-'+hash));
+ for(const mode of ['side','overlay','wipe','blink','edges','difference'])assert.ok(html.includes('data-mode="'+mode+'"'));
+ assert.match(html,/prefers-reduced-motion/);assert.match(html,/id="fallback"/);
  const transform=JSON.parse(await readFile(path.join(out,'comparison.json'),'utf8'));assert.deepEqual(transform.comparisonSize,[32,32]);
  execFileSync(python,['-c',"from PIL import Image; import sys; Image.new('RGB',(32,16)).save(sys.argv[1]+'/reference.png')",out]);
  assert.throws(()=>execFileSync(python,['-I',script,path.join(out,'reference.png'),out],{stdio:'pipe'}),/Command failed/);
@@ -77,4 +82,11 @@ assert not check(SimpleNamespace(use_nodes=False,node_tree=None,sequence_editor=
 assert check(SimpleNamespace(compositing_node_group=None,node_tree=object(),sequence_editor=None))
 assert check(SimpleNamespace(compositing_node_group=None,node_tree=None,sequence_editor=object()))
 `,capture]);
+});
+test('closed video branch rejects ambiguous settings/resources before any native call',async()=>{
+ let calls=0;const [cap]=createLocalCapabilities({port:{runTool:()=>calls++},resources:{scene:{path:'/scene'},reference:{path:'/reference'}},invocation:{}});
+ for(const value of [{...settings,referenceKind:'video'},{...settings,referenceTimeSeconds:1},{...settings,referenceKind:'image'},{...settings,referenceKind:'video',referenceTimeSeconds:NaN},{...settings,referenceKind:'video',referenceTimeSeconds:1}])await assert.rejects(()=>cap.execute(value,{}));
+ assert.equal(calls,0);
+ const [unknown]=createLocalCapabilities({port:{runTool:()=>calls++},resources:{scene:{path:'/scene'},reference:{path:'/reference'},video:{path:'/video'}},invocation:{}});
+ await assert.rejects(()=>unknown.execute(settings,{}));assert.equal(calls,0);
 });
