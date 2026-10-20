@@ -27,16 +27,17 @@ double. Linear is not an admitted runtime integration.
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
-before trusting and building it. This checkout requires embedded Core `0.2.0-pre.29` exactly.
+before trusting and building it. This checkout requires embedded Core `0.2.0-pre.30` exactly.
 Install the published matching Core before building, and use a CLI with this helper pin.
-Core29 and CLI19 are proposed compatibility targets, not a claim of registry availability.
+Core30 and CLI20 are proposed compatibility targets, not a claim of registry availability.
 Run the public installation below only after those exact versions are published. Before publication,
 maintainers qualify the same versions with retained local candidate archives using the overrides below.
 Use Node 26.8.2 for these build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
-| This proposed checkout — CLI `0.4.3-pre.19` | `0.2.0-pre.29` |
+| This proposed checkout — CLI `0.4.3-pre.20` | `0.2.0-pre.30` |
+| Core29/CLI19 checkout `a92e24820f6abc1968e73d9a278e7944a3eaef67` — CLI `0.4.3-pre.19` | `0.2.0-pre.29` |
 | [`0752fb1ca4374b09049c7e7adbd9990d943f8eae`](https://github.com/Holaxis-ai/superbee-plugins/tree/0752fb1ca4374b09049c7e7adbd9990d943f8eae) — published CLI `0.4.3-pre.18` | `0.2.0-pre.28` |
 | [`09e98187942690ec1a146f2cd7dae6863e3e79fb`](https://github.com/Holaxis-ai/superbee-plugins/tree/09e98187942690ec1a146f2cd7dae6863e3e79fb) | `0.2.0-pre.27` |
 | [`91af04ecda6db0bd3f97245ed3e5c81152ab787c`](https://github.com/Holaxis-ai/superbee-plugins/tree/91af04ecda6db0bd3f97245ed3e5c81152ab787c) | `0.2.0-pre.26` |
@@ -46,7 +47,7 @@ Use Node 26.8.2 for these build steps:
 
 CLI `0.4.3-pre.14` embeds Core24; use its full pinned checkout above.
 Build and register a checkout matching the selected CLI’s embedded Core version.
-Core23, Core24, Core25, Core26, Core27 and Core28 CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
+Core23, Core24, Core25, Core26, Core27, Core28 and Core29 CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
 
 ```sh
 git clone https://github.com/Holaxis-ai/superbee-plugins.git
@@ -55,8 +56,8 @@ git checkout --detach REVIEWED_FULL_COMMIT_SHA
 git rev-parse HEAD
 git status --short
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.29
-npm install --global superbee@0.4.3-pre.19
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.30
+npm install --global superbee@0.4.3-pre.20
 npm run build
 superbee source plugin register "$PWD/integrations/github"
 ```
@@ -88,13 +89,13 @@ npm run test:unit
 npm run test:packaged
 ```
 
-Core 0.2.0-pre.29 provides the public host helper exports. It remains an optional exact peer;
+Core 0.2.0-pre.30 provides the public host helper exports. It remains an optional exact peer;
 build and typecheck require its explicit installation above. No Core source or sibling checkout
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
 `SUPERBEE_CORE_TARBALL` to that exact archive for the packaged consumer proof. Local candidate
 paths never enter manifests or the lockfile. The packaged author journey defaults to the exact
-CLI `superbee@0.4.3-pre.19` after publication; before publication, `SUPERBEE_CLI_TARBALL` may select its
+CLI `superbee@0.4.3-pre.20` after publication; before publication, `SUPERBEE_CLI_TARBALL` may select its
 retained candidate archive. The proof requires the same package version and unchanged archive bytes.
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required

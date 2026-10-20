@@ -5,14 +5,19 @@ One trusted local operation, `local.blender.compare-view.v1`, maps to the existi
 unit; npm publication is disabled. Build the reviewed pinned checkout before registration.
 The manifest declares one self-contained entry and two finite UTF-8 Python assets. Discovery
 reads metadata without importing the module or probing tools. Core remains exactly
-`0.2.0-pre.29`, helper contract 1.
+`0.2.0-pre.30`, helper contract 1.
 
-Prepared-image mode works with the existing local-operation host in CLI `0.4.3-pre.19`.
+Prepared-image mode targets the local-operation host in CLI `0.4.3-pre.20` with exact
+Core `0.2.0-pre.30`; these are compatibility targets, not a registry publication claim.
 Video mode additionally requires the reviewed host support for explicit tool
-`versionFlag: "-version"`; that CLI release must be available before installing video bindings.
-No later published CLI version is assumed here. The GitHub integration's CLI baseline is
-independent. Use the root README's reviewed Git checkout/build procedure, then pass your
-existing local bundle as `YOUR_BUNDLE` (the repository directory alone is not a bundle):
+`versionFlag: "-version"`; qualify the exact CLI artifact for that support before installing
+video bindings. A CLI version number alone does not qualify video host behavior. The GitHub
+integration's CLI baseline is independent.
+
+The earlier checkout `0752fb1ca4374b09049c7e7adbd9990d943f8eae` pins Blender to Core27;
+its GitHub adapter uses Core28/CLI18. CLI18 does not provide this local host.
+Use the root README's reviewed Git checkout/build procedure, then pass your existing local
+bundle as `YOUR_BUNDLE` (the repository directory alone is not a bundle):
 
 ```sh
 superbee op register "$PWD/integrations/blender" --local --dir YOUR_BUNDLE
