@@ -13,9 +13,16 @@ available. The earlier checkout `0752fb1ca4374b09049c7e7adbd9990d943f8eae` pins 
 Core27; its GitHub adapter uses Core28/CLI18. Published CLI18 does not provide this local host.
 Before publication, maintainers install the exact retained Core29 candidate tarball and qualify
 the operation with the retained CLI19 candidate archive; no local paths enter committed metadata.
-After building, `superbee op --local register "$PWD/integrations/blender"` previews the local
-proposal. Review and explicitly accept its digest with `--accept PROPOSAL_DIGEST`; tool/resource
-binding and each invocation require their own explicit selections.
+After building, run from the repository root and pass the path to your existing local bundle
+as `YOUR_BUNDLE`; the repository directory alone is not a bundle:
+
+```sh
+superbee op register "$PWD/integrations/blender" --local --dir YOUR_BUNDLE
+```
+
+This previews the local proposal. Review it, then repeat the same command, retaining `--dir`,
+with `--accept PROPOSAL_DIGEST` to explicitly accept its digest. Tool/resource binding and each
+invocation require their own explicit selections.
 
 The CLI host supplies captured `scene` and `reference` resources and pinned `blender` and
 `python` tool handles. Python must have Pillow installed. Settings are exactly `camera`,
