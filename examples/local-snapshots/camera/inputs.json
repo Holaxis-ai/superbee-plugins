@@ -1,0 +1,6 @@
+{
+  "inputs": {
+    "scene": "examples/local-snapshots/camera/original-scene.txt",
+    "reference": "examples/local-snapshots/camera/original-reference.txt"
+  }
+}

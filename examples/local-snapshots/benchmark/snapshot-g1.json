@@ -1,0 +1,59 @@
+{
+  "v": 1,
+  "resource": "urn:example:benchmark-suite",
+  "generation": 1,
+  "complete": true,
+  "scope": "tiny-suite-v1",
+  "records": [
+    {
+      "key": "case-search-001",
+      "result": {
+        "label": "Synthetic search",
+        "metrics": {
+          "latency": {
+            "p95_ms": 12.5
+          },
+          "checks": {
+            "passed": 10
+          }
+        },
+        "metadata": {
+          "suites": [
+            "tiny",
+            "search"
+          ]
+        }
+      }
+    },
+    {
+      "key": "case-filter-002",
+      "result": {
+        "label": "Synthetic filter",
+        "metrics": {
+          "latency": {
+            "p95_ms": 8
+          },
+          "checks": {
+            "passed": 10
+          }
+        },
+        "metadata": {
+          "suites": [
+            "tiny",
+            "filter"
+          ]
+        }
+      }
+    }
+  ],
+  "evidence": {
+    "v": 1,
+    "association": "caller_asserted",
+    "inputs": [
+      {
+        "id": "workload",
+        "sha256": "sha256:621d847c3b0729b8b53885f3b569a90898be9a3ed4f9ff1fd5a24c7d8df6e53d"
+      }
+    ]
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "v": 1,
+  "resource": "urn:example:camera-study",
+  "generation": 1,
+  "complete": false,
+  "records": [
+    {
+      "key": "shot-front-001",
+      "camera": {
+        "blenderVersion": "5.0.0",
+        "scene": "Synthetic Studio",
+        "camera": "Front Camera",
+        "matrixWorld": [
+          [
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            -8
+          ],
+          [
+            0,
+            0,
+            1,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        "lensMm": 50,
+        "cameraType": "PERSP",
+        "sensorWidthMm": 36,
+        "sensorFit": "AUTO",
+        "shiftX": 0,
+        "shiftY": 0,
+        "clipStart": 0.1,
+        "clipEnd": 1000,
+        "unitSystem": "METRIC",
+        "scaleLength": 1,
+        "frame": 1,
+        "engine": "CYCLES",
+        "device": "CPU",
+        "samples": 8,
+        "seed": 0,
+        "size": [
+          64,
+          64
+        ],
+        "viewTransform": "Standard",
+        "look": "None",
+        "exposure": 0,
+        "gamma": 1,
+        "architectureHiddenByAdapter": false,
+        "modelSaved": false,
+        "closure": "packed scene; no scripts, drivers, external media or simulation caches"
+      }
+    }
+  ],
+  "evidence": {
+    "v": 1,
+    "association": "caller_asserted",
+    "inputs": [
+      {
+        "id": "reference",
+        "sha256": "sha256:c228901f977bf203a4e6ce348f4f3122c97d14d97d93c8470fcf616583cafa7c"
+      },
+      {
+        "id": "scene",
+        "sha256": "sha256:5b473576d74cf0409d20bd5ff17c3f7a2923d3f1b045d92b9c393238d7580de3"
+      }
+    ],
+    "settings_digest": "sha256:5543675a246fb06f2c4f0821a676b1b377c571558fa04b6b00af250ee4f927d6"
+  }
+}

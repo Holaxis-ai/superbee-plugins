@@ -1,0 +1,8 @@
+{
+  "camera": "Front Camera",
+  "width": 64,
+  "height": 64,
+  "samples": 8,
+  "unitSystem": "METRIC",
+  "scaleLength": 1
+}
