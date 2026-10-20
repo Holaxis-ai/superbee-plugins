@@ -12,7 +12,7 @@ test('private integration metadata retains optional compatibility and lockfile c
   assert.equal(pkg.private,true);
   assert.equal(pkg.publishConfig,undefined);
   assert.deepEqual(pkg.repository,{type:'git',url:'git+https://github.com/Holaxis-ai/superbee-plugins.git',directory:'integrations/github'});
-  assert.deepEqual(pkg.peerDependencies,{'@superbee/core':'0.2.0-pre.28'});
+  assert.deepEqual(pkg.peerDependencies,{'@superbee/core':'0.2.0-pre.29'});
   assert.deepEqual(pkg.peerDependenciesMeta,{'@superbee/core':{optional:true}});
   assert.equal(pkg.superbeeIntegration.core,pkg.peerDependencies['@superbee/core']);
   assert.deepEqual(pkg.superbeeIntegration.profiles,[{id:'github-issues',version:1,entry:'dist/profile.mjs'}]);
@@ -31,4 +31,9 @@ test('private integration metadata retains optional compatibility and lockfile c
   assert.match(pkg.scripts.prepublishOnly,/Integration npm publication is disabled/);
   assert.match(pkg.scripts.prepublishOnly,/process\.exit\(1\)/);
   assert.equal(root.devDependencies.tsx,'4.23.15');
+});
+
+test('Blender local operation retains exact Core compatibility',async () => {
+  const blender = await readJson('../integrations/blender/package.json');
+  assert.equal(blender.superbeeLocalOperations.core,'0.2.0-pre.29');
 });

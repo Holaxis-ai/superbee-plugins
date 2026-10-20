@@ -27,13 +27,17 @@ double. Linear is not an admitted runtime integration.
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
-before trusting and building it. This checkout requires embedded Core `0.2.0-pre.28` exactly.
+before trusting and building it. This checkout requires embedded Core `0.2.0-pre.29` exactly.
 Install the published matching Core before building, and use a CLI with this helper pin.
-Use Node 26.8.2 for these recorded build steps:
+Core29 and CLI19 are proposed compatibility targets, not a claim of registry availability.
+Run the public installation below only after those exact versions are published. Before publication,
+maintainers qualify the same versions with retained local candidate archives using the overrides below.
+Use Node 26.8.2 for these build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
-| This checkout | `0.2.0-pre.28` |
+| This proposed checkout — CLI `0.4.3-pre.19` | `0.2.0-pre.29` |
+| [`0752fb1ca4374b09049c7e7adbd9990d943f8eae`](https://github.com/Holaxis-ai/superbee-plugins/tree/0752fb1ca4374b09049c7e7adbd9990d943f8eae) — published CLI `0.4.3-pre.18` | `0.2.0-pre.28` |
 | [`09e98187942690ec1a146f2cd7dae6863e3e79fb`](https://github.com/Holaxis-ai/superbee-plugins/tree/09e98187942690ec1a146f2cd7dae6863e3e79fb) | `0.2.0-pre.27` |
 | [`91af04ecda6db0bd3f97245ed3e5c81152ab787c`](https://github.com/Holaxis-ai/superbee-plugins/tree/91af04ecda6db0bd3f97245ed3e5c81152ab787c) | `0.2.0-pre.26` |
 | [`e0186bf5b715895bcaab291877e98228719dab82`](https://github.com/Holaxis-ai/superbee-plugins/tree/e0186bf5b715895bcaab291877e98228719dab82) | `0.2.0-pre.25` |
@@ -42,7 +46,7 @@ Use Node 26.8.2 for these recorded build steps:
 
 CLI `0.4.3-pre.14` embeds Core24; use its full pinned checkout above.
 Build and register a checkout matching the selected CLI’s embedded Core version.
-Core23, Core24, Core25, Core26 and Core27 CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
+Core23, Core24, Core25, Core26, Core27 and Core28 CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
 
 ```sh
 git clone https://github.com/Holaxis-ai/superbee-plugins.git
@@ -51,7 +55,8 @@ git checkout --detach REVIEWED_FULL_COMMIT_SHA
 git rev-parse HEAD
 git status --short
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.28
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.29
+npm install --global superbee@0.4.3-pre.19
 npm run build
 superbee source plugin register "$PWD/integrations/github"
 ```
@@ -83,19 +88,21 @@ npm run test:unit
 npm run test:packaged
 ```
 
-Core 0.2.0-pre.28 provides the public host helper exports. It remains an optional exact peer;
+Core 0.2.0-pre.29 provides the public host helper exports. It remains an optional exact peer;
 build and typecheck require its explicit installation above. No Core source or sibling checkout
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
 `SUPERBEE_CORE_TARBALL` to that exact archive for the packaged consumer proof. Local candidate
 paths never enter manifests or the lockfile. The packaged author journey defaults to the exact
-published CLI `superbee@0.4.3-pre.18`; before publication, `SUPERBEE_CLI_TARBALL` may select its
-retained native release archive. The proof requires the same package version and unchanged archive bytes.
+CLI `superbee@0.4.3-pre.19` after publication; before publication, `SUPERBEE_CLI_TARBALL` may select its
+retained candidate archive. The proof requires the same package version and unchanged archive bytes.
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required
 user acquisition route. They install packed test bytes outside this checkout with a clean explicit
 environment and check public types, browser exports, recipes and the source harness. Source CI
-uses the published Core artifact. Integration metadata is private and `prepublishOnly` refuses
+uses the published Core and CLI artifacts. Qualify the proposed exact head with both local archive
+overrides before CLI approval; ordinary consumer CI and merge follow availability of the matching
+public CLI. This does not authorize a release. Integration metadata is private and `prepublishOnly` refuses
 publication; no integration registry bootstrap, publisher setup or release workflow is planned.
 
 ## Shared verification tooling
