@@ -6,6 +6,17 @@ unit; npm publication is disabled. Build the reviewed pinned checkout before reg
 The manifest declares one self-contained entry and two finite UTF-8 Python assets.
 Discovery reads metadata without importing the module or probing tools.
 
+This proposed checkout pins Core `0.2.0-pre.29` and requires the matching local-operation host
+in CLI `0.4.3-pre.19`. These are compatibility targets, not a registry publication claim.
+Use the root README's reviewed Git checkout and build procedure after the exact releases are
+available. The earlier checkout `0752fb1ca4374b09049c7e7adbd9990d943f8eae` pins Blender to
+Core27; its GitHub adapter uses Core28/CLI18. Published CLI18 does not provide this local host.
+Before publication, maintainers install the exact retained Core29 candidate tarball and qualify
+the operation with the retained CLI19 candidate archive; no local paths enter committed metadata.
+After building, `superbee op --local register "$PWD/integrations/blender"` previews the local
+proposal. Review and explicitly accept its digest with `--accept PROPOSAL_DIGEST`; tool/resource
+binding and each invocation require their own explicit selections.
+
 The CLI host supplies captured `scene` and `reference` resources and pinned `blender` and
 `python` tool handles. Python must have Pillow installed. Settings are exactly `camera`,
 `width`, `height`, `samples`, `unitSystem`, `scaleLength`. Dimensions are 16–1600 pixels,

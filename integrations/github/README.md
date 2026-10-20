@@ -21,7 +21,7 @@ bind a feed, grant a credential or contact GitHub.
 
 The `superbeeIntegration` contract-1 metadata identifies the single `dist/profile.mjs` module
 and exact compatible Core version. It has no runtime imports, executable sidecars, install hook
-or required runtime dependencies. Core 0.2.0-pre.28 is an optional exact peer for public types and host composition.
+or required runtime dependencies. Core 0.2.0-pre.29 is an optional exact peer for public types and host composition.
 Developers and programmatic callers explicitly install that Core artifact before building or using
 the adapter; it is not a mandatory development or runtime dependency. See [PROFILE.md](PROFILE.md)
 for normalization, paging and completeness behavior.
@@ -49,10 +49,15 @@ registry bootstrap or publisher configuration to complete. Local packed-artifact
 portability; the supported acquisition route is a reviewed full Git commit and direct folder
 registration.
 
-## Recorded author qualification
+## Author qualification
 
-After building and explicitly registering this folder with a matching Core28 CLI (published
-`superbee@0.4.3-pre.18`), run from the repository root:
+The unchanged fixture was qualified with Core28/CLI18 at reviewed checkout
+[`0752fb1ca4374b09049c7e7adbd9990d943f8eae`](https://github.com/Holaxis-ai/superbee-plugins/tree/0752fb1ca4374b09049c7e7adbd9990d943f8eae).
+This proposed checkout requires Core29/CLI19; the root README describes local archive qualification
+and the publication dependency. The version pin does not claim those releases are already public.
+
+After building and explicitly registering this folder with a matching Core29 CLI (`superbee@0.4.3-pre.19` after publication,
+or its retained candidate archive during prepublication qualification), run from the repository root:
 
 ```sh
 superbee source test ./integrations/github/recipes/work-items --fixture ./integrations/github/fixtures/author --json
@@ -61,7 +66,7 @@ superbee source test ./integrations/github/recipes/work-items --fixture ./integr
 `fixtures/author/fixture.json` contains 16 synthetic scenarios and exact, committed expectations
 for receipts, requests, cursors, changes and findings. It covers all 14 existing public Core
 qualification categories without changing or exempting any harness rule. The packaged proof runs
-the same command with the exact packed integration and published CLI outside the checkout, with
+the same command with the exact packed integration and matching CLI archive outside the checkout, with
 an isolated home and no provider credentials. It also proves that a wrong expectation and a
 missing required category fail.
 

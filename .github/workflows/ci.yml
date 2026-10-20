@@ -28,7 +28,7 @@ jobs:
         run: node .package-verification-producer/packages/package-verification/export.mjs --source .package-verification-producer --target scripts/vendor/package-verification --check
       - run: npm ci
       # Core publishes the host helper contract first. An unavailable prerelease must fail here.
-      - run: npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.28
+      - run: npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.29
       - run: npm run build
       - run: npm run typecheck
       - run: npm run test:unit
