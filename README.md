@@ -33,14 +33,13 @@ Use Node 26.8.2 for these recorded build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
-| This checkout (Core25 companion preparation) | `0.2.0-pre.25` |
+| This checkout | `0.2.0-pre.25` |
 | [`7484875919098720732be9fd3d96dc34fe016ffe`](https://github.com/Holaxis-ai/superbee-plugins/tree/7484875919098720732be9fd3d96dc34fe016ffe) — published CLI `0.4.3-pre.14` | `0.2.0-pre.24` |
 | [`7534c84fde8f18d46a625473eb7b6c7ba41401e1`](https://github.com/Holaxis-ai/superbee-plugins/tree/7534c84fde8f18d46a625473eb7b6c7ba41401e1) | `0.2.0-pre.23` |
 
-Current published CLI `0.4.3-pre.14` embeds Core24; use its pinned checkout above.
-This companion prepares for a CLI embedding Core25; it does not establish that CLI15 is
-published. Check the selected CLI’s embedded Core before registration. Core23 and Core24
-CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
+CLI `0.4.3-pre.14` embeds Core24; use its full pinned checkout above.
+Build and register a checkout matching the selected CLI’s embedded Core version.
+Core23 and Core24 CLIs refuse this checkout; use the matching reviewed checkout above for those hosts.
 
 ```sh
 git clone https://github.com/Holaxis-ai/superbee-plugins.git
