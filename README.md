@@ -28,8 +28,8 @@ The [local snapshot examples](examples/local-snapshots) wrap caller-associated c
 benchmark data for deliberately linked targets. Core owns mapping, reconciliation, generation
 admission and input applicability through its
 [snapshot contract](https://github.com/Holaxis-ai/superbee/blob/73c47c4473f3f1dd9b2f0533810dbac43b8b0104/packages/core/SNAPSHOT-SOURCES.md);
-this checkout supplies data-only wrappers and declarations. This prepared checkout targets Core33/CLI22;
-publication and exact native-archive companion qualification are still pending. These fixtures claim
+this checkout supplies data-only wrappers and declarations. Core33/CLI22 are published on next,
+and their exact native archives passed installed consumer qualification. These fixtures claim
 no real render or benchmark execution. The [comparison-review recipe](recipes/comparison-review)
 adds human discrepancies and revision-bound decisions; its [two synthetic journeys](examples/comparison-review)
 reuse these observations and the existing Artifact command without registering executable code.
@@ -39,17 +39,17 @@ reuse these observations and the existing Artifact command without registering e
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
 before trusting and building it. This checkout requires embedded Core `0.2.0-pre.33` exactly.
 Install the published matching Core before building, and use a CLI with this helper pin.
-Core33 and CLI22 are prepared compatibility targets, not published or archive-qualified by this change.
-Run the public installation below only after both versions have been published and qualified.
+Core33 and CLI22 are published prereleases. The [library finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39526383098)
+and [CLI finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39526385946) verified their public
+bytes after independent native archive review and installed GitHub/comparison consumer qualification.
 The prior Core32/CLI21 [library finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39514282631)
-and [CLI finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39514286240) verified those earlier
-public bytes; their evidence does not qualify this checkout. Maintainers can use the existing
-archive overrides for separate candidate qualification.
+and [CLI finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39514286240) remain historical
+evidence. Maintainers can use the existing archive overrides for separate candidate qualification.
 Use Node 26.8.2 for these build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
-| This prepared checkout — CLI `0.4.3-pre.22` | `0.2.0-pre.33` |
+| This checkout — CLI `0.4.3-pre.22` | `0.2.0-pre.33` |
 | Prior published compatibility checkout [`769bf609f3fe9c78e962f94ead11567cac7fcfd3`](https://github.com/Holaxis-ai/superbee-plugins/tree/769bf609f3fe9c78e962f94ead11567cac7fcfd3) — CLI `0.4.3-pre.21` | `0.2.0-pre.32` |
 | Prior Core30 compatibility checkout [`333d537d3dd92aab87f5801c60f5a609daf648ee`](https://github.com/Holaxis-ai/superbee-plugins/tree/333d537d3dd92aab87f5801c60f5a609daf648ee) — CLI `0.4.3-pre.20` | `0.2.0-pre.30` |
 | Core29/CLI19 checkout `a92e24820f6abc1968e73d9a278e7944a3eaef67` — CLI `0.4.3-pre.19` | `0.2.0-pre.29` |
@@ -105,20 +105,20 @@ npm run test:unit
 npm run test:packaged
 ```
 
-The Core 0.2.0-pre.33 target provides the public host helper exports. It remains an
+Published Core 0.2.0-pre.33 provides the public host helper exports. It remains an
 optional exact peer; build and typecheck require its explicit installation above. No Core source or sibling checkout
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
 `SUPERBEE_CORE_TARBALL` to that exact archive for the packaged consumer proof. Local candidate
 paths never enter manifests or the lockfile. The packaged author journey defaults to the exact
-CLI target `superbee@0.4.3-pre.22` after publication; `SUPERBEE_CLI_TARBALL` may explicitly select a
+published CLI `superbee@0.4.3-pre.22`; `SUPERBEE_CLI_TARBALL` may explicitly select a
 retained matching archive for candidate qualification. The proof requires the same package version
 and unchanged archive bytes.
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required
 user acquisition route. They install packed test bytes outside this checkout with a clean explicit
 environment and check public types, browser exports, recipes and the source harness. Source CI
-requires both matching Core and CLI versions to be public and must wait until then. Qualify the proposed exact head with both local archive
+uses the matching published Core and CLI artifacts. Qualify a proposed exact head with both local archive
 overrides during candidate qualification; ordinary consumer CI uses the matching public CLI. This
 does not authorize a release. Integration metadata is private and `prepublishOnly` refuses
 publication; no integration registry bootstrap, publisher setup or release workflow is planned.

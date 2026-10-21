@@ -7,9 +7,9 @@ The supplied target bodies contain human notes outside the source-owned fields.
 
 ## Prerequisites and checks
 
-This prepared checkout uses the snapshot command family and `op run --export-output` with Core
-`0.2.0-pre.33` and CLI `0.4.3-pre.22`. Publication and exact native-archive qualification
-for these prepared targets remain pending; the prior Core32/CLI21 qualification does not transfer.
+The snapshot command family and `op run --export-output` are available in published Core
+`0.2.0-pre.33` and CLI `0.4.3-pre.22`. Their exact native archives passed installed GitHub and
+synthetic camera/benchmark comparison journeys; this is not a new native tool execution claim.
 CLI `0.4.3-pre.20` alone does not provide these commands. Follow the root README's exact public
 installation or explicit archive override. These checked-in fixtures remain synthetic; running the
 commands is a new explicit action, not evidence that a tool already produced these values.
