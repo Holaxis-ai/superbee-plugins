@@ -13,7 +13,7 @@
   "superbeeLocalOperations": {
     "contract": 1,
     "id": "blender",
-    "core": "0.2.0-pre.32",
+    "core": "0.2.0-pre.33",
     "helper": 1,
     "entry": "dist/operation.mjs",
     "assets": [
