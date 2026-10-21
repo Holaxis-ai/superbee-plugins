@@ -51,7 +51,7 @@ Use Node 26.8.2 for these build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
-| This checkout — stable CLI `0.4.3` | `0.2.0-pre.34` |
+| This checkout, first reviewed at [`0b9241c7ebc24de55e6a717a1533c4d38a7bf88a`](https://github.com/Holaxis-ai/superbee-plugins/tree/0b9241c7ebc24de55e6a717a1533c4d38a7bf88a) — stable CLI `0.4.3` | `0.2.0-pre.34` |
 | Prior Core33 compatibility checkout [`d8c2dc755ed598a3a0dc9190082198dfd2825c75`](https://github.com/Holaxis-ai/superbee-plugins/tree/d8c2dc755ed598a3a0dc9190082198dfd2825c75) — CLI `0.4.3-pre.22` | `0.2.0-pre.33` |
 | Prior published compatibility checkout [`769bf609f3fe9c78e962f94ead11567cac7fcfd3`](https://github.com/Holaxis-ai/superbee-plugins/tree/769bf609f3fe9c78e962f94ead11567cac7fcfd3) — CLI `0.4.3-pre.21` | `0.2.0-pre.32` |
 | Prior Core30 compatibility checkout [`333d537d3dd92aab87f5801c60f5a609daf648ee`](https://github.com/Holaxis-ai/superbee-plugins/tree/333d537d3dd92aab87f5801c60f5a609daf648ee) — CLI `0.4.3-pre.20` | `0.2.0-pre.30` |
