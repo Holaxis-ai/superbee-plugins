@@ -42,7 +42,7 @@ test('comparison recipe preserves exact evidence and human decisions across two 
   const run = (command, args, expected = 0) => runProcess(command, args, {cwd: scratch, env, expected, timeout: 120_000, maxBuffer: 4 * 1024 * 1024});
   try {
     assert.ok(process.env.npm_execpath, 'run this proof with npm exec or npm run test:packaged');
-    const selected = process.env.SUPERBEE_CLI_TARBALL ?? 'superbee@0.4.3-pre.22';
+    const selected = process.env.SUPERBEE_CLI_TARBALL ?? 'superbee@0.4.3';
     const selectedBytes = process.env.SUPERBEE_CLI_TARBALL ? await readFile(selected) : undefined;
     await writeFile(path.join(scratch, 'package.json'), JSON.stringify({private: true, type: 'module'}));
     await run(process.execPath, [process.env.npm_execpath, 'install', selected, '--ignore-scripts', '--no-audit', '--no-fund', '--package-lock=false', '--registry=https://registry.npmjs.org/']);
@@ -50,11 +50,11 @@ test('comparison recipe preserves exact evidence and human decisions across two 
     const command = async (args, expected = 0) => (await run(process.execPath, [cli, ...args, '--json'], expected)).stdout;
     const json = async args => JSON.parse(await command(args));
     const identity = await json(['version']);
-    assert.equal(identity.identity.package.version, '0.4.3-pre.22');
-    assert.equal(identity.identity.source.commit, 'dbc71f69b27926a92085156b7ec82d2289aa1a5b');
+    assert.equal(identity.identity.package.version, '0.4.3');
+    assert.equal(identity.identity.source.commit, 'bb3589106691c27d15b156d8b45e4178836bd4be');
     assert.equal(identity.identity.source.dirty, false);
     assert.equal(identity.identity.artifact.channel, 'npm-package');
-    t.diagnostic(`installed CLI22 source=${identity.identity.source.commit} channel=${identity.identity.artifact.channel}`);
+    t.diagnostic(`installed CLI 0.4.3 source=${identity.identity.source.commit} channel=${identity.identity.artifact.channel}`);
 
     for (const consumer of ['camera', 'benchmark']) {
       const bundle = path.join(scratch, consumer, '.superbee');
