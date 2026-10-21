@@ -8,7 +8,8 @@ The supplied target bodies contain human notes outside the source-owned fields.
 ## Prerequisites and checks
 
 The snapshot command family and `op run --export-output` are available in published Core
-`0.2.0-pre.32` and CLI `0.4.3-pre.21`, whose native archives passed companion consumer qualification.
+`0.2.0-pre.33` and CLI `0.4.3-pre.22`. Their exact native archives passed installed GitHub and
+synthetic camera/benchmark comparison journeys; this is not a new native tool execution claim.
 CLI `0.4.3-pre.20` alone does not provide these commands. Follow the root README's exact public
 installation or explicit archive override. These checked-in fixtures remain synthetic; running the
 commands is a new explicit action, not evidence that a tool already produced these values.
@@ -21,12 +22,12 @@ the repository root, use Node 26.8.2 and the root README's dependency setup:
 
 ```sh
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.32
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.33
 node --test examples/local-snapshots/wrap-camera.test.mjs
 ```
 
-The standalone Core32 installation supplies the existing `@superbee/core/site-capabilities`
-`canonicalJson` owner used by the wrapper. Wrapper checks do not qualify CLI21 ingestion or prove
+The standalone Core33 installation supplies the existing `@superbee/core/site-capabilities`
+`canonicalJson` owner used by the wrapper. Wrapper checks do not qualify CLI22 ingestion or prove
 historical tool consumption. Core is an existing optional peer, so `npm ci` alone does not install
 it. No build or typecheck is needed for these `.mjs` examples. The focused checks exercise the wrapper, not a copied
 snapshot validator. Public Core's decoder, binder and freshness assessor remain authoritative.

@@ -5,8 +5,8 @@ revision-bound evidence and a bounded decision. These camera and benchmark examp
 synthetic. The HTML diagrams are invented; no Blender render or benchmark was executed to produce
 them. The decisions below belong to `process:comparison-review-example`, not a human reviewer.
 
-Use published CLI `superbee@0.4.3-pre.21` and Core `@superbee/core@0.2.0-pre.32` with this reviewed
-checkout. The [repository setup](../../README.md#develop-and-verify) supplies public Core for focused
+Use published CLI `superbee@0.4.3-pre.22` and Core `@superbee/core@0.2.0-pre.33` with this reviewed
+checkout. Their exact native archives passed the installed comparison journey. The [repository setup](../../README.md#develop-and-verify) supplies public Core for focused
 tests. No adapter build, tool registration, native media or provider access is needed for this
 recipe. The existing [local snapshot examples](../local-snapshots) own the camera/benchmark facts
 and the wrapper; these examples add no source parser, evidence exporter or new runtime.
@@ -146,8 +146,8 @@ concern; it does not become latency zero or an automatically generated human fin
 npm exec -- node --test scripts/comparison-review.test.mjs
 ```
 
-The single focused proof installs public CLI21 once into an isolated workspace and exercises both
-consumers with public Core32. The existing `SUPERBEE_CLI_TARBALL` override can select exact CLI21
+The single focused proof installs public CLI22 once into an isolated workspace and exercises both
+consumers with public Core33. The existing `SUPERBEE_CLI_TARBALL` override can select exact CLI22
 qualification bytes. The proof checks inert recipe installation/re-add, actual Artifact create/pull,
 valid records, invalid enum/section/datetime refusal, stale CAS, source refresh isolation,
 current/stale/unverifiable and a newly pinned successor. It uses existing verification helpers and

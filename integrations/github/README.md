@@ -21,7 +21,7 @@ bind a feed, grant a credential or contact GitHub.
 
 The `superbeeIntegration` contract-1 metadata identifies the single `dist/profile.mjs` module
 and exact compatible Core version. It has no runtime imports, executable sidecars, install hook
-or required runtime dependencies. The prepared Core 0.2.0-pre.32 target is an optional exact peer
+or required runtime dependencies. Published Core 0.2.0-pre.33 is an optional exact peer
 for public types and host composition.
 Developers and programmatic callers explicitly install that Core artifact before building or using
 the adapter; it is not a mandatory development or runtime dependency. See [PROFILE.md](PROFILE.md)
@@ -54,11 +54,11 @@ registration.
 
 The unchanged fixture was qualified with Core28/CLI18 at reviewed checkout
 [`0752fb1ca4374b09049c7e7adbd9990d943f8eae`](https://github.com/Holaxis-ai/superbee-plugins/tree/0752fb1ca4374b09049c7e7adbd9990d943f8eae).
-This proposed checkout requires Core32/CLI21; the root README describes local archive qualification
-and the publication dependency. The version pin does not claim those releases are already public
-or that native archive consumer qualification has completed. The earlier fixture qualification remains historical evidence.
+This checkout requires published Core33/CLI22. Its exact native archives passed the installed public
+author journey, including all 16 scenarios and negative controls. The root README links the current
+public finalizers; the earlier fixture qualification remains historical evidence.
 
-After building and explicitly registering this folder with a matching Core32 CLI (`superbee@0.4.3-pre.21` after publication,
+After building and explicitly registering this folder with a matching Core33 CLI (`superbee@0.4.3-pre.22`,
 or its retained candidate archive during prepublication qualification), run from the repository root:
 
 ```sh
