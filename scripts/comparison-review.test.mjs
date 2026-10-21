@@ -51,7 +51,7 @@ test('comparison recipe preserves exact evidence and human decisions across two 
     const json = async args => JSON.parse(await command(args));
     const identity = await json(['version']);
     assert.equal(identity.identity.package.version, '0.4.3-pre.22');
-    assert.equal(identity.identity.source.commit, '29628a5004d6640210f24a0b651ccefb57e7ff56');
+    assert.equal(identity.identity.source.commit, 'dbc71f69b27926a92085156b7ec82d2289aa1a5b');
     assert.equal(identity.identity.source.dirty, false);
     assert.equal(identity.identity.artifact.channel, 'npm-package');
     t.diagnostic(`installed CLI22 source=${identity.identity.source.commit} channel=${identity.identity.artifact.channel}`);
