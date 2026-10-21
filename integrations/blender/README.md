@@ -5,11 +5,11 @@ One trusted local operation, `local.blender.compare-view.v1`, maps to the existi
 unit; npm publication is disabled. Build the reviewed pinned checkout before registration.
 The manifest declares one self-contained entry and two finite UTF-8 Python assets. Discovery
 reads metadata without importing the module or probing tools. This checkout pins Core
-exactly `0.2.0-pre.33`, helper contract 1.
+exactly `0.2.0-pre.34`, helper contract 1.
 
-Prepared-image mode targets the local-operation host in CLI `0.4.3-pre.22` with exact
-Core `0.2.0-pre.33`. Both public artifacts are available, and the exact native archives passed
-installed GitHub/comparison consumer qualification. This does not claim a new native Blender render.
+Prepared-image mode targets the local-operation host in stable CLI `0.4.3` with exact
+Core `0.2.0-pre.34`. Both public artifacts are available and passed installed GitHub/comparison
+consumer qualification. This does not claim a new native Blender render.
 Use the reviewed checkout and exact public versions documented at repository root.
 Video mode additionally requires the reviewed host support for explicit tool
 `versionFlag: "-version"`; qualify the exact CLI artifact for that support before installing
@@ -110,7 +110,7 @@ this change deletes no private dispatcher or history.
 
 ## Validation
 
-Run `npm ci`, install published exact Core33 (or a retained local preparation archive for
+Run `npm ci`, install published exact Core34 (or a retained local preparation archive for
 maintainer checks) as documented at repository root, then `npm run build`,
 `npm run typecheck` and `npm test --workspace integrations/blender`. Set `SUPERBEE_TEST_PYTHON`
 to an isolated Python with Pillow when necessary. Native synthetic media tests require ffmpeg
