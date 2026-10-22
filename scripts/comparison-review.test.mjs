@@ -50,11 +50,13 @@ test('comparison recipe preserves exact evidence and human decisions across two 
     const command = async (args, expected = 0) => (await run(process.execPath, [cli, ...args, '--json'], expected)).stdout;
     const json = async args => JSON.parse(await command(args));
     const identity = await json(['version']);
-    assert.equal(identity.identity.package.version, '0.4.3');
-    assert.equal(identity.identity.source.commit, 'bb3589106691c27d15b156d8b45e4178836bd4be');
+    const expectedVersion = selectedBytes ? '0.4.4-pre.2' : '0.4.3';
+    const expectedSource = selectedBytes ? '008e00fa04d0ff726dfa3d6da80343cbcf230309' : 'bb3589106691c27d15b156d8b45e4178836bd4be';
+    assert.equal(identity.identity.package.version, expectedVersion);
+    assert.equal(identity.identity.source.commit, expectedSource);
     assert.equal(identity.identity.source.dirty, false);
     assert.equal(identity.identity.artifact.channel, 'npm-package');
-    t.diagnostic(`installed CLI 0.4.3 source=${identity.identity.source.commit} channel=${identity.identity.artifact.channel}`);
+    t.diagnostic(`installed CLI ${expectedVersion} source=${identity.identity.source.commit} channel=${identity.identity.artifact.channel}`);
 
     for (const consumer of ['camera', 'benchmark']) {
       const bundle = path.join(scratch, consumer, '.superbee');
