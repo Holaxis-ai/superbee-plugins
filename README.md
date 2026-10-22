@@ -28,8 +28,8 @@ The [local snapshot examples](examples/local-snapshots) wrap caller-associated c
 benchmark data for deliberately linked targets. Core owns mapping, reconciliation, generation
 admission and input applicability through its
 [snapshot contract](https://github.com/Holaxis-ai/superbee/blob/73c47c4473f3f1dd9b2f0533810dbac43b8b0104/packages/core/SNAPSHOT-SOURCES.md);
-this checkout supplies data-only wrappers and declarations. Stable CLI 0.4.3 (npm `latest`) embeds
-Core 0.2.0-pre.34, and this checkout passed its installed consumer journeys. These fixtures claim
+this checkout supplies data-only wrappers and declarations. The prior reviewed Core34 checkout
+passed installed consumer journeys with stable CLI 0.4.3 (npm `latest`), which embeds Core 0.2.0-pre.34. These fixtures claim
 no real render or benchmark execution. The [comparison-review recipe](recipes/comparison-review)
 adds human discrepancies and revision-bound decisions; its [two synthetic journeys](examples/comparison-review)
 reuse these observations and the existing Artifact command without registering executable code.
@@ -37,13 +37,20 @@ reuse these observations and the existing Artifact command without registering e
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
-before trusting and building it. This checkout requires embedded Core `0.2.0-pre.34` exactly.
+before trusting and building it. This checkout requires embedded Core `0.2.0-pre.37` exactly.
 Install the published matching Core before building, and use a CLI with this helper pin.
-Stable CLI `0.4.3` is published on npm `latest` from source tag
+Prerelease CLI `0.4.4-pre.2` is published on npm `next` from source tag
+[`v0.4.4-pre.2`](https://github.com/Holaxis-ai/superbee/releases/tag/v0.4.4-pre.2)
+(`008e00fa04d0ff726dfa3d6da80343cbcf230309`), embedding Core `0.2.0-pre.37`.
+The [library finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39834056403)
+and [CLI finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39834060825)
+verified the published artifacts. Installed consumer qualification is described below.
+
+Historical stable CLI `0.4.3` is published on npm `latest` from source tag
 [`v0.4.3`](https://github.com/Holaxis-ai/superbee/releases/tag/v0.4.3)
 (`bb3589106691c27d15b156d8b45e4178836bd4be`); its [release finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39633547715)
-verified the registry bytes. It embeds Core `0.2.0-pre.34`. This checkout passed the installed
-GitHub author and comparison consumer journeys against those exact public artifacts.
+verified the registry bytes. It embeds Core `0.2.0-pre.34`. The prior Core34 checkout passed the
+installed GitHub author and comparison consumer journeys against those exact public artifacts.
 The Core33/CLI22 [library finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39526383098)
 and [CLI finalizer](https://github.com/Holaxis-ai/superbee/actions/runs/39526385946) remain historical
 evidence. Maintainers can use the existing archive overrides for separate candidate qualification.
@@ -51,7 +58,7 @@ Use Node 26.8.2 for these build steps:
 
 | Repository checkout | Exact Core helper pin |
 | --- | --- |
-| This checkout, first reviewed at [`0b9241c7ebc24de55e6a717a1533c4d38a7bf88a`](https://github.com/Holaxis-ai/superbee-plugins/tree/0b9241c7ebc24de55e6a717a1533c4d38a7bf88a) — stable CLI `0.4.3` | `0.2.0-pre.34` |
+| Prior Core34 compatibility checkout, first reviewed at [`0b9241c7ebc24de55e6a717a1533c4d38a7bf88a`](https://github.com/Holaxis-ai/superbee-plugins/tree/0b9241c7ebc24de55e6a717a1533c4d38a7bf88a) — stable CLI `0.4.3` | `0.2.0-pre.34` |
 | Prior Core33 compatibility checkout [`d8c2dc755ed598a3a0dc9190082198dfd2825c75`](https://github.com/Holaxis-ai/superbee-plugins/tree/d8c2dc755ed598a3a0dc9190082198dfd2825c75) — CLI `0.4.3-pre.22` | `0.2.0-pre.33` |
 | Prior published compatibility checkout [`769bf609f3fe9c78e962f94ead11567cac7fcfd3`](https://github.com/Holaxis-ai/superbee-plugins/tree/769bf609f3fe9c78e962f94ead11567cac7fcfd3) — CLI `0.4.3-pre.21` | `0.2.0-pre.32` |
 | Prior Core30 compatibility checkout [`333d537d3dd92aab87f5801c60f5a609daf648ee`](https://github.com/Holaxis-ai/superbee-plugins/tree/333d537d3dd92aab87f5801c60f5a609daf648ee) — CLI `0.4.3-pre.20` | `0.2.0-pre.30` |
@@ -75,8 +82,8 @@ git checkout --detach REVIEWED_FULL_COMMIT_SHA
 git rev-parse HEAD
 git status --short
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.34
-npm install --global superbee@0.4.3
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.37
+npm install --global superbee@0.4.4-pre.2
 npm run build
 superbee source plugin register "$PWD/integrations/github"
 ```
@@ -108,15 +115,18 @@ npm run test:unit
 npm run test:packaged
 ```
 
-Published Core 0.2.0-pre.34 provides the public host helper exports. It remains an
+Published Core 0.2.0-pre.37 provides the public host helper exports. It remains an
 optional exact peer; build and typecheck require its explicit installation above. No Core source or sibling checkout
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
 `SUPERBEE_CORE_TARBALL` to that exact archive for the packaged consumer proof. Local candidate
 paths never enter manifests or the lockfile. The packaged author journey defaults to the exact
-published CLI `superbee@0.4.3`; `SUPERBEE_CLI_TARBALL` may explicitly select a
-retained matching archive for candidate qualification. The proof requires the same package version
-and unchanged archive bytes.
+published CLI `superbee@0.4.4-pre.2`; `SUPERBEE_CLI_TARBALL` may explicitly select its
+retained matching archive. The proof requires that exact version and unchanged archive bytes.
+The data-only comparison proof preserves stable CLI `0.4.3` / source `bb3589106691c27d15b156d8b45e4178836bd4be`
+as its normal historical control. An explicit CLI archive instead requires `0.4.4-pre.2` / source
+`008e00fa04d0ff726dfa3d6da80343cbcf230309`; both paths require a clean npm-package identity.
+These synthetic GitHub/comparison journeys do not establish native Blender rendering or video-host adoption.
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required
 user acquisition route. They install packed test bytes outside this checkout with a clean explicit
