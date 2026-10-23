@@ -158,3 +158,12 @@ node packages/package-verification/export.mjs --source . --target <plugins-check
 
 A refresh requires both pinned commits in the producer's Git objects and a reviewed snapshot and
 CI pin update. These are build-time test tools; they do not provide plugin execution isolation.
+
+## Verification report observations
+
+[`integrations/verification`](integrations/verification) supplies a separately registered local
+operation for retained native TLC checker reports. It checks an explicit original-input/run plan
+and selected current files, then exports a caller-associated snapshot for Core's existing source
+admission and overlay. It runs no prover and cannot discharge an obligation. Native installed
+host/ingestion qualification is separate from synthetic unit evidence. It targets exact Core38
+and executable CLI0.4.4-pre.3; registration never activates a source binding automatically.

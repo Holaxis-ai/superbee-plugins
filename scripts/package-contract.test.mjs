@@ -22,9 +22,9 @@ test('private integration metadata retains optional compatibility and lockfile c
   assert.equal(root.devDependencies['@superbee/core'],undefined);
   assert.equal(lock.packages['node_modules/@superbee/core'],undefined,'npm ci must not require unpublished Core');
   for (const [name,row] of Object.entries(lock.packages)) {
-    if (row.link) assert.ok(['integrations/github','integrations/blender'].includes(row.resolved));
+    if (row.link) assert.ok(['integrations/github','integrations/blender','integrations/verification'].includes(row.resolved));
     else if (name.startsWith('node_modules/')) assert.match(row.resolved,/^https:\/\/registry\.npmjs\.org\//,'no local candidate paths in committed dependency sources');
-    else assert.ok(['', 'integrations/github', 'integrations/blender'].includes(name),'only the intended plugin workspace belongs in the lockfile');
+    else assert.ok(['', 'integrations/github', 'integrations/blender', 'integrations/verification'].includes(name),'only the intended plugin workspace belongs in the lockfile');
   }
   assert.deepEqual(lock.packages['integrations/github'].peerDependencies,pkg.peerDependencies);
   assert.deepEqual(lock.packages['integrations/github'].peerDependenciesMeta,pkg.peerDependenciesMeta);
