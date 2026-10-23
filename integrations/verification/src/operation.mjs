@@ -72,7 +72,7 @@ export async function observeReport(resources,input,{signal}={}){
     const planned=basis.expectedRuns[index];
     if(!planned||row.variant!==planned.variant||row.expected_error!==planned.expectedError)refuse('VERIFICATION_RUN_IDENTITIES');
     if(row.pass){
-      if(planned.expectedError===null ? row.exit_code!==0||row.errors.length!==0 : row.exit_code===null||row.exit_code===0||!row.errors.includes(planned.expectedError))refuse('VERIFICATION_RUN_INCONSISTENT');
+      if(planned.expectedError===null ? row.exit_code!==0||row.errors.length!==0 : row.exit_code===null||row.exit_code===0||!row.errors.includes(planned.expectedError)||!row.errors.every(error=>[planned.expectedError,'The behavior up to this point is:','The following behavior constitutes a counter-example:'].includes(error)))refuse('VERIFICATION_RUN_INCONSISTENT');
       passed++;
     }
     seen.add(row.variant);

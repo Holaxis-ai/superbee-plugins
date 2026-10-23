@@ -57,3 +57,12 @@ test('partial failed attempts retain observations without claiming all controls 
 test('duplicate receipts cannot fill a missing planned control',()=>fixture(async({resources,report,basis,put})=>{
  basis.expectedRuns.push({variant:'next-control',expectedError:null});report.runs.push({...report.runs[0]});await put('basis',basis);await put('report',report);await assert.rejects(observeReport(resources,{generation:1}),/VERIFICATION_RUN/);
 }));
+
+test('successful negative receipt refuses unrelated diagnostics while retaining native trace headers',()=>fixture(async({resources,report,basis,put})=>{
+ const error='Invariant Unsafe is violated.';
+ basis.expectedRuns[0].expectedError=error;await put('basis',basis);
+ Object.assign(report.runs[0],{expected_error:error,exit_code:12,errors:[error,'Unexpected unrelated evaluation error']});
+ await put('report',report);await assert.rejects(observeReport(resources,{generation:1}),/VERIFICATION_RUN_INCONSISTENT/);
+ report.runs[0].errors=[error,'The behavior up to this point is:','The following behavior constitutes a counter-example:'];
+ await put('report',report);assert.equal((await observeReport(resources,{generation:1})).records[0].verification.reported_status,'reported_pass');
+}));
