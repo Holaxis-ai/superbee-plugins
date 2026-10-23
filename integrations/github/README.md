@@ -21,7 +21,7 @@ bind a feed, grant a credential or contact GitHub.
 
 The `superbeeIntegration` contract-1 metadata identifies the single `dist/profile.mjs` module
 and exact compatible Core version. It has no runtime imports, executable sidecars, install hook
-or required runtime dependencies. Published Core 0.2.0-pre.37 is an optional exact peer
+or required runtime dependencies. Core 0.2.0-pre.38 is an optional exact peer
 for public types and host composition.
 Developers and programmatic callers explicitly install that Core artifact before building or using
 the adapter; it is not a mandatory development or runtime dependency. See [PROFILE.md](PROFILE.md)
@@ -55,11 +55,14 @@ registration.
 The unchanged fixture was qualified with Core28/CLI18 at reviewed checkout
 [`0752fb1ca4374b09049c7e7adbd9990d943f8eae`](https://github.com/Holaxis-ai/superbee-plugins/tree/0752fb1ca4374b09049c7e7adbd9990d943f8eae).
 The prior reviewed Core34 checkout and stable CLI 0.4.3 passed the installed author journey,
-including all 16 scenarios and negative controls. This checkout requires published Core37 and
-prerelease CLI `0.4.4-pre.2` on `next`. The root README links their public finalizers;
-the Core28/CLI18 and Core34/stable0.4.3 qualifications remain historical evidence.
+including all 16 scenarios and negative controls. The prior Core37 checkout
+[`d271adbdb4949a3fb279ec9c79edacbc3f697739`](https://github.com/Holaxis-ai/superbee-plugins/tree/d271adbdb4949a3fb279ec9c79edacbc3f697739)
+targets CLI `0.4.4-pre.2`; its public finalizers remain historical evidence in the root README.
+This checkout requires exact Core38 and executable CLI `0.4.4-pre.3`; retained native archive
+qualification and public-default qualification are distinct. No prior qualification substitutes
+for the current checkout/artifact proof.
 
-After building and explicitly registering this folder with the matching Core37 CLI (`superbee@0.4.4-pre.2`,
+After building and explicitly registering this folder with the matching Core38 CLI (`superbee@0.4.4-pre.3`,
 or its exact retained native archive), run from the repository root:
 
 ```sh
