@@ -1,0 +1,57 @@
+{
+  "name": "@superbee/integration-verification",
+  "version": "0.1.0-pre.1",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Explicit local observation of retained native TLC report identities",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "superbeeLocalOperations": {
+    "contract": 1,
+    "id": "verification",
+    "core": "0.2.0-pre.38",
+    "helper": 1,
+    "entry": "dist/operation.mjs",
+    "assets": [],
+    "operations": [
+      {
+        "id": "local.verification.observe-tlc.v1",
+        "capability": {
+          "name": "verification_observe_tlc",
+          "implementationId": "verification-observe-tlc.v1",
+          "description": "Observe a retained TLC checker report against explicitly selected input identities. Caller-associated evidence only; no checker execution or proof discharge.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "generation"
+            ],
+            "properties": {
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "maximumOutputBytes": 65536
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "node --check src/operation.mjs",
+    "test": "node --test test/*.test.mjs",
+    "prepublishOnly": "node -e \"process.exit(1)\""
+  }
+}
