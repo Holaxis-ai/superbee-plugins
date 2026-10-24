@@ -54,7 +54,7 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
     const artifacts = path.join(scratch,'artifacts'); await mkdir(artifacts);
     const packed = {};
     const coreVersion = JSON.parse(await readFile(path.join(root,'integrations/github/package.json'),'utf8')).superbeeIntegration.core;
-    const cliVersion = '0.4.4-pre.5';
+    const cliVersion = '0.4.4-pre.6';
     for (const name of ['core','integration-github','superbee']) {
       const target = name === 'core' ? [process.env.SUPERBEE_CORE_TARBALL ?? `@superbee/core@${coreVersion}`]
         : name === 'superbee' ? [process.env.SUPERBEE_CLI_TARBALL ?? `superbee@${cliVersion}`]
@@ -108,6 +108,11 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
     assert.equal(createHash('sha256').update(await readFile(packed.superbee.tarball)).digest('hex'),packed.superbee.sha256,'CLI installation must retain the exact packed bytes');
     const cli = path.join(scratch,'node_modules/superbee/dist/superbee.mjs');
     const command = args => run(process.execPath,[cli,...args]);
+    const identity = JSON.parse((await command(['version','--json'])).stdout).identity;
+    assert.equal(identity.package.version,cliVersion);
+    assert.equal(identity.source.commit,'a3a03cd58b3d75b1366448f373429b25131fce5e');
+    assert.equal(identity.source.dirty,false);
+    assert.equal(identity.artifact.channel,'npm-package');
     const proposal = JSON.parse((await command(['source','plugin','register',installed,'--json'])).stdout);
     assert.equal(proposal.core,coreVersion);
     assert.equal(proposal.accepted,false);

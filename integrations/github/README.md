@@ -21,7 +21,7 @@ bind a feed, grant a credential or contact GitHub.
 
 The `superbeeIntegration` contract-1 metadata identifies the single `dist/profile.mjs` module
 and exact compatible Core version. It has no runtime imports, executable sidecars, install hook
-or required runtime dependencies. Core 0.2.0-pre.40 is an optional exact peer
+or required runtime dependencies. Core 0.2.0-pre.41 is an optional exact peer
 for public types and host composition.
 Developers and programmatic callers explicitly install that Core artifact before building or using
 the adapter; it is not a mandatory development or runtime dependency. See [PROFILE.md](PROFILE.md)
@@ -62,15 +62,12 @@ The prior reviewed Core34 checkout and stable CLI 0.4.3 passed the installed aut
 including all 16 scenarios and negative controls. The prior Core37 checkout
 [`d271adbdb4949a3fb279ec9c79edacbc3f697739`](https://github.com/Holaxis-ai/superbee-plugins/tree/d271adbdb4949a3fb279ec9c79edacbc3f697739)
 targets CLI `0.4.4-pre.2`; its public finalizers remain historical evidence in the root README.
-This checkout requires exact Core40 and executable CLI `0.4.4-pre.5`; retained native archive
-qualification and public-default qualification are distinct. Its version-2 fixture additionally
-requires a CLI that accepts and projects explicit fixture `readPolicyApproval`. The current
-packaged author journey remains held until a reviewed compatible CLI/cohort is adopted.
-No prior qualification substitutes for the current checkout/artifact proof.
+This checkout requires exact Core41 and executable CLI `0.4.4-pre.6`, including explicit
+fixture `readPolicyApproval` projection. Local archive qualification and public-default/native CI
+qualification are distinct. No prior qualification substitutes for the current checkout and
+artifact proof.
 
-After building and explicitly registering this folder with that compatible CLI, the required
-positive author command remains:
-
+After building and explicitly registering this folder with that compatible CLI, run:
 
 ```sh
 superbee source test ./integrations/github/recipes/work-items --fixture ./integrations/github/fixtures/author --json

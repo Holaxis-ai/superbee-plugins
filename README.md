@@ -20,14 +20,12 @@ acquired from pinned Git checkouts; integration npm publication is disabled unde
 policy. Core, CLI and development tools continue to use their existing npm channels.
 
 The current GitHub profile is version 2; its canonical Connector and Work Items recipe are
-version 2 and add an explicit read policy using Core39 page-number paging. Legacy Link-mode
+version 2 and add an explicit read policy using Core page-number paging. Legacy Link-mode
 declarations remain supported. Existing installations require reviewed registration, feed
-rebinding and approval of the exact bound policy digest. The updated author fixture is checked
-through public Core39; published CLI `0.4.4-pre.4` cannot parse its explicit approval field.
-**The current packaged CLI author journey and native CI are held** until a reviewed compatible
-CLI archive/cohort is adopted. The commands and historical cohort references below do not
-claim that gate has passed. Helper/peer pins and the separately owned Core40 companion are
-unchanged.
+rebinding and approval of the exact bound policy digest. This checkout targets exact Core41
+and CLI `0.4.4-pre.6`, whose author command projects the literal fixture approval. Local archive
+qualification and normal public-default/native CI qualification remain separate gates. No prior
+cohort's result substitutes for the current source and artifact proof.
 
 The canonical [`source-feeds`](recipes/source-feeds) and [`work-items`](recipes/work-items)
 recipes live here. The [GitHub example](examples/work-items-github) exercises the provider profile;
@@ -47,14 +45,17 @@ reuse these observations and the existing Artifact command without registering e
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
-before trusting and building it. This checkout requires embedded Core `0.2.0-pre.40` exactly
-and executable CLI `0.4.4-pre.5`. Use matching public artifacts after their native release/finalizer
-verification, or explicitly selected retained native archives for candidate qualification. Publication,
+before trusting and building it. This checkout requires embedded Core `0.2.0-pre.41` exactly
+and executable CLI `0.4.4-pre.6`. Use matching public artifacts after their native release/finalizer
+verification, or explicitly selected retained archives for candidate qualification. Publication,
 installed consumer proof and managed admission remain separate. The selected producer source is
-[`a23387c04ed9628e67f7fe8161846919c3149605`](https://github.com/Holaxis-ai/superbee/tree/a23387c04ed9628e67f7fe8161846919c3149605);
-that exact source identity is required for explicit candidate archives. This companion is prepared
-for Core40/CLIpre5; no current installed proof or registry finalization is claimed. Retained archive
-checks are candidate qualification; public-default qualification still requires the native release/finalizers.
+[`a3a03cd58b3d75b1366448f373429b25131fce5e`](https://github.com/Holaxis-ai/superbee/tree/a3a03cd58b3d75b1366448f373429b25131fce5e);
+that exact source identity is required for explicit candidate archives. Local retained-archive
+qualification covers the positive 16-scenario GitHub author journey and negative controls,
+comparison journeys, verification ingestion, and standalone Blender registration. Blender render
+and native media qualification remain separate. These local checks establish neither native
+attestation nor registry finalization. Public-default qualification still requires the native
+release/finalizers and normal source CI.
 
 Historical Core37 prerelease CLI `0.4.4-pre.2` was published on npm `next` from source tag
 [`v0.4.4-pre.2`](https://github.com/Holaxis-ai/superbee/releases/tag/v0.4.4-pre.2)
@@ -102,8 +103,8 @@ git checkout --detach REVIEWED_FULL_COMMIT_SHA
 git rev-parse HEAD
 git status --short
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.40
-npm install --global superbee@0.4.4-pre.5
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.41
+npm install --global superbee@0.4.4-pre.6
 npm run build
 superbee source plugin register "$PWD/integrations/github"
 ```
@@ -135,23 +136,23 @@ npm run test:unit
 npm run test:packaged
 ```
 
-The exact Core 0.2.0-pre.40 artifact provides the public host helper exports. It remains an
+The exact Core 0.2.0-pre.41 artifact provides the public host helper exports. It remains an
 optional exact peer; build and typecheck require its explicit installation above. No Core source or sibling checkout
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
 `SUPERBEE_CORE_TARBALL` to that exact archive for the packaged consumer proof. Local candidate
 paths never enter manifests or the lockfile. The packaged author journey defaults to the exact
-CLI `superbee@0.4.4-pre.5` after publication; `SUPERBEE_CLI_TARBALL` may explicitly select its
+CLI `superbee@0.4.4-pre.6` after publication; `SUPERBEE_CLI_TARBALL` may explicitly select its
 retained matching archive. The proof requires that exact version and unchanged archive bytes.
 The data-only comparison proof preserves stable CLI `0.4.3` / source `bb3589106691c27d15b156d8b45e4178836bd4be`
-as its normal historical control. An explicit CLI archive instead requires `0.4.4-pre.5` and its
-producer source `a23387c04ed9628e67f7fe8161846919c3149605`; both paths require a clean npm-package identity.
+as its normal historical control. An explicit CLI archive instead requires `0.4.4-pre.6` and its
+producer source `a3a03cd58b3d75b1366448f373429b25131fce5e`; both paths require a clean npm-package identity.
 These synthetic GitHub/comparison journeys do not establish native Blender rendering or video-host adoption.
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required
 user acquisition route. They install packed test bytes outside this checkout with a clean explicit
 environment and check public types, browser exports, recipes and the source harness. Ordinary source CI requires the matching published Core and CLI artifacts; the current
-author-fixture CLI gate remains held as described above. Qualify a proposed exact head with both local archive
+public-default gate remains held until those artifacts are available. Qualify a proposed exact head with both local archive
 overrides during candidate qualification; ordinary consumer CI uses the matching public CLI. This
 does not authorize a release. Integration metadata is private and `prepublishOnly` refuses
 publication; no integration registry bootstrap, publisher setup or release workflow is planned.
@@ -179,5 +180,5 @@ CI pin update. These are build-time test tools; they do not provide plugin execu
 operation for retained native TLC checker reports. It checks an explicit original-input/run plan
 and selected current files, then exports a caller-associated snapshot for Core's existing source
 admission and overlay. It runs no prover and cannot discharge an obligation. Native installed
-host/ingestion qualification is separate from synthetic unit evidence. It targets exact Core40
-and executable CLI0.4.4-pre.5; registration never activates a source binding automatically.
+host/ingestion qualification is separate from synthetic unit evidence. It targets exact Core41
+and executable CLI0.4.4-pre.6; registration never activates a source binding automatically.
