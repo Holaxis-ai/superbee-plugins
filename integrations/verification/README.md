@@ -15,7 +15,7 @@ The adapter is trusted Node code with ambient authority, not sandboxed code.
 
 ## Compatibility and installation
 
-Requires public executable CLI `0.4.4-pre.3`, Core helper `0.2.0-pre.38`, local-operation contract1.
+Requires public executable CLI `0.4.4-pre.4`, Core helper `0.2.0-pre.39`, local-operation contract1.
 Acquire/review a full Git commit, install declared development tools per repository README, build
 `npm run build --workspace integrations/verification`, and preview:
 
@@ -70,11 +70,12 @@ proof decisions outside those fields; an imported reported_pass never automatica
 
 ## Validation
 
-Use repository-pinned Node26.8.2 and explicitly installed public Core38 as documented at root.
+Use repository-pinned Node26.8.2 and explicitly installed public Core39 as documented at root.
 Run affected build, typecheck and `npm test --workspace integrations/verification`. Unit tests use
 synthetic report/jar/model bytes and Core's actual decoder. Run
 `npm exec -- node --test scripts/verification-consumer.test.mjs` for the separate native consumer
-qualification: it installs the published pinned CLI in an isolated home, registers a standalone
+qualification: it installs the published pinned CLI in an isolated home (or the explicit
+`SUPERBEE_CLI_TARBALL` retained archive), checks exact version/source and unchanged archive bytes, and registers a standalone
 built copy, exercises captured inputs and export, ingests/replays through Core, checks freshness
 and verifies that existing human verdict/title/body survive. Both suites use synthetic inputs;
 neither executes TLC or establishes a new proof. Actual retained-report adoption needs independently
