@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {createWorkspace,isolatedEnvironment,runProcess} from './vendor/package-verification/src/harness.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),sha=x=>createHash('sha256').update(x).digest('hex');
-test('installed Core38/CLIpre3 observes a standalone plugin report and ingests only linked observation fields',async t=>{
+test('installed Core39/CLIpre4 observes a standalone plugin report and ingests only linked observation fields',async t=>{
  const workspace=await createWorkspace(),scratch=workspace.root,home=path.join(scratch,'home'),exports=path.join(scratch,'exports'),inputs=path.join(scratch,'inputs'),plugin=path.join(scratch,'plugin');
  await Promise.all([mkdir(home),mkdir(exports),mkdir(inputs),mkdir(path.join(plugin,'dist'),{recursive:true})]);
  const env=isolatedEnvironment({home,values:{PATH:path.dirname(process.execPath),SUPERBEE_ACTOR:'process:verification-consumer'}});
@@ -14,10 +14,13 @@ test('installed Core38/CLIpre3 observes a standalone plugin report and ingests o
  try{
   assert.ok(process.env.npm_execpath,'invoke through npm');
   await writeFile(path.join(scratch,'package.json'),JSON.stringify({private:true,type:'module'}));
-  await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.4-pre.3','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  const selected=process.env.SUPERBEE_CLI_TARBALL??'superbee@0.4.4-pre.4';
+  const selectedBytes=process.env.SUPERBEE_CLI_TARBALL?await readFile(selected):undefined;
+  await run(process.execPath,[process.env.npm_execpath,'install',selected,'--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  if(selectedBytes)assert.deepEqual(await readFile(selected),selectedBytes,'CLI installation must retain exact selected archive bytes');
   const cli=path.join(scratch,'node_modules/superbee/dist/superbee.mjs');
   const command=async(args,expected=0)=>JSON.parse((await run(process.execPath,[cli,...args,'--json'],expected)).stdout);
-  const identity=await command(['version']);assert.equal(identity.identity.package.version,'0.4.4-pre.3');assert.equal(identity.identity.source.commit,'bf9a2a2bb54c7d682853679a4c241533eb8de381');assert.equal(identity.identity.source.dirty,false);
+  const identity=await command(['version']);assert.equal(identity.identity.package.version,'0.4.4-pre.4');assert.equal(identity.identity.source.commit,'128ccfcc43843e6dd97380a124b85e5bfe1d1711');assert.equal(identity.identity.source.dirty,false);assert.equal(identity.identity.artifact.channel,'npm-package');
   for(const name of ['package.json','dist/operation.mjs'])await copyFile(path.join(root,'integrations/verification',name),path.join(plugin,name));
   const bundle=path.join(scratch,'bundle'),flags=['--dir',bundle];await command(['init','--create-only','--recipe','none',...flags]);
   const put=async(file,text)=>{const p=path.join(bundle,file);await mkdir(path.dirname(p),{recursive:true});await writeFile(p,text);};
@@ -42,6 +45,7 @@ test('installed Core38/CLIpre3 observes a standalone plugin report and ingests o
   assert.equal((await command(['source','snapshot','check',snapshot,'--inputs-file',selections])).status,'current');
   await writeFile(resources.input0.path,'changed model');assert.equal((await command(['source','snapshot','check',snapshot,'--inputs-file',selections])).status,'stale');
   await run(process.execPath,[cli,'op','run','local.verification.observe-tlc.v1','--local','--binding',binding.binding,'--input-file',inputFile,...flags,'--json'],2);
-  t.diagnostic('Published CLIpre3/Core38, standalone accepted generation, native captured inputs/export, Core ingestion/replay/currentness and reviewed-field preservation. Synthetic inputs only; no TLC proof executed.');
+  if(selectedBytes)assert.deepEqual(await readFile(selected),selectedBytes,'consumer qualification must retain exact selected archive bytes');
+  t.diagnostic((selectedBytes?'Explicit retained CLI archive':'Published CLI default')+' pre4/Core39, standalone accepted generation, native captured inputs/export, Core ingestion/replay/currentness and reviewed-field preservation. Synthetic inputs only; no TLC proof executed.');
  }finally{await workspace.close();}
 });
