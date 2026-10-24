@@ -54,7 +54,7 @@ export function normalizeGithubIssue(issue: Record<string, unknown>, parameters:
 export function createSourceProfile(helpers: SourcePluginHelpers): SourceProfile<ConnectorSource, RestJsonCursor> {
   const {restJsonProfile, nextLinkTarget, unsupportedContent} = helpers;
   return Object.freeze({
-  id: "github-issues", version: 1, kind: "extension",
+  id: "github-issues", version: 2, kind: "extension",
   validateSpec(value: unknown) {
     const validated = restJsonProfile.validateSpec(value);
     if (!validated.ok) return validated;
@@ -64,18 +64,32 @@ export function createSourceProfile(helpers: SourcePluginHelpers): SourceProfile
     const problem = (path: string, message: string) => { errors.push({path, message}); };
     if (source.identity.resource !== "https://github.com/{owner}/{repo}") problem("/identity/resource", "github-issues requires a repository identity");
     if (r.host !== "api.github.com" || r.method !== "GET" || r.path !== "/repos/{owner}/{repo}/issues" || r.items !== "") problem("/request", "github-issues requires the repository issues REST listing");
-    if (r.paging?.kind !== "link-header" || r.complete !== "always" || r.query?.state !== "all") problem("/request", "github-issues requires state=all, Link paging and complete=always");
-    if (r.paging && Object.keys(r.paging).some(key => key !== "kind")) problem("/request/paging", "github-issues uses provider Link paging only");
-    if (r.query?.per_page !== undefined && (!Number.isSafeInteger(Number(r.query.per_page)) || Number(r.query.per_page) < 1 || Number(r.query.per_page) > 100)) problem("/request/query/per_page", "page size is an integer from 1 to 100");
+    const paging = r.paging;
+    if (r.complete !== "always" || r.query?.state !== "all") problem("/request", "github-issues requires state=all and complete=always");
+    if (paging?.kind === "page-number") {
+      if (paging.page_param !== "page" || paging.size_param !== "per_page" || !Number.isSafeInteger(paging.size) || paging.size! < 1 || paging.size! > 100)
+        problem("/request/paging", "github-issues page-number uses page and per_page with size 1 to 100");
+      if (r.query?.sort !== "updated" || r.query?.direction !== "asc" || Object.keys(r.query ?? {}).some(key => !["state", "sort", "direction"].includes(key)))
+        problem("/request/query", "github-issues page-number requires only all-state updated ascending filters");
+      const policy = r.read_policy;
+      if (!policy || policy.required_permissions?.issues !== "read" || policy.required_permissions?.metadata !== "read"
+        || Object.keys(policy.required_permissions ?? {}).length !== 2 || policy.header_provider !== "github")
+        problem("/request/read_policy", "github-issues page-number requires explicit issues and metadata read policy");
+    } else {
+      if (r.paging?.kind !== "link-header") problem("/request/paging", "github-issues requires Link or explicit page-number paging");
+      if (r.paging && Object.keys(r.paging).some(key => key !== "kind")) problem("/request/paging", "github-issues uses provider Link paging only");
+      if (r.query?.per_page !== undefined && (!Number.isSafeInteger(Number(r.query.per_page)) || Number(r.query.per_page) < 1 || Number(r.query.per_page) > 100)) problem("/request/query/per_page", "page size is an integer from 1 to 100");
+      if (Object.keys(r.query ?? {}).some(key => !["state", "sort", "direction", "per_page"].includes(key))) problem("/request/query", "unsupported issue filter or paging query");
+    }
     if (r.fields || r.skip || r.body || r.graphql) problem("/request", "github-issues owns provider normalization and filtering");
-    if (Object.keys(r.query ?? {}).some(key => !["state", "sort", "direction", "per_page"].includes(key))) problem("/request/query", "unsupported issue filter or paging query");
     if (r.watermark && (r.watermark.field !== "updated_at" || r.watermark.param !== "since")) problem("/request/watermark", "github-issues watermark is updated_at through since");
     return errors.length ? {ok: false as const, errors} : validated;
   },
   hostsFor: () => ["api.github.com"],
   async observe(ctx: ObserveContext<ConnectorSource, RestJsonCursor>) {
-    // Link page numbers are unstable between runs. Restart without claiming absence on resume.
-    const page = await restJsonProfile.observe({...ctx, cursor: ctx.resumed ? null : ctx.cursor,
+    // Neither paging mode can claim absence from an interrupted/resumed traversal.
+    const original = {...ctx, cursor: ctx.resumed ? null : ctx.cursor};
+    const page = await restJsonProfile.observe(ctx.spec.request!.paging?.kind === "page-number" ? original : {...original,
       transport: {request: async input => {
         const response = await ctx.transport.request(input);
         const next = nextLinkTarget(response.headers.link ?? "", response.url);

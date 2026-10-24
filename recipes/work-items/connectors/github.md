@@ -2,7 +2,7 @@
 type: Connector
 title: GitHub issues
 description: GitHub issues as Work Items through a GitHub App installation, one repository per Source Feed.
-version: "1"
+version: "2"
 auth:
   kind: github-app
   permissions: { issues: read, metadata: read }
@@ -14,9 +14,15 @@ record_sources:
       method: GET
       path: /repos/{owner}/{repo}/issues
       items: ""
-      query: { state: all, sort: updated, direction: asc, per_page: 100 }
+      query: { state: all, sort: updated, direction: asc }
       headers: { accept: application/vnd.github+json, x-github-api-version: "2026-03-10" }
-      paging: { kind: link-header }
+      paging: { kind: page-number, page_param: page, size_param: per_page, size: 100 }
+      read_policy:
+        contract: 1
+        kind: bound-get
+        bindings: { owner: segment, repo: segment }
+        required_permissions: { issues: read, metadata: read }
+        header_provider: github
       complete: always
     target_kind: Work Item
     mode: overlay
@@ -58,3 +64,8 @@ events: []
 Reads one repository's issues through the installation's `issues: read` permission and maps
 them onto the Work Item Kind. Pull requests in the listing are skipped. Milestones, Projects v2
 fields and relationships arrive in later versions.
+
+Version 2 declares all-state, updated-ascending Issues GET pages of 100 through the existing
+Core bound-read policy. The Issues and metadata read minima are inert declarations, not grants.
+Review the exact repository-bound policy digest and rebind affected feeds after upgrading to
+profile version 2; the profile never supplies that approval.

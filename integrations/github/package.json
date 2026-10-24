@@ -39,7 +39,7 @@
     "profiles": [
       {
         "id": "github-issues",
-        "version": 1,
+        "version": 2,
         "entry": "dist/profile.mjs"
       }
     ],

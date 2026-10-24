@@ -2,7 +2,7 @@
 type: Recipe
 id: work-items
 title: Work Items
-version: "1"
+version: "2"
 summary: Tracker work items with normalized and source-native state; GitHub mapping with a separate inert Linear fixture.
 content_policy: definitions-only
 connectors: [connectors/github.md]
@@ -26,3 +26,8 @@ fields outside the selected feed's ownership. Linear additionally maps priority 
 Recorded fixtures live in `examples/work-items-github` and
 `examples/work-items-linear`. Relationships, mirror mode and live execution
 remain separate work. The built-in Task recipe is unchanged.
+
+Version 2 selects `github-issues` profile version 2 and an explicit repository Issues GET read
+policy with Core-owned `page`/`per_page` paging. Existing registrations and feeds need a reviewed
+upgrade and rebinding; review the exact bound read-policy digest before observation. Installation
+and the inert permission declaration grant neither credentials nor execution approval.
