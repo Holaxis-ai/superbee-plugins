@@ -49,7 +49,7 @@ before trusting and building it. This checkout requires embedded Core `0.2.0-pre
 and executable CLI `0.4.4-pre.6`. Use matching public artifacts after their native release/finalizer
 verification, or explicitly selected retained archives for candidate qualification. Publication,
 installed consumer proof and managed admission remain separate. The selected producer source is
-[`a3a03cd58b3d75b1366448f373429b25131fce5e`](https://github.com/Holaxis-ai/superbee/tree/a3a03cd58b3d75b1366448f373429b25131fce5e);
+[`688d62a2e1395a6ca7dde52f08e0caf97b643d60`](https://github.com/Holaxis-ai/superbee/tree/688d62a2e1395a6ca7dde52f08e0caf97b643d60);
 that exact source identity is required for explicit candidate archives. Local retained-archive
 qualification covers the positive 16-scenario GitHub author journey and negative controls,
 comparison journeys, verification ingestion, and standalone Blender registration. Blender render
@@ -146,7 +146,7 @@ CLI `superbee@0.4.4-pre.6` after publication; `SUPERBEE_CLI_TARBALL` may explici
 retained matching archive. The proof requires that exact version and unchanged archive bytes.
 The data-only comparison proof preserves stable CLI `0.4.3` / source `bb3589106691c27d15b156d8b45e4178836bd4be`
 as its normal historical control. An explicit CLI archive instead requires `0.4.4-pre.6` and its
-producer source `a3a03cd58b3d75b1366448f373429b25131fce5e`; both paths require a clean npm-package identity.
+producer source `688d62a2e1395a6ca7dde52f08e0caf97b643d60`; both paths require a clean npm-package identity.
 These synthetic GitHub/comparison journeys do not establish native Blender rendering or video-host adoption.
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required

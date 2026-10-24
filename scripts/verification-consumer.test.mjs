@@ -20,7 +20,7 @@ test('installed Core41/CLIpre6 observes a standalone plugin report and ingests o
   if(selectedBytes)assert.deepEqual(await readFile(selected),selectedBytes,'CLI installation must retain exact selected archive bytes');
   const cli=path.join(scratch,'node_modules/superbee/dist/superbee.mjs');
   const command=async(args,expected=0)=>JSON.parse((await run(process.execPath,[cli,...args,'--json'],expected)).stdout);
-  const identity=await command(['version']);assert.equal(identity.identity.package.version,'0.4.4-pre.6');assert.equal(identity.identity.source.commit,'a3a03cd58b3d75b1366448f373429b25131fce5e');assert.equal(identity.identity.source.dirty,false);assert.equal(identity.identity.artifact.channel,'npm-package');
+  const identity=await command(['version']);assert.equal(identity.identity.package.version,'0.4.4-pre.6');assert.equal(identity.identity.source.commit,'688d62a2e1395a6ca7dde52f08e0caf97b643d60');assert.equal(identity.identity.source.dirty,false);assert.equal(identity.identity.artifact.channel,'npm-package');
   for(const name of ['package.json','dist/operation.mjs'])await copyFile(path.join(root,'integrations/verification',name),path.join(plugin,name));
   const bundle=path.join(scratch,'bundle'),flags=['--dir',bundle];await command(['init','--create-only','--recipe','none',...flags]);
   const put=async(file,text)=>{const p=path.join(bundle,file);await mkdir(path.dirname(p),{recursive:true});await writeFile(p,text);};

@@ -51,7 +51,7 @@ test('comparison recipe preserves exact evidence and human decisions across two 
     const json = async args => JSON.parse(await command(args));
     const identity = await json(['version']);
     const expectedVersion = selectedBytes ? '0.4.4-pre.6' : '0.4.3';
-    const expectedSource = selectedBytes ? 'a3a03cd58b3d75b1366448f373429b25131fce5e' : 'bb3589106691c27d15b156d8b45e4178836bd4be';
+    const expectedSource = selectedBytes ? '688d62a2e1395a6ca7dde52f08e0caf97b643d60' : 'bb3589106691c27d15b156d8b45e4178836bd4be';
     assert.equal(identity.identity.package.version, expectedVersion);
     assert.equal(identity.identity.source.commit, expectedSource);
     assert.equal(identity.identity.source.dirty, false);

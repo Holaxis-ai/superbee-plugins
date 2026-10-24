@@ -110,7 +110,7 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
     const command = args => run(process.execPath,[cli,...args]);
     const identity = JSON.parse((await command(['version','--json'])).stdout).identity;
     assert.equal(identity.package.version,cliVersion);
-    assert.equal(identity.source.commit,'a3a03cd58b3d75b1366448f373429b25131fce5e');
+    assert.equal(identity.source.commit,'688d62a2e1395a6ca7dde52f08e0caf97b643d60');
     assert.equal(identity.source.dirty,false);
     assert.equal(identity.artifact.channel,'npm-package');
     const proposal = JSON.parse((await command(['source','plugin','register',installed,'--json'])).stdout);
