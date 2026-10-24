@@ -34,6 +34,10 @@ and accept the concrete proposal digest. This registers the built folder directl
 recipe bytes with `superbee recipe add github:source-feeds`, followed by
 `superbee recipe add github:work-items`, then explicitly bind and run the feed. For author
 validation and fixture tests, use this folder's generated recipe and fixture directories.
+The canonical Work Items recipe and Connector are version 2 and require `github-issues`
+profile version 2. They use Core page-number paging with an explicit authored read policy; the
+legacy Link declaration remains supported by the profile. Read-policy approval is a separate
+review of the exact bound digest, never an automatic consequence of plugin registration.
 A plugin upgrade requires registration and feed rebinding; rebinding to a changed implementation
 resets prior observation and accepted overlay state, so the next run reacquires it.
 
@@ -52,26 +56,31 @@ registration.
 
 ## Author qualification
 
-The unchanged fixture was qualified with Core28/CLI18 at reviewed checkout
+The earlier Link-mode fixture was qualified with Core28/CLI18 at reviewed checkout
 [`0752fb1ca4374b09049c7e7adbd9990d943f8eae`](https://github.com/Holaxis-ai/superbee-plugins/tree/0752fb1ca4374b09049c7e7adbd9990d943f8eae).
 The prior reviewed Core34 checkout and stable CLI 0.4.3 passed the installed author journey,
 including all 16 scenarios and negative controls. The prior Core37 checkout
 [`d271adbdb4949a3fb279ec9c79edacbc3f697739`](https://github.com/Holaxis-ai/superbee-plugins/tree/d271adbdb4949a3fb279ec9c79edacbc3f697739)
 targets CLI `0.4.4-pre.2`; its public finalizers remain historical evidence in the root README.
-This checkout requires exact Core39 and executable CLI `0.4.4-pre.4`; retained native archive
-qualification and public-default qualification are distinct. No prior qualification substitutes
-for the current checkout/artifact proof.
+This checkout retains exact Core39 helper compatibility. Its version-2 fixture requires a CLI
+that accepts and projects explicit fixture `readPolicyApproval`; published CLI `0.4.4-pre.4`
+cannot parse that field. The current source fixture is qualified through installed public Core39,
+but the packaged CLI author journey and native CI remain held until a reviewed compatible CLI
+archive/cohort is adopted. No prior qualification substitutes for that gate.
 
-After building and explicitly registering this folder with the matching Core39 CLI (`superbee@0.4.4-pre.4`,
-or its exact retained native archive), run from the repository root:
+After building and explicitly registering this folder with that compatible CLI, the required
+positive author command remains:
 
 ```sh
 superbee source test ./integrations/github/recipes/work-items --fixture ./integrations/github/fixtures/author --json
 ```
 
 `fixtures/author/fixture.json` contains 16 synthetic scenarios and exact, committed expectations
-for receipts, requests, cursors, changes and findings. It covers all 14 existing public Core
-qualification categories without changing or exempting any harness rule. The packaged proof runs
+for receipts, requests, cursors, changes and findings. Its top-level `readPolicyApproval` is a
+literal, authored digest for the fixture repository and exact declaration. Any scope change
+requires review and a new literal; product code must not derive approval automatically. It covers all 14 existing public Core
+qualification categories without changing or exempting any harness rule. Numeric partial-page
+cases include 100 raw rows with excluded PRs so that a second page is required. The packaged proof must run
 the same command with the exact packed integration and matching CLI archive outside the checkout, with
 an isolated home and no provider credentials. It also proves that a wrong expectation and a
 missing required category fail.

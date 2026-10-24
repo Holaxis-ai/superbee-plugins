@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {checkScenario, missingScenarios, runSourceScenario} from '@superbee/core/source-harness';
 import {parseRecipeFiles} from '@superbee/core/recipes';
+import {buildKindRegistry} from '@superbee/core/kinds';
+import {bindSourceFeed,inspectSourceReadPolicy} from '@superbee/core/connectors';
 import {recipeFiles} from '../dist/recipes.mjs';
 import {githubIssuesProfile} from './profile.js';
 const fixture = JSON.parse(await readFile(new URL('../fixtures/author/fixture.json',import.meta.url),'utf8'));
@@ -11,8 +13,11 @@ test('complete GitHub author fixture satisfies unchanged public qualification an
   assert.ok(recipe.ok);
   const documents = [...recipe.recipe.docs,...fixture.documents];
   const connector = recipe.recipe.connectors!.find(row=>row.connector.id === fixture.connector)!.connector;
+  const registry = buildKindRegistry(documents,[],{okfVersion:'0.2'});
+  const bound = bindSourceFeed(connector,documents.find(doc=>doc.id===fixture.feed)!,registry,{okfVersion:'0.2'});
+  assert.deepEqual(fixture.readPolicyApproval,{contract:1,digest:inspectSourceReadPolicy(connector,bound).digest},'literal recorded scope approval must be reviewed again when the declaration changes');
   for (const scenario of fixture.scenarios) {
-    const result = await runSourceScenario({connector,profile:githubIssuesProfile,spec:connector.sources.find(source=>source.name===fixture.source),feed:fixture.feed,documents},scenario);
+    const result = await runSourceScenario({connector,profile:githubIssuesProfile,spec:connector.sources.find(source=>source.name===fixture.source),feed:fixture.feed,documents,readPolicyApproval:fixture.readPolicyApproval},scenario);
     assert.deepEqual(checkScenario(result),[],scenario.name);
     assert.equal(result.runs.every(run=>run.unused.length===0),true,scenario.name+' consumes every exchange');
     for (const [index,run] of result.runs.entries()) {

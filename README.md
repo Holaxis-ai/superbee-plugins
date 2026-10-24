@@ -19,6 +19,16 @@ identity `@superbee/integration-github`, compatibility and build metadata. Integ
 acquired from pinned Git checkouts; integration npm publication is disabled under the current
 policy. Core, CLI and development tools continue to use their existing npm channels.
 
+The current GitHub profile is version 2; its canonical Connector and Work Items recipe are
+version 2 and add an explicit read policy using Core39 page-number paging. Legacy Link-mode
+declarations remain supported. Existing installations require reviewed registration, feed
+rebinding and approval of the exact bound policy digest. The updated author fixture is checked
+through public Core39; published CLI `0.4.4-pre.4` cannot parse its explicit approval field.
+**The current packaged CLI author journey and native CI are held** until a reviewed compatible
+CLI archive/cohort is adopted. The commands and historical cohort references below do not
+claim that gate has passed. Helper/peer pins and the separately owned Core40 companion are
+unchanged.
+
 The canonical [`source-feeds`](recipes/source-feeds) and [`work-items`](recipes/work-items)
 recipes live here. The [GitHub example](examples/work-items-github) exercises the provider profile;
 the [Linear example](examples/work-items-linear) proves the shared model with an offline projection
@@ -139,8 +149,8 @@ These synthetic GitHub/comparison journeys do not establish native Blender rende
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required
 user acquisition route. They install packed test bytes outside this checkout with a clean explicit
-environment and check public types, browser exports, recipes and the source harness. Source CI
-uses the matching published Core and CLI artifacts. Qualify a proposed exact head with both local archive
+environment and check public types, browser exports, recipes and the source harness. Ordinary source CI requires the matching published Core and CLI artifacts; the current
+author-fixture CLI gate remains held as described above. Qualify a proposed exact head with both local archive
 overrides during candidate qualification; ordinary consumer CI uses the matching public CLI. This
 does not authorize a release. Integration metadata is private and `prepublishOnly` refuses
 publication; no integration registry bootstrap, publisher setup or release workflow is planned.

@@ -30,8 +30,9 @@ node --test --import tsx integrations/github/test/work-items-github.test.ts
 `issues.json` contains six invented issues and one pull request, with schema provenance in the
 file. No API response or private account data was captured. `profile.mjs` composes the separately installed
 `@superbee/integration-github` factory with public Core helpers; it contains no separate implementation.
-The Connector declares a repository GET request with Link-header paging and a complete all-state
-listing. The public offline source harness runs that actual declaration against the recorded page.
+The version-2 Connector declares a repository Issues GET with explicit bound-read policy,
+Core `page`/`per_page` paging and a complete all-state listing. The offline test supplies
+explicit approval of its exact inspected repository scope; the adapter never approves a policy. The public offline source harness runs that actual declaration against the recorded page.
 A declaration supplies no credentials and does not authorize execution.
 
 The acceptance test installs the real recipe, binds one repository, maps source-native and
@@ -72,5 +73,7 @@ findings omit source titles and descriptions. Source text remains untrusted data
   old and new repositories are different resources.
 - Public author validation uses inert metadata from an explicitly accepted local plugin registration.
   `source test` resolves its recorded scenarios through that same registered profile. The shipped
-  partial author fixture reports its eight missing qualification scenarios honestly; full author
-  qualification and live provider behavior remain separate evidence.
+  author fixture covers all 16 recorded scenarios through public Core39. Its literal policy
+  approval requires a compatible CLI fixture reader; published CLI `0.4.4-pre.4` cannot parse
+  that field, so current packaged CLI qualification remains held. Live provider behavior
+  remains separate evidence.

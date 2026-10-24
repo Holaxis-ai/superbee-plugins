@@ -86,7 +86,7 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
     const manifest = JSON.parse(await readFile(path.join(installed,'package.json'),'utf8'));
     const sourceManifest = JSON.parse(await readFile(path.join(root,'integrations/github/package.json'),'utf8'));
     assert.deepEqual(manifest,sourceManifest);
-    assert.deepEqual(manifest.superbeeIntegration,{contract:1,id:'github',core:coreVersion,profiles:[{id:'github-issues',version:1,entry:'dist/profile.mjs'}],recipes:{'source-feeds':'recipes/source-feeds','work-items':'recipes/work-items'}});
+    assert.deepEqual(manifest.superbeeIntegration,{contract:1,id:'github',core:coreVersion,profiles:[{id:'github-issues',version:2,entry:'dist/profile.mjs'}],recipes:{'source-feeds':'recipes/source-feeds','work-items':'recipes/work-items'}});
     assert.equal(manifest.dependencies,undefined);
     assert.deepEqual(manifest.peerDependenciesMeta,{'@superbee/core':{optional:true}});
     assert.match(manifest.scripts.prepublishOnly,/process\.exit\(1\)/);
@@ -151,7 +151,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {MemoryBackend,loadKinds} from '@superbee/core';
-import {parseConnectorDoc} from '@superbee/core/connectors';
+import {parseConnectorDoc,bindSourceFeed,inspectSourceReadPolicy} from '@superbee/core/connectors';
 import {parseRecipeFiles} from '@superbee/core/recipes';
 import {installRecipe} from '@superbee/core/recipe-lifecycle';
 import {restJsonProfile,nextLinkTarget,getSourceProfile,SOURCE_PLUGIN_CORE_VERSION} from '@superbee/core/source-profiles';
@@ -164,7 +164,7 @@ assert.equal(createSourceProfile,sameFactory);
 assert.equal(getSourceProfile('github-issues'),undefined);
 const helpers = Object.freeze({restJsonProfile,nextLinkTarget,unsupportedContent});
 const profile = createSourceProfile(helpers);
-assert.equal(profile.id,'github-issues'); assert.equal(profile.version,1); assert.equal(profile.kind,'extension');
+assert.equal(profile.id,'github-issues'); assert.equal(profile.version,2); assert.equal(profile.kind,'extension');
 const fixture = JSON.parse(await readFile(new URL('./node_modules/@superbee/integration-github/fixtures/repository-issues.json',import.meta.url),'utf8'));
 const [issue,second] = fixture.issues;
 assert.deepEqual(uncoveredGithubFields(issue),[]);
@@ -188,11 +188,14 @@ const resource = 'https://github.com/example-org/widgets';
 const feed = 'source-feeds/widgets';
 await backend.write(feed,{id:feed,body:'',frontmatter:{type:'Source Feed',title:'Packed issues',feed_kind:'connector',connector:connector.id,source:'issues',url:resource,owned_fields:Object.keys(connector.sources[0].fields),target_kind:'Work Item',missing_threshold:2}});
 const url = 'https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100';
-async function execute(rows,headers={}) {
+const bound = bindSourceFeed(connector,(await backend.read(feed)).doc,registry,{okfVersion:'0.2'});
+// Explicit offline test approval; the adapter does not inspect or approve its own policy.
+const readPolicyApproval = {contract:1,digest:inspectSourceReadPolicy(connector,bound).digest};
+async function execute(rows,headers={},status=200) {
   const documents = await Promise.all((await backend.list()).map(async id=>(await backend.read(id)).doc));
-  return runSourceScenario({connector,profile,spec:connector.sources[0],feed,documents},{name:'packed.observation',runs:[{mode:'complete',exchanges:rows.map((body,index)=>({request:{url:index?url+'&page=2':url},response:{status:200,body:JSON.stringify(body),headers:index?{}:headers}}))}]});
+  return runSourceScenario({connector,profile,spec:connector.sources[0],feed,documents,readPolicyApproval},{name:'packed.observation',runs:[{mode:'complete',exchanges:rows.map((body,index)=>({request:{url:url+'&page='+(index+1)},response:{status,body:JSON.stringify(body),headers:index?{}:headers}}))}]});
 }
-let result = await execute([[issue,{...issue,pull_request:{}}],[second]],{link:'<'+url+'&page=2>; rel="next"'});
+let result = await execute([[issue,...Array.from({length:99},()=>({...issue,pull_request:{}}))],[second]]);
 assert.deepEqual(checkScenario(result),[]);
 let run = result.runs[0];
 assert.equal(run.receipt.outcome,'observed'); assert.equal(run.receipt.pages,2); assert.equal(run.receipt.changes.new,2);
@@ -206,7 +209,7 @@ assert.equal(run.documents[adopted].title,'Human diagnosis'); assert.deepEqual(r
 assert.equal(run.documents[adopted].key,'example-org/widgets#42');
 result = await execute([[{...issue,repository_url:'https://api.github.com/repos/other/widgets'}]]);
 assert.equal(result.runs[0].receipt.outcome,'unsupported_content');
-result = await execute([[issue]],{link:'<https://api.github.com/repos/other/widgets/issues?page=2>; rel="next"'});
+result = await execute([[issue]],{location:'https://api.github.com/repos/other/widgets/issues?page=2'},302);
 assert.equal(result.runs[0].receipt.outcome,'refused'); assert.equal(result.runs[0].received.length,1);
 assert.equal(SOURCE_PLUGIN_CORE_VERSION,JSON.parse(await readFile('./node_modules/@superbee/core/package.json','utf8')).version);
 `;
