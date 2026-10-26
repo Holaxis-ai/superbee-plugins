@@ -15,7 +15,7 @@ The adapter is trusted Node code with ambient authority, not sandboxed code.
 
 ## Compatibility and installation
 
-Requires public executable CLI `0.4.4-pre.5`, Core helper `0.2.0-pre.40`, local-operation contract1.
+Requires public executable CLI `0.4.4-pre.6`, Core helper `0.2.0-pre.41`, local-operation contract1.
 Acquire/review a full Git commit, install declared development tools per repository README, build
 `npm run build --workspace integrations/verification`, and preview:
 
@@ -70,7 +70,7 @@ proof decisions outside those fields; an imported reported_pass never automatica
 
 ## Validation
 
-Use repository-pinned Node26.8.2 and explicitly installed public Core40 as documented at root.
+Use repository-pinned Node26.8.2 and explicitly installed public Core41 as documented at root.
 Run affected build, typecheck and `npm test --workspace integrations/verification`. Unit tests use
 synthetic report/jar/model bytes and Core's actual decoder. Run
 `npm exec -- node --test scripts/verification-consumer.test.mjs` for the separate native consumer

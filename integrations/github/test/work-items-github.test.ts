@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { bindSourceFeed, changeBetween, findingsFor, mapRecord, parseConnectorDoc, renderIdentity, type MappingDiagnostic, type Connector } from "@superbee/core/connectors";
+import { bindSourceFeed, changeBetween, findingsFor, inspectSourceReadPolicy, mapRecord, parseConnectorDoc, renderIdentity, type MappingDiagnostic, type Connector } from "@superbee/core/connectors";
 import { mutateDocument } from "@superbee/core/document-mutation";
 import { loadKinds } from "@superbee/core";
 import { installRecipe } from "@superbee/core/recipe-lifecycle";
@@ -116,7 +116,7 @@ test("example installs complete recipe definitions and binds the GitHub mapping 
   const w = await world();
   for (const id of ["conventions/work-item", "connectors/github"]) {
     const stamp = (await w.backend.read(id)).doc.frontmatter.x_recipe as Record<string, unknown>;
-    assert.equal(stamp.id, "work-items"); assert.equal(stamp.version, "1"); assert.equal(stamp.connectors, 1);
+    assert.equal(stamp.id, "work-items"); assert.equal(stamp.version, "2"); assert.equal(stamp.connectors, 1);
   }
   assert.equal(w.overlay.registry.kinds.has("Task"), false);
   assert.equal(w.bound.kind.claim, undefined);
@@ -276,9 +276,10 @@ test("the shipped first-party profile runs the installed example in the public o
   const connector = w.connector;
   const documents = [];
   for (const id of await w.backend.list()) documents.push((await w.backend.read(id)).doc);
-  const result = await runSourceScenario({ connector, profile: githubFixtureProfile, spec: connector.sources[0]!, feed: FEED, documents }, {
+  const result = await runSourceScenario({ connector, profile: githubFixtureProfile, spec: connector.sources[0]!, feed: FEED, documents,
+    readPolicyApproval: {contract: 1, digest: inspectSourceReadPolicy(connector, w.bound).digest} }, {
     name: "github.synthetic-first-observation", runs: [{ mode: "complete", exchanges: [{
-      request: { url: "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100" },
+      request: { url: "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1" },
       response: { status: 200, headers: { "content-type": "application/json" }, body: JSON.stringify(ISSUES) },
     }] }],
   });

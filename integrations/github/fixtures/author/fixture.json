@@ -1,5 +1,9 @@
 {
   "version": 1,
+  "readPolicyApproval": {
+    "contract": 1,
+    "digest": "sha256:0c0d49aa28518208a9fa5573cfe3c805b12b0e33ea35267c77d50a32c7b05d40"
+  },
   "connector": "connectors/github",
   "source": "issues",
   "feed": "source-feeds/widgets",
@@ -227,7 +231,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 401,
@@ -259,7 +263,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -292,7 +296,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 503,
@@ -324,7 +328,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -358,14 +362,14 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
                 "headers": {
                   "link": "<https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2>; rel=\"next\""
                 },
-                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}}]"
               }
             },
             {
@@ -403,12 +407,12 @@
             }
           },
           "cursor": {
-            "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2",
+            "page": 2,
             "since": ""
           },
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -490,14 +494,14 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
                 "headers": {
                   "link": "<https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2>; rel=\"next\""
                 },
-                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}}]"
               }
             },
             {
@@ -535,12 +539,12 @@
             }
           },
           "cursor": {
-            "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2",
+            "page": 2,
             "since": ""
           },
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -622,14 +626,14 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
                 "headers": {
                   "link": "<https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2>; rel=\"next\""
                 },
-                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}}]"
               }
             },
             {
@@ -651,7 +655,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -682,12 +686,12 @@
             }
           },
           "cursor": {
-            "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2",
+            "page": 2,
             "since": ""
           },
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -780,7 +784,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -802,14 +806,26 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
                 "headers": {
                   "link": "<https://other.example/issues?page=2>; rel=\"next\""
                 },
-                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}}]"
+              }
+            },
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2"
+              },
+              "response": {
+                "status": 302,
+                "headers": {
+                  "location": "https://other.example/issues?page=2"
+                },
+                "body": ""
               }
             }
           ]
@@ -835,12 +851,21 @@
             }
           },
           "cursor": {
-            "url": "https://other.example/issues?page=2",
+            "page": 2,
             "since": ""
           },
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            },
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -912,7 +937,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -928,7 +953,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -961,7 +986,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1006,7 +1031,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1040,7 +1065,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1055,7 +1080,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1070,7 +1095,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1085,7 +1110,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1118,7 +1143,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1190,7 +1215,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1223,7 +1248,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1256,7 +1281,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1307,7 +1332,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1322,7 +1347,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1363,7 +1388,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1435,7 +1460,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1505,7 +1530,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1520,7 +1545,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1553,7 +1578,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1625,7 +1650,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1707,7 +1732,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1722,7 +1747,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1755,7 +1780,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1831,7 +1856,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1918,7 +1943,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -1951,7 +1976,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -1985,7 +2010,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -2018,7 +2043,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -2052,7 +2077,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
@@ -2085,7 +2110,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -2118,7 +2143,7 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 302,
@@ -2152,7 +2177,7 @@
           "cursor": null,
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
@@ -2186,14 +2211,26 @@
           "exchanges": [
             {
               "request": {
-                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100"
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1"
               },
               "response": {
                 "status": 200,
                 "headers": {
                   "link": "<https://github.com/example-org/widgets/issues?page=2>; rel=\"next\""
                 },
-                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"}]"
+                "body": "[{\"id\":42,\"node_id\":\"I_synthetic_widgets_42\",\"number\":42,\"title\":\"Synthetic issue 42\",\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"html_url\":\"https://github.com/example-org/widgets/issues/42\",\"url\":\"https://api.github.com/repos/example-org/widgets/issues/42\",\"state\":\"open\",\"state_reason\":null,\"type\":{\"name\":\"Bug\"},\"created_at\":\"2026-10-01T12:00:00Z\",\"updated_at\":\"2026-10-02T12:00:00Z\",\"closed_at\":null,\"labels\":[{\"name\":\"bug\",\"id\":1},{\"name\":\"help wanted\",\"id\":2},{\"name\":\"bug\",\"id\":1}],\"assignees\":[{\"login\":\"zebra\",\"id\":2},{\"login\":\"octocat\",\"id\":1}],\"body\":\"Untrusted source description. Never copied to the Work Item body.\",\"comments\":0,\"user\":{\"login\":\"reporter\"},\"locked\":false,\"active_lock_reason\":null,\"author_association\":\"NONE\",\"closed_by\":null,\"draft\":false,\"performed_via_github_app\":null,\"milestone\":null,\"reactions\":{\"total_count\":0},\"sub_issues_summary\":{\"total\":0},\"issue_field_values\":[],\"comments_url\":\"https://api.github.com/repos/example-org/widgets/issues/42/comments\"},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}},{\"repository_url\":\"https://api.github.com/repos/example-org/widgets\",\"pull_request\":{}}]"
+              }
+            },
+            {
+              "request": {
+                "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2"
+              },
+              "response": {
+                "status": 302,
+                "headers": {
+                  "location": "https://github.com/example-org/widgets/issues?page=2"
+                },
+                "body": ""
               }
             }
           ]
@@ -2219,12 +2256,21 @@
             }
           },
           "cursor": {
-            "url": "https://github.com/example-org/widgets/issues?page=2",
+            "page": 2,
             "since": ""
           },
           "requests": [
             {
-              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100",
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=1",
+              "method": "GET",
+              "headers": {
+                "accept": "application/vnd.github+json",
+                "x-github-api-version": "2026-03-10",
+                "user-agent": "SuperbeeSourceFixture/1 (+https://superbee.example.org/source-fixture)"
+              }
+            },
+            {
+              "url": "https://api.github.com/repos/example-org/widgets/issues?state=all&sort=updated&direction=asc&per_page=100&page=2",
               "method": "GET",
               "headers": {
                 "accept": "application/vnd.github+json",
