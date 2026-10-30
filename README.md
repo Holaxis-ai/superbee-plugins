@@ -11,6 +11,15 @@ contributing to this repository does not automatically enable code in a user's C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
+## Civic records experiment
+
+The experimental [Civic Records recipe](recipes/civic-records) separates source, immutable record,
+complete text and interpretation without encoding a municipality in the definitions. The
+[captured-text local operation](integrations/civic-records) is an explicit finite-input prototype,
+with [synthetic experiments and learning questions](examples/civic-records). It does not crawl
+providers, execute PDF conversion, create domain records or publish civic news. Keep real municipal
+capture evidence in private/local research, not repository fixtures.
+
 ## GitHub reference integration
 
 [`integrations/github`](integrations/github) contains the independently versioned GitHub issue

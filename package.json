@@ -14,7 +14,7 @@
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test:unit && npm run test:packaged",
-    "test:unit": "node --test --import tsx integrations/github/test/*.test.ts test/*.test.ts integrations/blender/test/*.test.mjs integrations/verification/test/*.test.mjs",
+    "test:unit": "node --test --import tsx integrations/github/test/*.test.ts test/*.test.ts integrations/blender/test/*.test.mjs integrations/verification/test/*.test.mjs integrations/civic-records/test/*.test.mjs",
     "test:packaged": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
