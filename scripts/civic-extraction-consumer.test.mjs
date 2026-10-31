@@ -24,6 +24,11 @@ test('standalone civic discovery and real PDF extraction through public native r
   const invoke=async(id,binding,name,roles)=>{const input=path.join(scratch,name+'-input.json');await writeFile(input,JSON.stringify({expectedInputs:binding.expectedInputs,settings:{}}));return command(['op','run',id,'--local','--binding',binding.binding,'--input-file',input,...roles.flatMap(([role,file])=>['--export-output',role+'='+path.join(output,file)])]);};
   const found=await invoke('local.civic.discover-pdfs.v1',discover,'discover',[['discovery','discovery.json']]);assert.equal(found.status,'succeeded');
   const d=JSON.parse(await readFile(path.join(output,'discovery.json')));assert.equal(d.candidates.length,1);assert.equal(d.coverage,'selected-only-unknown-tail');
+  const ecodeBasis={v:1,registryUrl:'https://ecode360.com/ZZ0001/documents/Minutes',listingUrl:'https://ecode360.com/api/ZZ0001/pub-doc/type/12',jurisdictionCode:'ZZ0001',typeTitle:'Minutes',typeId:12,categoryId:34,year:2030,maxDocuments:2};
+  const ecodeData={type:{id:12,custId:'ZZ0001',title:'Minutes'},documents:[{id:123,title:'Synthetic council minutes',date:'2030-01-02',categoryId:34,category:{id:34,custId:'ZZ0001',typeId:12,typeTitle:'Minutes',title:'Synthetic Council',private:false},type:'DOCUMENT',extension:'pdf',origExtension:'pdf',url:null,private:false,corrupt:false}]};
+  const ecode=await prepare('local.civic.discover-ecode360.v1',{listing:await resource('ecode-listing.json',ecodeData),basis:await resource('ecode-basis.json',ecodeBasis)});
+  assert.equal((await invoke('local.civic.discover-ecode360.v1',ecode,'ecode',[['discovery','ecode.json']])).status,'succeeded');
+  const ecodeResult=JSON.parse(await readFile(path.join(output,'ecode.json')));assert.equal(ecodeResult.candidates[0].sourceUrl,'https://ecode360.com/ZZ0001/document/123.pdf');assert.equal(ecodeResult.coverage,'selected-only-unknown-tail');
   const pdf=await resource('source.pdf',syntheticPdf());
   const binding=await prepare('local.civic.extract-pdf.v1',{pdf,basis:await resource('extraction-basis.json',{v:1,jurisdictionKey:'synthetic-town',documentId:'123',recordId:'civic-records/synthetic-123',sourceUrl:d.candidates[0].sourceUrl})},{pdftotext:{path:tool,versionFlag:'-v',versionChannel:'stderr'}});
   for(const name of ['first','repeat']){

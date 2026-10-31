@@ -80,12 +80,33 @@
           },
           "maximumOutputBytes": 65536
         }
+      },
+      {
+        "id": "local.civic.discover-ecode360.v1",
+        "capability": {
+          "name": "civic_discover_ecode360",
+          "implementationId": "civic-discover-ecode360.v1",
+          "description": "Project a captured eCode360 public document-list response into finite selected PDF candidates. No network, identifier enumeration, private records, archive completeness or approval claim.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "maximumOutputBytes": 65536
+        }
       }
     ]
   },
   "scripts": {
     "build": "node build.mjs",
-    "typecheck": "node --check src/operation.mjs && node --check src/capture.mjs",
+    "typecheck": "node --check src/operation.mjs && node --check src/capture.mjs && node --check src/ecode360.mjs",
     "test": "node --test test/*.test.mjs",
     "prepublishOnly": "node -e \"process.exit(1)\""
   },
