@@ -1,0 +1,19 @@
+{
+  "schema": "local-recipe-preflight-plan/v1",
+  "recipes": [
+    {"key": "core", "publisher": "reviewed-local-example", "role": "base", "path": "../../recipes/deep-research"},
+    {"key": "place", "publisher": "reviewed-local-example", "role": "extension", "path": "../deep-research/extensions/place-history"}
+  ],
+  "consumers": [{
+    "id": "place-research", "owner": "place",
+    "requirements": [
+      {"id": "source", "provider": "core", "kind": "Research Source", "required": true, "fields": ["citation"]},
+      {"id": "claim", "provider": "core", "kind": "Research Claim", "required": true, "fields": ["statement", "scope"]},
+      {"id": "observation", "provider": "core", "kind": "Research Observation", "required": true, "fields": ["locator"], "links": [{"label": "drawn from", "target": {"provider": "core", "kind": "Research Source"}}]},
+      {"id": "comparison", "provider": "place", "kind": "Place Comparison", "required": true, "links": [
+        {"label": "assessed by", "target": {"provider": "core", "kind": "Research Claim"}},
+        {"label": "compares observation", "target": {"provider": "core", "kind": "Research Observation"}}
+      ]}
+    ]
+  }]
+}

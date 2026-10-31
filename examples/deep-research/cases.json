@@ -1,0 +1,373 @@
+{
+  "house-history": {
+    "extension": true,
+    "records": [
+      {
+        "kind": "Research Source",
+        "id": "research-sources/lantern-index",
+        "fields": {
+          "title": "Fictional Lantern register index",
+          "citation": "Synthetic Register R, page 8: Vale to Reed; pointer D12/4. The row contains no building or move statement.",
+          "inspection_state": "inspected",
+          "representation": "fictional supplied text",
+          "inspection_scope": "The complete short synthetic fixture, unless otherwise stated.",
+          "independence_group": "lantern-index-origin"
+        },
+        "body": "# Identity and scope\nSynthetic Register R, page 8: Vale to Reed; pointer D12/4. The row contains no building or move statement.\n\n# Inspection and access\nSynthetic example input only.\n\n# Limits\nFictional supplied material. No actual acquisition occurred.\n"
+      },
+      {
+        "kind": "Research Source",
+        "id": "research-sources/lantern-deed",
+        "fields": {
+          "title": "Unobtained fictional deed D12/4",
+          "citation": "Synthetic deed D12/4, identified by Register R page 8.",
+          "inspection_state": "referenced",
+          "representation": "fictional supplied text",
+          "inspection_scope": "The complete short synthetic fixture, unless otherwise stated."
+        },
+        "body": "# Identity and scope\nSynthetic deed D12/4, identified by Register R page 8.\n\n# Inspection and access\nSynthetic example input only.\n\n# Limits\nThe underlying deed is not held or inspected. An index pointer does not establish its contents.\n"
+      },
+      {
+        "kind": "Research Source",
+        "id": "research-sources/lantern-transcript",
+        "fields": {
+          "title": "Second representation of the same fictional index",
+          "citation": "Synthetic transcript of Register R page 8; same Vale to Reed pointer.",
+          "inspection_state": "inspected",
+          "representation": "fictional supplied text",
+          "inspection_scope": "The complete short synthetic fixture, unless otherwise stated.",
+          "independence_group": "lantern-index-origin"
+        },
+        "body": "# Identity and scope\nSynthetic transcript of Register R page 8; same Vale to Reed pointer.\n\n# Inspection and access\n[derived from](../research-sources/lantern-index.md)\n\n# Limits\nFictional supplied material. No actual acquisition occurred.\n"
+      },
+      {
+        "kind": "Research Observation",
+        "id": "research-observations/lantern-pointer",
+        "fields": {
+          "title": "Index names a transfer pointer",
+          "observation": "The index row names Vale to Reed and D12/4; no building move is stated.",
+          "locator": "Synthetic Register R, printed page 8, row Vale",
+          "inspection_mode": "source_text"
+        },
+        "body": "# Observation\nThe index row names Vale to Reed and D12/4; no building move is stated.\n\n# Evidence and method\n[drawn from](../research-sources/lantern-index.md)\n\nLocator: Synthetic Register R, printed page 8, row Vale\n\n# Limits\nThe fixture tests record connections, not source authenticity or a real-world event.\n"
+      },
+      {
+        "kind": "Research Observation",
+        "id": "research-observations/lantern-copy",
+        "fields": {
+          "title": "Transcript repeats the index pointer",
+          "observation": "The supplied transcript repeats the same Vale to Reed pointer, with no move statement.",
+          "locator": "Synthetic section 1",
+          "inspection_mode": "supplied_transcript"
+        },
+        "body": "# Observation\nThe supplied transcript repeats the same Vale to Reed pointer, with no move statement.\n\n# Evidence and method\n[drawn from](../research-sources/lantern-transcript.md)\n\nLocator: Synthetic section 1\n\n# Limits\nThe fixture tests record connections, not source authenticity or a real-world event.\n"
+      },
+      {
+        "kind": "Research Claim",
+        "id": "research-claims/lantern-old",
+        "fields": {
+          "title": "Earlier overbroad relocation hypothesis",
+          "statement": "The cottage was moved when the indexed transfer occurred.",
+          "scope": "Fictional cottage and the transfer pointed to by D12/4.",
+          "assertion_mode": "hypothesis",
+          "evidence_state": "superseded",
+          "review_state": "reviewed",
+          "review_note": "Synthetic authored review, not human authorization or native verification."
+        },
+        "body": "# Assertion and scope\nThe cottage was moved when the indexed transfer occurred.\n\nScope: Fictional cottage and the transfer pointed to by D12/4.\n\n# Evidence\n[supported by](../research-observations/lantern-pointer.md)\n\n# Reasoning and alternatives\nEarlier hypothesis overextended a transfer pointer into a building event. It is retained to make the correction inspectable.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
+      },
+      {
+        "kind": "Research Claim",
+        "id": "research-claims/lantern-current",
+        "fields": {
+          "title": "The index provides a deed pointer; relocation remains unproved",
+          "statement": "The inspected index provides a transfer pointer, but does not establish a cottage relocation.",
+          "scope": "Only the inspected Register R row; contents of D12/4 remain unknown.",
+          "assertion_mode": "inference",
+          "evidence_state": "supported",
+          "review_state": "reviewed",
+          "review_note": "Synthetic authored review, not human authorization or native verification."
+        },
+        "body": "# Assertion and scope\nThe inspected index provides a transfer pointer, but does not establish a cottage relocation.\n\nScope: Only the inspected Register R row; contents of D12/4 remain unknown.\n\n# Evidence\n[supported by](../research-observations/lantern-pointer.md)\n\n[supersedes claim](../research-claims/lantern-old.md)\n\n# Reasoning and alternatives\nThe transcript and index share one origin, so they are not independent corroboration. The uninspected deed may identify different land or contain no building statement.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
+      },
+      {
+        "kind": "Research Question",
+        "id": "research-questions/lantern-move",
+        "fields": {
+          "title": "Was the fictional cottage relocated?",
+          "progress_status": "blocked",
+          "next_action": "Obtain D12/4 and compare its described premises before inferring a move.",
+          "revisit_when": "The deed becomes available or another source describes the building move."
+        },
+        "body": "# Question and alternatives\nWas the fictional cottage relocated?\n\n# Attempts and coverage\n2026-01-02: inspected only the index row and its transcript. Deed access unavailable. This did not search every archive.\n\n[investigates](../research-claims/lantern-old.md)\n\n[consulted](../research-sources/lantern-index.md)\n\n[found observation](../research-observations/lantern-pointer.md)\n\n[needs source](../research-sources/lantern-deed.md)\n\n# Current interpretation\nA pointer was found; the move question is unanswered.\n\n# Next test\nObtain D12/4 and compare its described premises before inferring a move.\n\nRepeat only when: The deed becomes available or another source describes the building move.\n"
+      },
+      {
+        "kind": "Place Comparison",
+        "id": "place-comparisons/lantern-address",
+        "fields": {
+          "title": "Fictional comparison: lantern-address",
+          "left_label": "12 Lantern Lane",
+          "right_label": "Former Lantern cottage site",
+          "question": "Does a matching name identify the same premises?",
+          "geometry_note": "No measured overlay or legal-boundary join has been performed."
+        },
+        "body": "# Comparison\nDoes a matching name identify the same premises?\n\n# Evidence links\n[assessed by](../research-claims/lantern-current.md)\n\n[compares observation](../research-observations/lantern-pointer.md)\n\n# Limits\nThe labels identify candidate objects only. Identity is not established by proximity or names.\n"
+      },
+      {
+        "kind": "Place Comparison",
+        "id": "place-comparisons/lantern-parcel",
+        "fields": {
+          "title": "Fictional comparison: lantern-parcel",
+          "left_label": "Vale land in Register R",
+          "right_label": "Reed cottage lot",
+          "question": "Does the uninspected deed describe this cottage lot?",
+          "geometry_note": "No measured overlay or legal-boundary join has been performed."
+        },
+        "body": "# Comparison\nDoes the uninspected deed describe this cottage lot?\n\n# Evidence links\n[assessed by](../research-claims/lantern-current.md)\n\n[compares observation](../research-observations/lantern-pointer.md)\n\n# Limits\nThe labels identify candidate objects only. Identity is not established by proximity or names.\n"
+      },
+      {
+        "kind": "Place Comparison",
+        "id": "place-comparisons/lantern-building",
+        "fields": {
+          "title": "Fictional comparison: lantern-building",
+          "left_label": "Cottage at the present site",
+          "right_label": "Building allegedly moved",
+          "question": "Is this the same physical building?",
+          "geometry_note": "No measured overlay or legal-boundary join has been performed."
+        },
+        "body": "# Comparison\nIs this the same physical building?\n\n# Evidence links\n[assessed by](../research-claims/lantern-current.md)\n\n[compares observation](../research-observations/lantern-pointer.md)\n\n# Limits\nThe labels identify candidate objects only. Identity is not established by proximity or names.\n"
+      }
+    ]
+  },
+  "technical": {
+    "extension": false,
+    "records": [
+      {
+        "kind": "Research Source",
+        "id": "research-sources/bench-a",
+        "fields": {
+          "title": "Fictional benchmark A output",
+          "citation": "Synthetic output A: scenario small-input, baseline 100 ms, candidate 80 ms; sample size 5.",
+          "inspection_state": "inspected",
+          "representation": "fictional supplied text",
+          "inspection_scope": "The complete short synthetic fixture, unless otherwise stated."
+        },
+        "body": "# Identity and scope\nSynthetic output A: scenario small-input, baseline 100 ms, candidate 80 ms; sample size 5.\n\n# Inspection and access\nSynthetic example input only.\n\n# Limits\nFictional supplied material. No actual acquisition occurred.\n"
+      },
+      {
+        "kind": "Research Source",
+        "id": "research-sources/bench-b",
+        "fields": {
+          "title": "Fictional independent benchmark B output",
+          "citation": "Synthetic independent output B: scenario small-input, baseline 110 ms, candidate 88 ms; sample size 5.",
+          "inspection_state": "inspected",
+          "representation": "fictional supplied text",
+          "inspection_scope": "The complete short synthetic fixture, unless otherwise stated."
+        },
+        "body": "# Identity and scope\nSynthetic independent output B: scenario small-input, baseline 110 ms, candidate 88 ms; sample size 5.\n\n# Inspection and access\nSynthetic example input only.\n\n# Limits\nFictional supplied material. No actual acquisition occurred.\n"
+      },
+      {
+        "kind": "Research Source",
+        "id": "research-sources/bench-large",
+        "fields": {
+          "title": "Fictional large-input counterexample",
+          "citation": "Synthetic output C: scenario large-input, baseline 100 ms, candidate 120 ms; sample size 5.",
+          "inspection_state": "inspected",
+          "representation": "fictional supplied text",
+          "inspection_scope": "The complete short synthetic fixture, unless otherwise stated."
+        },
+        "body": "# Identity and scope\nSynthetic output C: scenario large-input, baseline 100 ms, candidate 120 ms; sample size 5.\n\n# Inspection and access\nSynthetic example input only.\n\n# Limits\nFictional supplied material. No actual acquisition occurred.\n"
+      },
+      {
+        "kind": "Research Observation",
+        "id": "research-observations/bench-a",
+        "fields": {
+          "title": "A reports lower latency for small input",
+          "observation": "Synthetic output A reports 100 ms baseline and 80 ms candidate for small-input only.",
+          "locator": "Synthetic output A, scenario small-input, latency_ms",
+          "inspection_mode": "execution_output"
+        },
+        "body": "# Observation\nSynthetic output A reports 100 ms baseline and 80 ms candidate for small-input only.\n\n# Evidence and method\n[drawn from](../research-sources/bench-a.md)\n\nLocator: Synthetic output A, scenario small-input, latency_ms\n\n# Limits\nThe fixture tests record connections, not source authenticity or a real-world event.\n"
+      },
+      {
+        "kind": "Research Observation",
+        "id": "research-observations/bench-b",
+        "fields": {
+          "title": "B independently reports lower small-input latency",
+          "observation": "Synthetic output B reports 110 ms baseline and 88 ms candidate for small-input only.",
+          "locator": "Synthetic output B, scenario small-input, latency_ms",
+          "inspection_mode": "execution_output"
+        },
+        "body": "# Observation\nSynthetic output B reports 110 ms baseline and 88 ms candidate for small-input only.\n\n# Evidence and method\n[drawn from](../research-sources/bench-b.md)\n\nLocator: Synthetic output B, scenario small-input, latency_ms\n\n# Limits\nThe fixture tests record connections, not source authenticity or a real-world event.\n"
+      },
+      {
+        "kind": "Research Observation",
+        "id": "research-observations/bench-large",
+        "fields": {
+          "title": "Large input is slower in the counterexample",
+          "observation": "Synthetic output C reports 100 ms baseline and 120 ms candidate for large-input.",
+          "locator": "Synthetic output C, scenario large-input, latency_ms",
+          "inspection_mode": "execution_output"
+        },
+        "body": "# Observation\nSynthetic output C reports 100 ms baseline and 120 ms candidate for large-input.\n\n# Evidence and method\n[drawn from](../research-sources/bench-large.md)\n\nLocator: Synthetic output C, scenario large-input, latency_ms\n\n# Limits\nThe fixture tests record connections, not source authenticity or a real-world event.\n"
+      },
+      {
+        "kind": "Research Claim",
+        "id": "research-claims/bench-old",
+        "fields": {
+          "title": "Earlier all-input claim",
+          "statement": "The candidate is faster for every input size.",
+          "scope": "All input sizes; this scope was not justified.",
+          "assertion_mode": "inference",
+          "evidence_state": "superseded",
+          "review_state": "reviewed",
+          "review_note": "Synthetic authored review, not human authorization or native verification."
+        },
+        "body": "# Assertion and scope\nThe candidate is faster for every input size.\n\nScope: All input sizes; this scope was not justified.\n\n# Evidence\n[supported by](../research-observations/bench-a.md)\n\n[challenged by](../research-observations/bench-large.md)\n\n# Reasoning and alternatives\nA small-input measurement was wrongly generalized. The large-input output supplies counterevidence.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
+      },
+      {
+        "kind": "Research Claim",
+        "id": "research-claims/bench-scoped",
+        "fields": {
+          "title": "Two outputs support a bounded small-input result",
+          "statement": "Both supplied outputs report lower candidate latency for the selected small-input scenario.",
+          "scope": "Fictional supplied outputs A and B; small-input scenario only, five samples each. No production or statistical-generalization claim.",
+          "assertion_mode": "inference",
+          "evidence_state": "supported",
+          "review_state": "reviewed",
+          "review_note": "Synthetic authored review, not human authorization or native verification."
+        },
+        "body": "# Assertion and scope\nBoth supplied outputs report lower candidate latency for the selected small-input scenario.\n\nScope: Fictional supplied outputs A and B; small-input scenario only, five samples each. No production or statistical-generalization claim.\n\n# Evidence\n[supported by](../research-observations/bench-a.md)\n\n[supported by](../research-observations/bench-b.md)\n\n[supersedes claim](../research-claims/bench-old.md)\n\n# Reasoning and alternatives\nThe independent second output remains a support path if A is later withdrawn. Support requires renewed review after changes; these fixture numbers are not an executed benchmark or a significance test.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
+      },
+      {
+        "kind": "Research Claim",
+        "id": "research-claims/bench-applicability",
+        "fields": {
+          "title": "Small-input result is not a release decision",
+          "statement": "The bounded latency result alone does not justify a general release.",
+          "scope": "Release assessment for the fictional candidate across both tested scenarios.",
+          "assertion_mode": "inference",
+          "evidence_state": "supported",
+          "review_state": "reviewed",
+          "review_note": "Synthetic authored review, not human authorization or native verification."
+        },
+        "body": "# Assertion and scope\nThe bounded latency result alone does not justify a general release.\n\nScope: Release assessment for the fictional candidate across both tested scenarios.\n\n# Evidence\n[supported by](../research-observations/bench-large.md)\n\n[depends on claim](../research-claims/bench-scoped.md)\n\n# Reasoning and alternatives\nSmall-input improvement and large-input regression have different applicability. No authorized release decision is recorded.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
+      },
+      {
+        "kind": "Research Question",
+        "id": "research-questions/bench-release",
+        "fields": {
+          "title": "Should the fictional candidate be released?",
+          "progress_status": "open",
+          "next_action": "Define the intended input population and reproduce both scenarios under an explicit run protocol.",
+          "revisit_when": "The target workload or reproducible run evidence changes."
+        },
+        "body": "# Question and alternatives\nShould the fictional candidate be released?\n\n# Attempts and coverage\n2026-01-03: compared the three supplied output keys only. No benchmark was run and production traffic was not inspected.\n\n[investigates](../research-claims/bench-applicability.md)\n\n[consulted](../research-sources/bench-a.md)\n\n[consulted](../research-sources/bench-b.md)\n\n[consulted](../research-sources/bench-large.md)\n\n# Current interpretation\nA bounded result is supported; the release decision and broader performance are unresolved.\n\n# Next test\nDefine the intended input population and reproduce both scenarios under an explicit run protocol.\n\nRepeat only when: The target workload or reproducible run evidence changes.\n"
+      }
+    ]
+  },
+  "interview": {
+    "extension": false,
+    "records": [
+      {
+        "kind": "Research Source",
+        "id": "research-sources/interview-notes",
+        "fields": {
+          "title": "Fictional interview notes",
+          "citation": "Synthetic interview notes, participant Delta: \"Dark mode would be nice.\" These are supplied notes, not a verified recording.",
+          "inspection_state": "inspected",
+          "representation": "fictional supplied text",
+          "inspection_scope": "The complete short synthetic fixture, unless otherwise stated."
+        },
+        "body": "# Identity and scope\nSynthetic interview notes, participant Delta: \"Dark mode would be nice.\" These are supplied notes, not a verified recording.\n\n# Inspection and access\nSynthetic example input only.\n\n# Limits\nFictional supplied material. No actual acquisition occurred.\n"
+      },
+      {
+        "kind": "Research Source",
+        "id": "research-sources/approval-log",
+        "fields": {
+          "title": "Fictional bounded approval-log excerpt",
+          "citation": "Synthetic approval-log excerpt for meeting Q: no decision on dark mode is recorded in this excerpt.",
+          "inspection_state": "inspected",
+          "representation": "fictional supplied text",
+          "inspection_scope": "The complete short synthetic fixture, unless otherwise stated."
+        },
+        "body": "# Identity and scope\nSynthetic approval-log excerpt for meeting Q: no decision on dark mode is recorded in this excerpt.\n\n# Inspection and access\nSynthetic example input only.\n\n# Limits\nFictional supplied material. No actual acquisition occurred.\n"
+      },
+      {
+        "kind": "Research Observation",
+        "id": "research-observations/interview-remark",
+        "fields": {
+          "title": "Notes attribute a preference to Delta",
+          "observation": "The supplied notes attribute \"Dark mode would be nice\" to Delta.",
+          "locator": "Synthetic notes, turn 4",
+          "inspection_mode": "supplied_transcript"
+        },
+        "body": "# Observation\nThe supplied notes attribute \"Dark mode would be nice\" to Delta.\n\n# Evidence and method\n[drawn from](../research-sources/interview-notes.md)\n\nLocator: Synthetic notes, turn 4\n\n# Limits\nThe fixture tests record connections, not source authenticity or a real-world event.\n"
+      },
+      {
+        "kind": "Research Observation",
+        "id": "research-observations/approval-gap",
+        "fields": {
+          "title": "The selected excerpt records no dark-mode decision",
+          "observation": "No dark-mode approval appears in the selected meeting-Q excerpt.",
+          "locator": "Synthetic meeting Q, selected decisions section",
+          "inspection_mode": "source_text"
+        },
+        "body": "# Observation\nNo dark-mode approval appears in the selected meeting-Q excerpt.\n\n# Evidence and method\n[drawn from](../research-sources/approval-log.md)\n\nLocator: Synthetic meeting Q, selected decisions section\n\n# Limits\nThe fixture tests record connections, not source authenticity or a real-world event.\n"
+      },
+      {
+        "kind": "Research Claim",
+        "id": "research-claims/interview-reported",
+        "fields": {
+          "title": "The supplied notes attribute a preference to Delta",
+          "statement": "The supplied notes attribute the remark \"Dark mode would be nice\" to Delta.",
+          "scope": "Only the synthetic supplied notes, turn 4; not a verified recording or all users.",
+          "assertion_mode": "source_assertion",
+          "evidence_state": "supported",
+          "review_state": "reviewed",
+          "review_note": "Fictional example review of the source assertion, not authentication of a speaker or authorization."
+        },
+        "body": "# Assertion and scope\nThe supplied notes attribute the remark \"Dark mode would be nice\" to Delta. This claim concerns what the notes say.\n\n# Evidence\n[supported by](../research-observations/interview-remark.md)\n\n# Reasoning and alternatives\nThe observation supports the attribution in these supplied notes. The accuracy of the notes and the identity or authority of Delta are not established.\n\n# Review\nA fictional authored review, not human approval.\n"
+      },
+      {
+        "kind": "Research Claim",
+        "id": "research-claims/interview-policy",
+        "fields": {
+          "title": "Earlier interpretation of a remark as policy",
+          "statement": "Dark mode is approved product policy.",
+          "scope": "Fictional product decision; the remark supplied no authority.",
+          "assertion_mode": "inference",
+          "evidence_state": "superseded",
+          "review_state": "reviewed",
+          "review_note": "Synthetic authored review, not human authorization or native verification."
+        },
+        "body": "# Assertion and scope\nDark mode is approved product policy.\n\nScope: Fictional product decision; the remark supplied no authority.\n\n# Evidence\n[supported by](../research-observations/interview-remark.md)\n\n[challenged by](../research-observations/approval-gap.md)\n\n# Reasoning and alternatives\nA participant preference was treated as a decision. The log excerpt is incomplete evidence about all possible approvals, not proof that no approval exists anywhere.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
+      },
+      {
+        "kind": "Research Claim",
+        "id": "research-claims/interview-preference",
+        "fields": {
+          "title": "A preference was reported; policy is unresolved",
+          "statement": "The notes report one preference; they do not establish approval or general user demand.",
+          "scope": "Delta as represented by the supplied notes, not all users or an authenticated decision maker.",
+          "assertion_mode": "inference",
+          "evidence_state": "supported",
+          "review_state": "reviewed",
+          "review_note": "Synthetic authored review, not human authorization or native verification."
+        },
+        "body": "# Assertion and scope\nThe notes report one preference; they do not establish approval or general user demand.\n\nScope: Delta as represented by the supplied notes, not all users or an authenticated decision maker.\n\n# Evidence\n[supported by](../research-observations/interview-remark.md)\n\n[supersedes claim](../research-claims/interview-policy.md)\n\n[depends on claim](../research-claims/interview-reported.md)\n\n# Reasoning and alternatives\nSeparate faithful observation, population-level inference and human authority. No recording was checked and no publication or implementation permission follows.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
+      },
+      {
+        "kind": "Research Question",
+        "id": "research-questions/interview-authority",
+        "fields": {
+          "title": "Was dark mode actually authorized?",
+          "progress_status": "open",
+          "next_action": "Ask for the relevant explicit decision record and assess who had authority; inspect the full source if supplied.",
+          "revisit_when": "A decision record, fuller source or clarified authority becomes available."
+        },
+        "body": "# Question and alternatives\nWas dark mode actually authorized?\n\n# Attempts and coverage\n2026-01-04: inspected only the selected decision excerpt. An unrelated topic search found nothing within that excerpt; do not repeat it unchanged.\n\n[investigates](../research-claims/interview-policy.md)\n\n[consulted](../research-sources/approval-log.md)\n\n[found observation](../research-observations/approval-gap.md)\n\n# Current interpretation\nPreference is evidenced in the notes. Authorization and broader demand remain unknown.\n\n# Next test\nAsk for the relevant explicit decision record and assess who had authority; inspect the full source if supplied.\n\nRepeat only when: A decision record, fuller source or clarified authority becomes available.\n"
+      }
+    ]
+  }
+}

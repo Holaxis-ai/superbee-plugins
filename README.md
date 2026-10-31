@@ -11,6 +11,24 @@ contributing to this repository does not automatically enable code in a user's C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
+## Deep, Deep Research (experimental)
+
+The data-only [`deep-research`](recipes/deep-research/recipe.md) recipe supplies four
+Kinds—Source, Observation, Claim and Question—with defined evidence, challenge,
+dependency and correction relationships. Its references explain bounded research,
+scope, inspection limits and extension ownership. It does not run research or install
+instances. The [three synthetic journeys](examples/deep-research/README.md) include
+an explicitly invoked new-bundle starter, a small disjoint place-history extension
+and focused installed-public-CLI checks. Existing research migrations, optional
+readers/companions and real-use effectiveness remain separate work.
+
+## Optional recipe-author tooling
+
+The [local recipe preflight example](examples/recipe-preflight/README.md) prepares
+explicit local evidence for Superbee's existing compatibility checker. It is
+independent of the research recipe, runs only when invoked, and is not installed
+by any recipe. Its supplied research/place plan is one example input.
+
 ## Civic records experiment
 
 Start with the [two-document supplied-file walkthrough](examples/civic-records/getting-started.md):
