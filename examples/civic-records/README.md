@@ -56,9 +56,9 @@ node examples/civic-records/import-prepared.mjs \
 # Inspect the read-only proposal, then repeat the exact selection with --apply.
 ```
 
-Use the actual preparation time, explicitly supplied as canonical UTC milliseconds, for
-`derived-at`; it must remain fixed on retries, not become a new freshness clock. It is caller
-metadata, not trusted invocation evidence. Tests qualify installed public CLI `0.4.4-pre.6`,
+Use the chosen record-derivation/materialization time, explicitly supplied as canonical UTC
+milliseconds, for `derived-at`; it must remain fixed on retries, not become a new freshness
+clock. It is caller metadata, not an assertion of converter execution or its missing timestamp. Tests qualify installed public CLI `0.4.4-pre.6`,
 Core41; the operation's exact compatibility pin remains unchanged. The importer invokes an explicit
 trusted CLI executable with argv, no shell. No hosted credential lookup or sync is requested.
 
@@ -82,7 +82,9 @@ newline-canonical; noncanonical bodies refuse rather than inventing a competing 
 Unchanged means the target's native read matches every mapped authored field and exact body.
 Extra human-owned fields and server stamps are preserved. An edited mapped field or body refuses;
 there is no overwrite, rebase, delete or CAS update mode. Source/Kind versions are checked again
-at the write boundary and source version after creation. Those checks do not create a transaction
+at the write boundary and source version after creation. The selected physical directory device/inode
+is checked before each write boundary, refusing an observed same-path root replacement. This is
+not an OS capability or an atomic directory transaction. Those checks do not create a transaction
 across documents. Strict Kind validation still occurs inside the native create. A batch can make
 partial progress; its receipt preserves actual outcomes and never claims batch atomicity.
 

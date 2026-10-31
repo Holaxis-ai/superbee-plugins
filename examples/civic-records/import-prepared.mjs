@@ -48,8 +48,14 @@ export async function importPrepared({cli='superbee',bundle,files,derivedAt,acto
  let temp;
  try{
   if(!path.isAbsolute(bundle)||!Array.isArray(files)||files.length<1||files.length>10||!string(actor,200)||!/^process:[a-zA-Z0-9._-]+$/.test(actor))fail('CIVIC_IMPORT_SELECTION');
-  const root=await realpath(bundle),native=nativeCli(cli,root);
-  const local=async()=>{if(await realpath(bundle)!==root)fail('CIVIC_TARGET_MOVED');const s=native.ok(['bundle','locate']);if(s.home!=='local'||s.locator?.kind!=='local-path'||s.locator.path!==root)fail('CIVIC_LOCAL_ONLY');};
+  const root=await realpath(bundle),native=nativeCli(cli,root),selectedRoot=await lstat(root,{bigint:true});
+  if(!selectedRoot.isDirectory())fail('CIVIC_TARGET_DIRECTORY');
+  const local=async()=>{
+   if(await realpath(bundle)!==root)fail('CIVIC_TARGET_MOVED');
+   const currentRoot=await lstat(root,{bigint:true});
+   if(!currentRoot.isDirectory()||currentRoot.dev!==selectedRoot.dev||currentRoot.ino!==selectedRoot.ino)fail('CIVIC_TARGET_REPLACED');
+   const s=native.ok(['bundle','locate']);if(s.home!=='local'||s.locator?.kind!=='local-path'||s.locator.path!==root)fail('CIVIC_LOCAL_ONLY');
+  };
   await local();
   const kind=await native.read('conventions/civic-text');if(kind?.governs!=='Civic Text'||kind.path!=='civic-texts/')fail('CIVIC_KIND_REQUIRED');
   const proposals=[],seen=new Set();
@@ -72,6 +78,7 @@ export async function importPrepared({cli='superbee',bundle,files,derivedAt,acto
    if(current){if(!matches(current,wanted))fail('CIVIC_EXISTING_CONFLICT');receipt.results.push({id:wanted.id,outcome:'up-to-date',version:current.head_version});receipt.unchanged++;continue;}
    const bodyFile=path.join(temp,'body.md');await writeFile(bodyFile,wanted.body,{mode:0o600});
    const args=['new',wanted.type,wanted.id,...Object.entries(wanted.fields).map(([k,v])=>`--${k}=${v}`),'--body-file',bodyFile,'--actor',actor];
+   await local();
    receipt.results.push({id:wanted.id,outcome:'create-outcome-unknown'});
    const result=native.call(args);
    if(result.status!==0){Object.assign(receipt.results.at(-1),{outcome:'refused-or-unknown',nativeStatus:result.status});fail('CIVIC_CREATE_STOPPED');}
