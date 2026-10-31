@@ -97,3 +97,35 @@ H&M's source selection, cadence, Signal mapping, editorial decisions and public 
 outside the plugin. A host workflow can invoke these capabilities after its own transport and
 machine-access admission; installing this source does not enable managed execution. Hosted sync
 and independent readback remain separate from local staging. npm publication remains disabled.
+
+## eCode360 public document-list projection
+
+Some official eCode360 pages populate documents after loading: the initial HTML can contain
+categories without PDF anchors. `local.civic.discover-ecode360.v1` handles the captured structured
+response used by that official UI. It does not fetch an API, claim a sanctioned bulk service or
+invent document IDs. The caller must first observe the exact request and obey its admitted
+transport/robots policy. A refused page/API cannot be retried through a different reader.
+
+Bind `listing` (captured JSON, at most 4MiB/10000 rows) and `basis`, with no tools:
+
+```json
+{"v":1,"registryUrl":"https://ecode360.com/ZZ0001/documents/Minutes",
+ "listingUrl":"https://ecode360.com/api/ZZ0001/pub-doc/type/12",
+ "jurisdictionCode":"ZZ0001","typeTitle":"Minutes","typeId":12,
+ "categoryId":34,"year":2030,"maxDocuments":2}
+```
+
+These are synthetic instance values. Another municipality and document type supply their own
+observed identifiers/title; the recipe has no Fairport defaults. The captured type/customer and
+selected category must match. Only explicit public, uncorrupted `DOCUMENT` records with original
+and served PDF extensions, no external URL, and a valid provider date in the selected year (date role remains unknown)
+are projected. Private/unknown visibility, undated records, other formats and linked external files
+are deliberately excluded. No approval, creator identity, contacts or document interpretation is
+projected. Category/type titles and dates remain provider metadata, not independent verification.
+
+Candidates use only IDs actually present in the captured response and the observed provider PDF
+URL form. They are ordered by date (newest first) with a stable ID tie-break, deduplicated, and
+bounded to 1–100. Inconsistent duplicates refuse. Export the checked JSON role `discovery` through
+the native command. Coverage stays `selected-only-unknown-tail`, including empty results; response
+counts/filter options are not an archive completeness or deletion guarantee. Native source/resource
+identity and separate host HTTP receipts remain necessary; projected JSON is not authentication.

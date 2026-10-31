@@ -73,3 +73,6 @@ export async function extractCapturedPdf({port,resources,invocation},input,{sign
  await port.writeJson('extraction.json',receipt);
  return {pdfSha256:receipt.pdfSha256,textSha256:receipt.textSha256,pageCount:receipt.pageCount,extractorExecution:receipt.extractorExecution,outputs:[{role:'text',path:'extracted.txt',mimeType:'text/plain'},{role:'extraction',path:'extraction.json',mimeType:'application/json'}]};
 }
+
+// Reused by captured provider projections; not a transport or record writer.
+export {captured as readCapturedBytes,basis as readCapturedBasis,utf8 as capturedUtf8};
