@@ -129,3 +129,73 @@ bounded to 1–100. Inconsistent duplicates refuse. Export the checked JSON role
 the native command. Coverage stays `selected-only-unknown-tail`, including empty results; response
 counts/filter options are not an archive completeness or deletion guarantee. Native source/resource
 identity and separate host HTTP receipts remain necessary; projected JSON is not authentication.
+
+## Prepare undated Civic Evidence
+
+`local.civic.prepare-evidence.v1` is a separate captured-input operation for sources whose meeting
+date is not established. It uses the existing `Civic Evidence` Kind; it does not loosen Civic
+Record/Civic Text requirements or migrate old records. Bind `pdf`, `text` and `basis`, no tools:
+
+```json
+{"v":1,"jurisdictionKey":"synthetic-town","documentId":"123",
+ "sourceId":"civic-sources/synthetic-council","sourceUrl":"https://example.org/123.pdf",
+ "title":"Synthetic supplied source","documentKind":"other",
+ "pdfSha256":"<64 lowercase hex>","textSha256":"<64 lowercase hex>","expectedPages":1}
+```
+
+The supplied PDF/text association is a caller assertion. This formatter observes no converter,
+HTTP fetch, approval or date. Keep actual native extraction/HTTP receipts separately. Meeting dates
+and claimed execution proof are not accepted settings. The shared page formatter preserves full
+source wording and escapes literal fences; scanned/short/partial/malformed text and oversized
+representations refuse without OCR or truncation. Existing dated formatter-v1 output remains
+byte-equal; the separate Evidence format has its own identity.
+
+Export JSON role `evidence`. It proposes original-byte metadata and complete page-linked Markdown,
+with stable source/provider/original/representation identities. No clock, local path, invocation or
+human interpretation is part of those identities. It makes no record/blob writes. A prepared link
+to a retained original becomes valid only after the caller's admitted native custody step below.
+
+## Stage undated evidence after native original custody
+
+Undated staging requires public CLI `0.4.4-pre.11` for actual stored-MIME readback; earlier
+clients must refuse. The full reviewed Git checkout supplies `examples/civic-records/stage-evidence.mjs`, reusing public
+Core Kind validation and native CLI only. Its admitted target is one explicit original bound hosted
+checkout. The caller first retains the original at the prepared `evidence/source-bytes/<sha256>.pdf` key
+with ordinary native `promote`, and records its actual acknowledgement. Hosted promotion requires
+the original file at that canonical checkout path; never move/copy/adopt the checkout binding.
+The stager itself does not retain bytes, sync or publish, and does not create a journal or retry.
+
+```sh
+node examples/civic-records/stage-evidence.mjs \
+  --cli /absolute/provisioned/superbee --bundle /absolute/bound/research \
+  --expected-host https://workspace.example --expected-workspace synthetic-workspace \
+  --expected-bundle synthetic-research --expected-principal person:synthetic \
+  --actor process:civic-example --prepared /absolute/export/evidence.json \
+  --observed-at 2030-01-02T00:00:00.000Z --expected-blob-version 'sha256:<original-sha256>'
+```
+
+These synthetic scope values are not grants. Inspect the preview, then append `--apply` for local
+create-only staging. The stager verifies actual host blob bytes, stored PDF MIME and the exact
+native version through `pull --from-host`; local filename MIME is insufficient. An unknown or
+refused host read stops. Source/Kind versions and physical checkout identity are checked around
+writes. There is no exactly-once or transaction guarantee across the blob and documents.
+
+Known genuine Record/Text originals must be reused in their dated lane. The original tuple
+(jurisdiction/provider document/URL/PDF digest) is the reuse guard; renaming or removing a helper
+link in a human-edited Record body does not make that original eligible for duplicate Evidence. An existing differently
+named Evidence representation for the same source/original requires reuse or owning disposition,
+not silent duplicate creation. The bounded current snapshot lookup refuses above 200 known heads
+per relevant Kind; it is not an exhaustive history/tombstone or concurrent-writer guarantee.
+Existing semantic matches preserve the first valid observation and native version; other mapped
+metadata/body edits conflict. New-create acknowledgements and complete readback stay exact for
+every field. Partial/uncertain outcomes stop and remain unconfirmed, with no automatic retry.
+
+Normal native sync and independent complete fresh research/blob readback still precede any Signal
+claiming retained research. Machine authentication, scope, current serving, sync/recovery and quota
+qualification are separate from local consumer doubles. Private labels and JSON hashes are not
+ACLs or authentication. H&M must use a distinct explicit Evidence-to-Signal adapter and the reviewed
+same-run handoff; never disguise Evidence as a Civic Record or weaken attended principal checks.
+
+The original-byte key follows the existing pilot custody convention, shared across sources.
+Existing originals keep their keys and bytes; this extension does not introduce a second blob
+namespace or migrate historical files.

@@ -27,7 +27,7 @@ async function bounded(file,max){
  }catch(error){if(error.message==='CIVIC_HOSTED_INPUT_FILE')throw error;fail('CIVIC_HOSTED_INPUT_FILE');}
  finally{if(handle)await handle.close();}
 }
-async function jsonFile(file,max){
+export async function readHostedCivicJson(file,max){
  const bytes=await bounded(file,max);
  try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{fail('CIVIC_HOSTED_INPUT_JSON');}
 }
@@ -38,7 +38,7 @@ export function hostedProjection(prepared,record,derivedAt){
  const identity=['civic-hosted-import-v1',prepared.recordId,prepared.pdfSha256,prepared.textSha256,prepared.markdownSha256,prepared.extractionLabel,'private-research'];
  return {...local,id:'civic-texts/import-hosted-v1-'+hash(identity.join('\n')),fields:{...local.fields,access_scope:'private-research',extraction_note:local.fields.extraction_note+' Prepared source scope: local-private-research. Final audience intent: private-research; not an access-control or confidentiality guarantee.'}};
 }
-async function selection(config){
+export async function selectHostedCivicTarget(config){
  const {cli,bundle,expectedHost,expectedWorkspace,expectedBundle,expectedPrincipal}=config;
  if(!string(cli)||!path.isAbsolute(cli)||!string(bundle)||!path.isAbsolute(bundle)||![expectedHost,expectedWorkspace,expectedBundle,expectedPrincipal].every(x=>string(x,500)))fail('CIVIC_HOSTED_SELECTION');
  let url;try{url=new URL(expectedHost);}catch{fail('CIVIC_HOSTED_SELECTION');}
@@ -70,7 +70,7 @@ export async function stageHosted(config){
  let temp;
  try{
   if(!['capture','text'].includes(mode)||!string(actor,200)||!/^process:[a-zA-Z0-9._-]+$/.test(actor)||typeof apply!=='boolean')fail('CIVIC_HOSTED_ARGUMENTS');
-  const target=await selection(config),{native,read}=target;receipt.target={folder:target.root,...target.scope};
+  const target=await selectHostedCivicTarget(config),{native,read}=target;receipt.target={folder:target.root,...target.scope};
   const kind=await read(mode==='capture'?'conventions/civic-record':'conventions/civic-text');
   const definition=kindDefinition(kind,mode==='capture'?'Civic Record':'Civic Text',mode==='capture'?'civic-records/':'civic-texts/');
   if(mode==='text'&&(!Array.isArray(kind.fields?.values?.access_scope)||!kind.fields.values.access_scope.includes('private-research')))fail('CIVIC_HOSTED_RECIPE_UPGRADE_REQUIRED');
@@ -83,7 +83,7 @@ export async function stageHosted(config){
    proposals.push({wanted,source,existing});
   };
   if(mode==='capture'){
-   const manifest=await jsonFile(config.manifest,65536);
+   const manifest=await readHostedCivicJson(config.manifest,65536);
    if(!exact(manifest,['schema','sourceId','captureBasis','coverage','entries'])||manifest.schema!=='civic-captured-records/v1'||manifest.captureBasis!=='operator-supplied-files'||manifest.coverage!=='selected-only-unknown-tail'||!string(manifest.sourceId,220)||!/^civic-sources\/[a-z0-9][a-z0-9._-]{0,200}$/.test(manifest.sourceId)||!Array.isArray(manifest.entries)||manifest.entries.length<1||manifest.entries.length>10)fail('CIVIC_CAPTURE_MANIFEST');
    const source=await read(manifest.sourceId);if(!source)fail('CIVIC_CAPTURE_SOURCE');
    for(const entry of manifest.entries){
@@ -94,7 +94,7 @@ export async function stageHosted(config){
   }else{
    if(!Array.isArray(config.files)||config.files.length<1||config.files.length>10)fail('CIVIC_HOSTED_ARGUMENTS');
    for(const file of config.files){
-    const prepared=await jsonFile(file,70000);
+    const prepared=await readHostedCivicJson(file,70000);
     if(!object(prepared)||!string(prepared.recordId,220)||!/^civic-records\/[a-z0-9][a-z0-9._-]{0,200}$/.test(prepared.recordId))fail('CIVIC_RECORD_ID');
     const source=await read(prepared.recordId);if(!source)fail('CIVIC_SOURCE_REQUIRED');
     await add(hostedProjection(prepared,source,config.derivedAt),source);

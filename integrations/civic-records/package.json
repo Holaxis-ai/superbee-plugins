@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
-  "description": "Bounded civic listing discovery, native PDF extraction and captured-text preparation",
+  "description": "Bounded civic discovery, native PDF extraction and dated/undated representation preparation",
   "files": [
     "dist",
     "README.md",
@@ -101,12 +101,33 @@
           },
           "maximumOutputBytes": 65536
         }
+      },
+      {
+        "id": "local.civic.prepare-evidence.v1",
+        "capability": {
+          "name": "civic_prepare_evidence",
+          "implementationId": "civic-prepare-evidence.v1",
+          "description": "Prepare source-linked original-byte metadata and complete page-linked Markdown for existing Civic Evidence. Dates remain absent. Supplied associations only; no network, conversion, record/blob writes or publication.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "maximumOutputBytes": 65536
+        }
       }
     ]
   },
   "scripts": {
     "build": "node build.mjs",
-    "typecheck": "node --check src/operation.mjs && node --check src/capture.mjs && node --check src/ecode360.mjs",
+    "typecheck": "node --check src/operation.mjs && node --check src/capture.mjs && node --check src/ecode360.mjs && node --check src/layout.mjs && node --check src/evidence.mjs",
     "test": "node --test test/*.test.mjs",
     "prepublishOnly": "node -e \"process.exit(1)\""
   },

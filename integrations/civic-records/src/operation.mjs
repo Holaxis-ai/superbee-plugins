@@ -3,6 +3,8 @@ import {readFile,lstat} from 'node:fs/promises';
 import {discoveryDescriptor,extractionDescriptor,discoverCapturedPdfs,extractCapturedPdf} from './capture.mjs';
 import {ecodeDescriptor,discoverEcode360} from './ecode360.mjs';
 import {createHash} from 'node:crypto';
+import {layoutMarkdown} from './layout.mjs';
+import {evidenceDescriptor,prepareCapturedEvidence} from './evidence.mjs';
 export const FORMAT='civic-layout-markdown-v1';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const refuse=code=>{throw Error(code);};
@@ -39,20 +41,13 @@ export async function prepareCapturedText(resources,input,{signal}={}){
  const pdf=await bytes(resources.pdf,8*1024*1024),textBytes=await bytes(resources.text,256*1024);
  if(!pdf.subarray(0,5).equals(Buffer.from('%PDF-')))refuse('CIVIC_PDF_HEADER');
  if(sha(pdf)!==basis.pdfSha256||sha(textBytes)!==basis.textSha256)refuse('CIVIC_ASSOCIATION_IDENTITIES');
- const text=utf8(textBytes).replace(/\r\n?/g,'\n');const pages=text.split('\f');
- if(pages.length&&!pages.at(-1).trim())pages.pop();
- if(pages.length!==basis.expectedPages||pages.some(p=>p.replace(/\s/g,'').length<40||/[\u0000\ufffd]/.test(p)))refuse('CIVIC_TEXT_REVIEW_REQUIRED');
-  const markdown=['# Complete supplied extracted text\n',
-  'Local/private research. Original wording and source errors retained. This is caller-associated extracted text, not independently verified PDF transcription.\n',
-  `[Original PDF](<${basis.sourceUrl}>)\n`,`[extracted from](../${basis.recordId}.md)\n`,
-  ...pages.map((page,index)=>{const length=[...page.matchAll(/`+/g)].reduce((max,x)=>Math.max(max,x[0].length+1),3),fence='`'.repeat(length);return `## Page ${index+1}\n\n[Official source page](<${basis.sourceUrl}#page=${index+1}>)\n\n${fence}text\n${page}${page.endsWith('\n')?'':'\n'}${fence}\n`;})
- ].join('\n');
+ const {markdown,pageCount}=layoutMarkdown(utf8(textBytes),basis.expectedPages,basis.sourceUrl,[`[extracted from](../${basis.recordId}.md)`]);
  signal?.throwIfAborted();
- return {schema:'civic-prepared-text/v1',formatVersion:FORMAT,jurisdictionKey:basis.jurisdictionKey,documentId:basis.documentId,recordId:basis.recordId,sourceUrl:basis.sourceUrl,pdfSha256:basis.pdfSha256,textSha256:basis.textSha256,markdownSha256:sha(markdown),pageCount:pages.length,extractionLabel:basis.extractionLabel,extractionAssociation:'caller_asserted',extractorExecution:'not_observed',accessScope:'local-private-research',markdown};
+ return {schema:'civic-prepared-text/v1',formatVersion:FORMAT,jurisdictionKey:basis.jurisdictionKey,documentId:basis.documentId,recordId:basis.recordId,sourceUrl:basis.sourceUrl,pdfSha256:basis.pdfSha256,textSha256:basis.textSha256,markdownSha256:sha(markdown),pageCount,extractionLabel:basis.extractionLabel,extractionAssociation:'caller_asserted',extractorExecution:'not_observed',accessScope:'local-private-research',markdown};
 }
 export function createLocalCapabilities({port,resources,invocation}){
  return [{...descriptor,execute:async(input,context)=>{
   const prepared=await prepareCapturedText(resources,input,context);await port.writeJson('prepared-civic-text.json',prepared);
   return {formatVersion:FORMAT,pageCount:prepared.pageCount,pdfSha256:prepared.pdfSha256,textSha256:prepared.textSha256,markdownSha256:prepared.markdownSha256,extractionAssociation:prepared.extractionAssociation,extractorExecution:prepared.extractorExecution,outputs:[{role:'prepared',path:'prepared-civic-text.json',mimeType:'application/json'}]};
- }}, {...discoveryDescriptor,execute:async(input,context)=>{const value=await discoverCapturedPdfs(resources,input,context);await port.writeJson('discovered-pdfs.json',value);return {observedCandidates:value.observedCandidates,coverage:value.coverage,outputs:[{role:'discovery',path:'discovered-pdfs.json',mimeType:'application/json'}]};}}, {...extractionDescriptor,execute:(input,context)=>extractCapturedPdf({port,resources,invocation},input,context)}, {...ecodeDescriptor,execute:async(input,context)=>{const value=await discoverEcode360(resources,input,context);await port.writeJson('discovered-ecode360-pdfs.json',value);return {observedCandidates:value.observedCandidates,coverage:value.coverage,outputs:[{role:'discovery',path:'discovered-ecode360-pdfs.json',mimeType:'application/json'}]};}}];
+ }}, {...discoveryDescriptor,execute:async(input,context)=>{const value=await discoverCapturedPdfs(resources,input,context);await port.writeJson('discovered-pdfs.json',value);return {observedCandidates:value.observedCandidates,coverage:value.coverage,outputs:[{role:'discovery',path:'discovered-pdfs.json',mimeType:'application/json'}]};}}, {...extractionDescriptor,execute:(input,context)=>extractCapturedPdf({port,resources,invocation},input,context)}, {...ecodeDescriptor,execute:async(input,context)=>{const value=await discoverEcode360(resources,input,context);await port.writeJson('discovered-ecode360-pdfs.json',value);return {observedCandidates:value.observedCandidates,coverage:value.coverage,outputs:[{role:'discovery',path:'discovered-ecode360-pdfs.json',mimeType:'application/json'}]};}}, {...evidenceDescriptor,execute:async(input,context)=>{const value=await prepareCapturedEvidence(resources,input,context);await port.writeJson('prepared-civic-evidence.json',value);return {pageCount:value.pageCount,outputs:[{role:'evidence',path:'prepared-civic-evidence.json',mimeType:'application/json'}]};}}];
 }
