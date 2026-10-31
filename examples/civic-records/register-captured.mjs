@@ -75,8 +75,9 @@ export async function registerCaptured({cli='superbee',bundle,manifest,actor,app
    await local();receipt.results.push({id:wanted.id,outcome:'create-outcome-unknown'});
    const result=native.call(['new',wanted.type,wanted.id,...Object.entries(wanted.fields).map(([key,value])=>`--${key}=${value}`),'--body-file',bodyFile,'--actor',actor]);
    if(result.status!==0){Object.assign(receipt.results.at(-1),{outcome:'refused-or-unknown',nativeStatus:result.status});fail('CIVIC_CREATE_STOPPED');}
+   const ack=result.data;if(!object(ack)||ack.new!=='written'||ack.id!==wanted.id||ack.type!==wanted.type||!string(ack.version,200))fail('CIVIC_NATIVE_RECEIPT_UNKNOWN');
    receipt.results.at(-1).outcome='created-unconfirmed';
-   const actual=await native.read(wanted.id);if(!actual||!matches(actual,wanted))fail('CIVIC_READBACK_CONFLICT');
+   const actual=await native.read(wanted.id);if(!actual||actual.head_version!==ack.version||!matches(actual,wanted))fail('CIVIC_READBACK_CONFLICT');
    if(!await native.read(source.id,source.head_version)||!await native.read(kind.id,kind.head_version))fail('CIVIC_PREREQUISITE_CHANGED');
    Object.assign(receipt.results.at(-1),{outcome:'created',version:actual.head_version});receipt.created++;
   }
