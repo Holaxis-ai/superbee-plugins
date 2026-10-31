@@ -58,11 +58,26 @@ invented; there are no private bundle excerpts, real asset paths or customer fac
 ## Install the core for your own study
 
 ```sh
-superbee init --create-only --recipe none --dir /tmp/my-new-research
-superbee recipe add ./recipes/deep-research --dir /tmp/my-new-research
-superbee new 'Research Source' --help --dir /tmp/my-new-research
-superbee new 'Research Question' --help --dir /tmp/my-new-research
+superbee init --create-only --recipe none --dir /tmp/my-new-research/.superbee
+superbee recipe add ./recipes/deep-research --actor openai/codex --dir /tmp/my-new-research/.superbee
+superbee new 'Research Source' --help --dir /tmp/my-new-research/.superbee
+superbee new 'Research Question' --help --dir /tmp/my-new-research/.superbee
 ```
+
+Keep the study folder separate from the bundle root:
+
+```text
+my-new-research/
+  .superbee/       # authoritative typed records and installed definitions
+  evidence/        # permissible original assets and derivatives
+  SYNTHESIS.md     # short human entrypoint, linking canonical records
+```
+
+`--dir` selects the bundle root itself; it does not append `.superbee`. Temporary
+Markdown bodies, capture notes and other drafts inside that root can be indexed
+as documents. Stage them outside it (for example in an OS temporary directory).
+When passing `--body-file`, use the documented body sections and an explicit actor
+appropriate to your writer. Do not rerun a create-only starter to update a study.
 
 Use actual evidence and body sections as described in the installed references.
 Re-add is idempotent; upgrades use native `recipe evolve` preview and exact-token
@@ -81,8 +96,8 @@ Place Comparison and a reference. Install it explicitly after the core:
 
 ```sh
 superbee recipe add ./examples/deep-research/extensions/place-history \
-  --dir /tmp/my-new-research
-superbee new 'Place Comparison' --help --dir /tmp/my-new-research
+  --dir /tmp/my-new-research/.superbee
+superbee new 'Place Comparison' --help --dir /tmp/my-new-research/.superbee
 ```
 
 Copy that directory, change its identity/path and domain fields, and keep core
@@ -120,3 +135,17 @@ The optional [local preflight author example](preflight/README.md) collects expl
 local definition snapshots for the existing public Core structural checker. It
 keeps consumer requirements authored, creates no research instances and is never
 run by recipe installation. Its dependency setup and scope are separate.
+
+## Retrieve the full basis
+
+Start with the short synthesis, then follow the Question's answer, the Claim's
+support/challenge/dependency links, and each Observation's source and locator.
+`superbee doc read <id> --offset 0 --dir <bundle> --json` returns the full body;
+the default may be a clearly marked preview. Use `superbee status` for structural
+checks, not a guessed `check` command. Neither command verifies research truth.
+
+A Source that says bytes were retained must locate them: record the exact path,
+its base (study root, bundle root or Source document), and which representation
+was inspected. Keep an original and its extracted text distinguishable. A path or
+hash locates/checks bytes; it does not authenticate a publisher or a conclusion.
+Different independence-group names likewise do not prove independent evidence.

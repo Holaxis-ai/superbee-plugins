@@ -45,9 +45,11 @@ full scientific support, cross-version compatibility, complete downstream-impact
 discovery or publication approval. No executable provider integration was changed;
 the unrelated integration test matrix is outside this contribution's qualification.
 
-The next useful validation is one real new investigation compared with ordinary
-organized notes. Optional readers, attempt/run/capture companions and any actual
-historical/civic migration require their own consumer-driven scope.
+A subsequent bounded real composition study and a fresh-agent environmental
+science investigation exercised the unchanged four-type core. They are consumer
+observations, not a controlled comparison against organized notes. Optional readers,
+attempt/run/capture companions and any actual historical/civic migration still
+require their own consumer-driven scope.
 
 ## Independent review corrections
 
@@ -73,3 +75,28 @@ hash/snapshot fields. The adapter prepares the same bounded structural question 
 the handwritten runner. This demonstrates reusable collection plumbing, not
 measured human-time savings or a new schema/solver capability. Source review and
 subsequent bounded QA receipts belong to the owning Development task.
+
+## Fresh-agent onboarding observation
+
+A history-free agent started from the user-facing README and investigated an
+unrelated environmental-science question with actual sources. It used 12 research
+records (five Sources, four Observations, two Claims, one Question) plus seven
+installed definitions, with no additional Kind. A separate reader recovered the
+answer, positive counterevidence, extrapolation limits and an inaccessible follow-up
+from the structured evidence alone. That took 21 CLI invocations and 14 full
+document reads; the short narrative was 261 words. Neither number establishes
+superiority, time savings, independent human ease or exhaustive research quality.
+
+Observed friction led to guidance-only changes in `0.1.0-pre.2`: the own-study
+example now explicitly uses a `.superbee` child, keeps draft Markdown outside the
+indexed root, locates retained assets from each Source with a path base, explains
+full-body reads, and warns that distinct independence labels are not corroboration.
+The original run and initial missing asset locator were frozen before a post-run
+repair. The second reader then located both retained assets, verified hashes and
+checked one locator against a derivative. This is byte/derivative checking, not
+visual verification, authenticated provenance or universal evidence correctness.
+
+No raw research corpus, source excerpts or private local paths from that study are
+shipped in the recipe. The existing consumer suites pass 14/14 on the guidance
+candidate. A read-only native evolution preview from an unchanged pre.1 install
+reports ready with zero blockers; no existing research bundle was upgraded.

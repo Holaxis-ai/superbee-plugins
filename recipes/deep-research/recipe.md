@@ -2,7 +2,7 @@
 type: Recipe
 id: deep-research
 title: Deep, Deep Research
-version: "0.1.0-pre.1"
+version: "0.1.0-pre.2"
 summary: Located evidence, scoped claims and persistent questions for cumulative research.
 content_policy: definitions-only
 references:
