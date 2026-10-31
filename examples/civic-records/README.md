@@ -1,5 +1,10 @@
 # Civic records packaging/use experiments
 
+For first use, follow the [complete supplied-file walkthrough](getting-started.md). The
+`plan-supplied.mjs` helper generates repeated JSON inputs from explicit metadata and checked local
+bytes; it performs no capture, conversion, trust acceptance, bundle write or publication.
+
+
 These examples are synthetic. Never commit actual residents' minutes, local bundle paths, private
 exports or local evidence into this repository. Model instances belong in the selected research
 bundle; this directory contains only reusable instructions and synthetic consumer tests.
