@@ -19,3 +19,5 @@ test('Evidence reuses the capture source guard for same-host foreign eCode munic
   if(accept)assert.equal(evidenceProjections(p,source,'2026-01-01T00:00:00.000Z').length,2);else assert.throws(()=>evidenceProjections(p,source,'2026-01-01T00:00:00.000Z'),/CIVIC_CAPTURE_URL/);
  }
 });
+
+test('staging refuses a rehashed original body that points at an unchecked blob namespace',async t=>{const f=await fixture(t),p=await prepareCapturedEvidence(f.resources,{});const forged=structuredClone(p);forged.representations[0].body=forged.representations[0].body.replace('evidence/source-bytes/','civic-originals/');forged.representations[0].bodySha256=sha(forged.representations[0].body);const source={id:f.basis.sourceId,type:'Civic Source',jurisdiction_key:f.basis.jurisdictionKey,registry_url:'https://example.org/',provider:'other'};assert.throws(()=>evidenceProjections(forged,source,'2030-01-01T00:00:00.000Z'),/CIVIC_EVIDENCE_ORIGINAL_BODY/);});

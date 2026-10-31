@@ -10,6 +10,7 @@ const text=(x,max)=>typeof x==='string'&&x.length>0&&x.length<=max&&!/[\x00-\x1f
 const hex=x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x);
 export const EVIDENCE_FORMAT='civic-evidence-layout-v1';
 export const originalBlobKey=pdfSha256=>`evidence/source-bytes/${pdfSha256}.pdf`;
+export const originalEvidenceBody=p=>`# Supplied original representation\n\nOriginal PDF bytes are retained separately under the checked bundle key below. This metadata does not establish official authenticity, approval or a meeting date. Source URL and original-file association are caller assertions; HTTP observations and native custody receipts remain separate.\n\nSHA256: ${p.pdfSha256}\n\n[Original source](<${p.sourceUrl}>)\n\n[Retained original](../${originalBlobKey(p.pdfSha256)})\n\n[from source](../${p.sourceId}.md)\n`;
 export const originalEvidenceId=p=>'civic-evidence/original-v1-'+hash(['civic-evidence-original-v1',p.sourceId,p.jurisdictionKey,p.documentId,p.sourceUrl,p.pdfSha256].join('\n'));
 export const textEvidenceId=(originalId,formatVersion,textSha256,markdownSha256)=>'civic-evidence/text-v1-'+hash(['civic-evidence-text-v1',originalId,formatVersion,textSha256,markdownSha256].join('\n'));
 export const evidenceDescriptor={name:'civic_prepare_evidence',implementationId:'civic-prepare-evidence.v1',description:'Prepare source-linked original-byte metadata and complete page-linked Markdown for existing Civic Evidence. Dates remain absent. Supplied associations only; no network, conversion, record/blob writes or publication.',inputSchema:{type:'object',additionalProperties:false,required:[],properties:{}},annotations:{readOnlyHint:false,destructiveHint:false,idempotentHint:false,openWorldHint:false},maximumOutputBytes:65536};
@@ -23,7 +24,7 @@ export async function prepareCapturedEvidence(resources,input,{signal}={}){
  if(!pdf.subarray(0,5).equals(Buffer.from('%PDF-'))||hash(pdf)!==b.pdfSha256||hash(rawText)!==b.textSha256)fail('CIVIC_EVIDENCE_IDENTITIES');
  const originalId=originalEvidenceId(b);
  const blobKey=originalBlobKey(b.pdfSha256);
- const originalBody=`# Supplied original representation\n\nOriginal PDF bytes are retained separately under the checked bundle key below. This metadata does not establish official authenticity, approval or a meeting date. Source URL and original-file association are caller assertions; HTTP observations and native custody receipts remain separate.\n\nSHA256: ${b.pdfSha256}\n\n[Original source](<${b.sourceUrl}>)\n\n[Retained original](../${blobKey})\n\n[from source](../${b.sourceId}.md)\n`;
+ const originalBody=originalEvidenceBody(b);
  const {markdown,pageCount}=layoutMarkdown(capturedUtf8(rawText),b.expectedPages,b.sourceUrl,[`[from source](../${b.sourceId}.md)`,`[Original representation](../${originalId}.md)`]);
  const markdownSha256=hash(markdown);
  if(Buffer.byteLength(markdown)>55000)fail('CIVIC_EVIDENCE_REVIEW_REQUIRED');

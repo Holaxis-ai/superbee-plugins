@@ -7,7 +7,7 @@ import {queryHeads,parseLinksFromDoc} from '@superbee/core';
 import {readHostedCivicJson,selectHostedCivicTarget} from './stage-hosted.mjs';
 import {assertCapturedSourceUrl} from './register-captured.mjs';
 import {readCapturedBytes} from '../../integrations/civic-records/src/capture.mjs';
-import {originalEvidenceId,textEvidenceId,originalBlobKey,EVIDENCE_FORMAT} from '../../integrations/civic-records/src/evidence.mjs';
+import {originalEvidenceId,textEvidenceId,originalBlobKey,originalEvidenceBody,EVIDENCE_FORMAT} from '../../integrations/civic-records/src/evidence.mjs';
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const fail=code=>{throw Error(code);};
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
@@ -25,6 +25,7 @@ export function evidenceProjections(p,source,observedAt){
  if(!Array.isArray(p.representations)||p.representations.length!==2)fail('CIVIC_EVIDENCE_REPRESENTATIONS');
  const [a,b]=p.representations;
  if(!exact(a,['role','id','blobKey','contentType','representationSha256','bodySha256','body'])||!exact(b,['role','id','contentType','representationSha256','bodySha256','body'])||a.role!=='original'||b.role!=='text'||a.contentType!=='application/pdf'||b.contentType!=='text/markdown'||a.blobKey!==originalBlobKey(p.pdfSha256)||a.representationSha256!==p.pdfSha256||b.representationSha256!==b.bodySha256)fail('CIVIC_EVIDENCE_REPRESENTATIONS');
+ if(a.body!==originalEvidenceBody(p))fail('CIVIC_EVIDENCE_ORIGINAL_BODY');
  const expectedOriginal=originalEvidenceId(p);
  const expectedText=textEvidenceId(expectedOriginal,p.formatVersion,p.textSha256,b.bodySha256);
  if(a.id!==expectedOriginal||b.id!==expectedText)fail('CIVIC_EVIDENCE_IDENTITY');
