@@ -8,7 +8,7 @@ import {preflightRecipeSet, recipePreflightDigest, explainRecipePreflightIssue} 
 
 const schema = 'local-recipe-preflight-plan/v1';
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
-const decoder = new TextDecoder('utf-8', {fatal: true});
+const decoder = new TextDecoder('utf-8', {fatal: true, ignoreBOM: true});
 const fail = message => { throw new Error(message); };
 function keys(value, allowed, where) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail(`${where}: expected object`);

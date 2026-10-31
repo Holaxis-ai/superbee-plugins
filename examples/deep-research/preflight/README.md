@@ -64,7 +64,10 @@ inventory to recipe-owned definitions.
 Two complete collections of the selected plan, recipes, bundle index,
 `conventions/` and `references/` must match before checking. This detects changes
 between the sampled passes; it is not an atomic snapshot, a lock, hostile-writer
-isolation or a future-state guarantee. Each pass is bounded to 2,000 files/16 MiB,
+isolation or a future-state guarantee. UTF-8 text is decoded without stripping a leading BOM. Physical byte changes
+therefore change the supplied snapshot; Core still owns structural identity rules
+and may consider an encoding-only difference structurally equivalent. Each pass
+is bounded to 2,000 files/16 MiB,
 with 1 MiB per file. Encountered symlinks and non-regular files are refused.
 Only installed definition folders are read, never instance folders. A local
 folder snapshot says nothing about a live hosted authority or current access.
@@ -86,7 +89,7 @@ The consumer test copies the example outside this checkout, installs its locked
 public dependencies and public CLI `0.4.4-pre.9` in isolated temporary state. It
 checks complete evidence, missing base/empty folder, competing unselected type,
 wrong field, missing target requirement, unsupported semantics, local drift,
-symlink/size controls, unknown plan keys, output protection and unchanged authored
+BOM preservation, symlink/size controls, unknown plan keys, output protection and unchanged authored
 bytes. No sibling Core checkout is imported.
 
 The earlier handwritten experiment needed JavaScript to collect artifacts,

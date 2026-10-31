@@ -88,6 +88,22 @@ test('local recipe author adapter delegates to public Core on explicit snapshots
       assert.ok(JSON.parse(r.stdout).result.issues.some(i => ['LOCAL_ADAPTATION', 'DEFINITION_DIVERGENT'].includes(i.code)));
       assert.equal(await readFile(f, 'utf8'), before + '\nLocal customization.\n'); await writeFile(f, before);
     });
+    await t.test('UTF-8 BOM is retained in supplied snapshot evidence', async () => {
+      const file = path.join(good, 'conventions/research-claim.md');
+      const before = await readFile(file);
+      await writeFile(file, Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), before]));
+      const bomEvidence = path.join(scratch, 'bom-evidence.json');
+      const r = check(good, ['--evidence', bomEvidence]);
+      assert.ok([0, 2, 3].includes(r.status), r.stderr || r.stdout);
+      const after = JSON.parse(await readFile(bomEvidence, 'utf8'));
+      const snapshot = after.input.placementInventories[0].files.find(f => f.path === 'conventions/research-claim.md');
+      assert.deepEqual(Buffer.from(snapshot.bytes, 'utf8'), await readFile(file), 'snapshot preserves physical UTF-8 BOM bytes');
+      const baseline = JSON.parse(await readFile(evidence, 'utf8'));
+      assert.notDeepEqual(after.input, baseline.input, 'BOM-only change cannot disappear from evidence');
+      assert.notEqual(after.input.placementInventories[0].observedVersion, baseline.input.placementInventories[0].observedVersion);
+      await writeFile(file, before);
+      t.diagnostic(`BOM-only physical change retained; Core verdict ${after.report.result.verdict} remains Core policy`);
+    });
     await t.test('collection controls refuse symlinks, overlarge files, wrong scope and output overwrite', async () => {
       const link = path.join(good, 'conventions/link.md'); await symlink(path.join(good, 'conventions/research-claim.md'), link);
       let r = check(good); assert.equal(r.status, 1); assert.match(r.stderr, /non-symlink/); await rm(link);
