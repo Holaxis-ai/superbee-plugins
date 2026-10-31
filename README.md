@@ -13,6 +13,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
 ## Civic records experiment
 
+Start with the [two-document supplied-file walkthrough](examples/civic-records/getting-started.md):
+isolated tools, both recipes, explicit preparation/import, native queries and safe repeats.
+
+
 The experimental [Civic Records recipe](recipes/civic-records) separates source, immutable record,
 complete text and interpretation without encoding a municipality in the definitions. The
 [captured-text local operation](integrations/civic-records) is an explicit finite-input prototype,

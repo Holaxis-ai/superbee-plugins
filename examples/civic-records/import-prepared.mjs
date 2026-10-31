@@ -7,6 +7,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const fail=code=>{throw Error(code);};
+const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 const string=(x,max)=>typeof x==='string'&&x.length>0&&x.length<=max&&!/[\x00-\x1f\x7f]/.test(x);
 const keys=['schema','formatVersion','jurisdictionKey','documentId','recordId','sourceUrl','pdfSha256','textSha256','markdownSha256','pageCount','extractionLabel','extractionAssociation','extractorExecution','accessScope','markdown'];
 export function projection(p,record,derivedAt){
@@ -84,8 +85,9 @@ export async function importPrepared({cli='superbee',bundle,files,derivedAt,acto
    receipt.results.push({id:wanted.id,outcome:'create-outcome-unknown'});
    const result=native.call(args);
    if(result.status!==0){Object.assign(receipt.results.at(-1),{outcome:'refused-or-unknown',nativeStatus:result.status});fail('CIVIC_CREATE_STOPPED');}
-   Object.assign(receipt.results.at(-1),{outcome:'created-unconfirmed',nativeReceipt:result.data});
-   const actual=await native.read(wanted.id);if(!actual||!matches(actual,wanted))fail('CIVIC_READBACK_CONFLICT');
+   const ack=result.data;if(!object(ack)||ack.new!=='written'||ack.id!==wanted.id||ack.type!==wanted.type||!string(ack.version,200))fail('CIVIC_NATIVE_RECEIPT_UNKNOWN');
+   Object.assign(receipt.results.at(-1),{outcome:'created-unconfirmed',nativeReceipt:ack});
+   const actual=await native.read(wanted.id);if(!actual||actual.head_version!==ack.version||!matches(actual,wanted))fail('CIVIC_READBACK_CONFLICT');
    if(!await native.read(source.id,source.head_version))fail('CIVIC_PREREQUISITE_CHANGED');
    receipt.results.at(-1).outcome='created';receipt.results.at(-1).version=actual.head_version;receipt.created++;
   }
@@ -93,7 +95,8 @@ export async function importPrepared({cli='superbee',bundle,files,derivedAt,acto
  }catch(error){error.receipt={...receipt,error:error.message,complete:false};throw error;}
  finally{if(temp)await rm(temp,{recursive:true,force:true});}
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+const isMain=process.argv[1]&&(await realpath(process.argv[1]).catch(()=>null))===await realpath(fileURLToPath(import.meta.url));
+if(isMain){
  try{
   const config={files:[],apply:false};const names={'--cli':'cli','--bundle':'bundle','--actor':'actor','--derived-at':'derivedAt'};
   for(let i=2;i<process.argv.length;i++){const flag=process.argv[i];if(flag==='--apply'){if(config.apply)fail('CIVIC_ARGUMENTS');config.apply=true;}else if(flag==='--prepared'){config.files.push(process.argv[++i]);}else if(names[flag]&&!config[names[flag]]){config[names[flag]]=process.argv[++i];}else fail('CIVIC_ARGUMENTS');}
