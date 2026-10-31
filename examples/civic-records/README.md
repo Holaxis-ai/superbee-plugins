@@ -65,11 +65,13 @@ trusted CLI executable with argv, no shell. No hosted credential lookup or sync 
 Input is a bounded standalone export, not a native receipt or an authenticated extraction. It retains
 `caller_asserted` association and `not_observed` converter execution. Matching the existing source
 record's jurisdiction/provider key/PDF digest/URL/page count is required; it does not verify the
-original PDF or independently validate the transcript. Formatter identity occupies `extraction_version`;
-`extraction_note` explicitly carries the caller label, supplied-text digest and absent execution
-observation. Existing historical texts and Kind definitions are not rewritten or reinterpreted.
-This exposes a model limitation to revisit before a broader importer: formatter and actual extractor
-identities deserve distinct explicit fields, not implicit upgrades of old provenance.
+original PDF or independently validate the transcript. Base recipe0.4.0-pre.1 declares explicit `formatter_version`, `input_text_sha256`,
+`extraction_association` and `extractor_execution` fields; importer projectionv2 requires those
+declarations before preview/apply and writes them through native commands. `extraction_version`
+remains a compatible legacy label. The caller label stays explicitly asserted in `extraction_note`.
+Historical records and their provenance are not rewritten. Projectionv2 uses its own immutable
+identity namespace: it never silently upgrades an existing import-v1 record. An old bundle must
+inspect/apply its additive native recipe-evolve plan first; there is no install/evolution fallback.
 
 The importer checks all inputs and target records before any write, then uses native strict
 `new` as each document's atomic expected-absent boundary. A domain-specific framed identity includes
@@ -94,3 +96,58 @@ from a missing document or conflicting edit. No custom journal, request id or au
 is added. This recovery is appropriate only to local atomic create-only documents; it does **not**
 qualify uncertain hosted writes. Hosted adoption must reuse the existing durable client journal or
 checkout sync/receipt protocols and establish current admission and fresh remote confirmation.
+
+## Base plus research extension
+
+The base `recipes/civic-records` v0.4.0-pre.1 keeps the historical Source/Record/Text/Finding
+Kinds and adds generic Civic Evidence for non-meeting sources. A webpage need not invent a meeting
+date/session. Evidence distinguishes retained tool representations from original response bytes;
+publication/event/meeting/observation/effective dates remain separate. The base retains legacy
+Finding for compatibility; moving it to an editorial recipe would need an explicit ownership and
+migration decision, not another authored copy.
+
+`recipes/civic-research` v0.1.0-pre.1 owns three disjoint Kinds: Civic Matter, Civic Observation
+and Civic Connection. Matters record identity basis and scope; observations separate source
+assertions, interpretations and open questions; proposed connections preserve both endpoints and
+unresolved enactment identity. No source adapter, AI execution or publishing authority is installed.
+Document hyperlinks remain ordinary typed/body links; they do not become support between claims.
+Use coarse dates such as a season in statement text and leave asserted_date absent until a real
+calendar day is known. Kind enums check shape, not source truth, chronology or citation relevance.
+
+The existing public `@superbee/core/recipe-set-preflight` contract accepts a finite caller-selected
+base/add-on artifact set, consumer requirements and complete declared placement snapshots.
+[`research-consumer.json`](research-consumer.json) declares this example reader's fields/links;
+`scripts/civic-research-consumer.test.mjs` constructs both explicitly labeled proposed fixtures and
+actual native installed snapshots using public Core codecs/lifecycle functions. It demonstrates:
+missing-base and Kind-collision refusal; preserved human base customization; unknown external
+consumers; no-op repeat install; native enum/date refusal; and explicit additive evolution.
+It does not introduce an adapter parser or another compatibility engine.
+
+There is no automatic dependency resolver or recipe inheritance: manifest requires/composes/seeds
+keys are reserved and not applied. A preflight valid result covers only the declared structural
+input and leaves external consumers unknown. Requirements cover declared fields/links, not
+arbitrary enum/type predicates; unsupported operators stay partial. It grants no write, hosted
+access or execution authority. Convention stamps identify the last writer; same-Kind additive
+cross-recipe evolution can transfer a stamp, so they are not an ownership security lock. This
+extension avoids that coupling rather than redeclaring base Kinds.
+
+From a reviewed full checkout, validate both recipe directories, inspect the structural selection,
+then install explicitly into your selected research bundle:
+
+```sh
+superbee recipe validate ./recipes/civic-records --json
+superbee recipe validate ./recipes/civic-research --json
+superbee recipe add ./recipes/civic-records --dir /explicit/private/research-bundle
+superbee recipe add ./recipes/civic-research --dir /explicit/private/research-bundle
+```
+
+For an existing base, inspect `superbee recipe evolve ./recipes/civic-records --dir <bundle> --json`.
+If it reports missing definitions, ordinary recipe add creates only missing assets and preserves
+existing definitions, then re-plan evolve. Apply only the current returned token after inspecting
+changes and affected instances. The prototype does not auto-apply upgrades. A customized base can
+stay intact while the disjoint add-on installs; matching structural compatibility is still a separate
+question and may correctly refuse on observed local adaptation.
+
+Resident-facing use reuses the existing Civic Finding editorial/freshness fields plus the add-on's
+handoff reference. Source adapters, research relationships and Here & Main contribution/review/release
+remain distinct interfaces. No new editorial Kind or publication permission was invented for a demo.

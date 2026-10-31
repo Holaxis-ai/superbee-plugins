@@ -1,0 +1,11 @@
+{
+  "id": "civic-research-prototype",
+  "owner": "research",
+  "requirements": [
+    {"id":"evidence","provider":"base","kind":"Civic Evidence","required":true,"fields":["source_url","capture_format","capture_note","observed_at"]},
+    {"id":"record","provider":"base","kind":"Civic Record","required":true,"fields":["jurisdiction_key","content_sha256","meeting_date"]},
+    {"id":"matter","provider":"research","kind":"Civic Matter","required":true,"fields":["identity_status","identity_basis","scope_note"]},
+    {"id":"observation","provider":"research","kind":"Civic Observation","required":true,"fields":["statement","evidence_id","evidence_locator","verification_state"],"links":[{"label":"web evidence","target":{"provider":"base","kind":"Civic Evidence"}}]},
+    {"id":"connection","provider":"research","kind":"Civic Connection","required":true,"fields":["relation_type","identity_scope_status","review_status"]}
+  ]
+}
