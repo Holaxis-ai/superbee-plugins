@@ -50,6 +50,9 @@ test('hosted-selection double: native local stages remain unconfirmed, repeat sa
   const preview=await invoke('capture',['--manifest',manifest]);assert.equal(preview.hostedConfirmed,0);assert.deepEqual(preview.results.map(r=>r.outcome),['would-stage','would-stage']);
   const staged=await invoke('capture',['--manifest',manifest],{apply:true});assert.equal(staged.stagedLocal,2);assert.equal(staged.hostedConfirmed,0);assert.equal(staged.needsNativeSync,true);
   const repeated=await invoke('capture',['--manifest',manifest],{apply:true});assert.equal(repeated.stagedLocal,0);assert.equal(repeated.matchingLocal,2);assert.deepEqual(repeated.results.map(r=>r.localVersion),staged.results.map(r=>r.localVersion));
+  const laterEntries=[];for(const entry of entries){const pdfFile=path.join(scratch,'later-'+entry.documentId+'.pdf');await writeFile(pdfFile,await readFile(entry.pdfFile));laterEntries.push({...entry,pdfFile,capturedAt:'2026-01-09T00:00:00.000Z'});}
+  const laterManifest=path.join(scratch,'later-captures.json');await writeFile(laterManifest,JSON.stringify({...manifestValue,entries:laterEntries}));
+  const laterCapture=await invoke('capture',['--manifest',laterManifest],{apply:true});assert.equal(laterCapture.stagedLocal,0);assert.deepEqual(laterCapture.results.map(r=>r.localVersion),staged.results.map(r=>r.localVersion));
   for(let i=0;i<entries.length;i++){
    const actual=await native(['doc','read',staged.results[i].id,'--offset','0']);assert.equal(actual.evidence_path,entries[i].pdfFile);assert.equal(actual.id,captureProjection(entries[i],source).id);
   }
@@ -57,6 +60,7 @@ test('hosted-selection double: native local stages remain unconfirmed, repeat sa
   const textArgs=['--derived-at','2026-01-04T00:00:00.000Z',...preparedFiles.flatMap(file=>['--prepared',file])];
   const textStage=await invoke('text',textArgs,{apply:true});assert.equal(textStage.stagedLocal,2);assert.equal(textStage.hostedConfirmed,0);
   const textRepeat=await invoke('text',textArgs,{apply:true});assert.equal(textRepeat.stagedLocal,0);assert.equal(textRepeat.matchingLocal,2);assert.deepEqual(textRepeat.results.map(r=>r.localVersion),textStage.results.map(r=>r.localVersion));
+  const laterText=await invoke('text',textArgs.map(x=>x==='2026-01-04T00:00:00.000Z'?'2026-01-09T00:00:00.000Z':x),{apply:true});assert.equal(laterText.stagedLocal,0);assert.deepEqual(laterText.results.map(r=>r.localVersion),textStage.results.map(r=>r.localVersion));
   const textId=textStage.results[0].id,record=await native(['doc','read',preparedValues[0].recordId,'--offset','0']),current=await native(['doc','read',textId,'--offset','0']);
   assert.equal(current.access_scope,'private-research');assert.match(current.extraction_note,/Prepared source scope: local-private-research/);assert.equal(current.extraction_association,'caller_asserted');assert.equal(current.extractor_execution,'not_observed');assert.notEqual(textId,projection(preparedValues[0],record,'2026-01-04T00:00:00.000Z').id);
   assert.equal((await native(['doc','read',legacyId,'--offset','0'])).head_version,legacyBefore.head_version);

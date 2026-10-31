@@ -8,8 +8,8 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {buildKindRegistry,validateAgainstKind} from '@superbee/core/kinds';
-import {projection,nativeCli} from './import-prepared.mjs';
-import {captureProjection} from './register-captured.mjs';
+import {projection,nativeCli,existingTextMatches} from './import-prepared.mjs';
+import {captureProjection,existingCaptureMatches} from './register-captured.mjs';
 const fail=code=>{throw Error(code);};
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
@@ -75,10 +75,11 @@ export async function stageHosted(config){
   const definition=kindDefinition(kind,mode==='capture'?'Civic Record':'Civic Text',mode==='capture'?'civic-records/':'civic-texts/');
   if(mode==='text'&&(!Array.isArray(kind.fields?.values?.access_scope)||!kind.fields.values.access_scope.includes('private-research')))fail('CIVIC_HOSTED_RECIPE_UPGRADE_REQUIRED');
   const proposals=[],seen=new Set();
+  const existingMatches=mode==='capture'?existingCaptureMatches:existingTextMatches;
   const add=async(wanted,source)=>{
    if(seen.has(wanted.id))fail('CIVIC_DUPLICATE');seen.add(wanted.id);
    if(validateAgainstKind({id:wanted.id,frontmatter:{type:wanted.type,...wanted.fields},body:wanted.body},definition).length)fail('CIVIC_HOSTED_KIND_INVALID');
-   const existing=await read(wanted.id);if(existing&&!same(existing,wanted))fail('CIVIC_EXISTING_CONFLICT');
+   const existing=await read(wanted.id);if(existing&&!existingMatches(existing,wanted))fail('CIVIC_EXISTING_CONFLICT');
    proposals.push({wanted,source,existing});
   };
   if(mode==='capture'){
@@ -107,7 +108,7 @@ export async function stageHosted(config){
   for(const {wanted,source}of proposals){
    await target.check();if(!await read(source.id,source.head_version)||!await read(kind.id,kind.head_version))fail('CIVIC_PREREQUISITE_CHANGED');
    const current=await read(wanted.id);
-   if(current){if(!same(current,wanted))fail('CIVIC_EXISTING_CONFLICT');receipt.results.push({id:wanted.id,outcome:'locally-matching',localVersion:current.head_version});receipt.matchingLocal++;continue;}
+   if(current){if(!existingMatches(current,wanted))fail('CIVIC_EXISTING_CONFLICT');receipt.results.push({id:wanted.id,outcome:'locally-matching',localVersion:current.head_version});receipt.matchingLocal++;continue;}
    const bodyFile=path.join(temp,'body.md');await writeFile(bodyFile,wanted.body,{mode:0o600});
    await target.check();receipt.results.push({id:wanted.id,outcome:'stage-outcome-unknown'});
    const result=native.call(['new',wanted.type,wanted.id,...Object.entries(wanted.fields).map(([key,value])=>`--${key}=${value}`),'--body-file',bodyFile,'--actor',actor]);

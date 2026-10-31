@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {mkdir,writeFile,readFile,symlink,link} from 'node:fs/promises';import path from 'node:path';import {fileURLToPath,pathToFileURL} from 'node:url';import {createHash} from 'node:crypto';
+import {mkdir,writeFile,readFile,symlink,link,copyFile} from 'node:fs/promises';import path from 'node:path';import {fileURLToPath,pathToFileURL} from 'node:url';import {createHash} from 'node:crypto';
 import {createWorkspace,isolatedEnvironment,runProcess} from './vendor/package-verification/src/harness.mjs';
 import {prepareCapturedText} from '../integrations/civic-records/src/operation.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),sha=x=>createHash('sha256').update(x).digest('hex');
@@ -29,7 +29,7 @@ test('finite capture registrar: installed public CLI, revisions, conflicts, unce
   const resumed=await invoke([firstEntry,secondEntry],{apply:true});assert.equal(resumed.created,1);assert.equal(resumed.unchanged,1);
   assert.equal((await invoke([firstEntry,secondEntry],{apply:true})).unchanged,2);assert.equal((await native(['doc','read',id])).head_version,before.head_version);
   // Same bytes retain the first materialization time: a new observation is not another source revision.
-  const later={...firstEntry,capturedAt:'2026-01-04T00:00:00.000Z'};assert.equal((await invoke([later],{apply:true,expected:1})).error,'CIVIC_EXISTING_CONFLICT');
+  const laterFile=path.join(scratch,'later-same-bytes.pdf');await copyFile(firstEntry.pdfFile,laterFile);const later={...firstEntry,pdfFile:laterFile,capturedAt:'2026-01-04T00:00:00.000Z'};assert.equal((await invoke([later],{apply:true})).unchanged,1);const retained=await native(['doc','read',id]);assert.equal(retained.head_version,before.head_version);assert.equal(retained.observed_at,firstEntry.capturedAt);assert.equal(retained.evidence_path,firstEntry.pdfFile);
   const changed=await make(1,'%PDF-1.4\nSYNTHETIC changed bytes same provider URL\n');const revised=await invoke([changed],{apply:true});assert.equal(revised.created,1);assert.notEqual(revised.results[0].id,id);assert.equal((await native(['doc','read',id])).head_version,before.head_version);
   await native(['doc','update',id,'--description=Human unowned note','--actor=human:synthetic-reviewer']);assert.equal((await invoke([firstEntry],{apply:true})).unchanged,1);assert.equal((await native(['doc','read',id])).description,'Human unowned note');
   await native(['doc','update',id,'--title=Human correction','--actor=human:synthetic-reviewer']);assert.equal((await invoke([firstEntry],{apply:true,expected:1})).error,'CIVIC_EXISTING_CONFLICT');assert.equal((await native(['doc','read',id])).title,'Human correction');
@@ -58,7 +58,7 @@ test('finite capture registrar: installed public CLI, revisions, conflicts, unce
   const basis={v:1,jurisdictionKey:'synthetic-town',documentId:changed.documentId,recordId,sourceUrl:changed.sourceUrl,pdfSha256:changed.pdfSha256,textSha256:sha(text),expectedPages:1,extractionLabel:'synthetic caller text; no converter'};await writeFile(textFile,text);await writeFile(basisFile,JSON.stringify(basis));
   const prepared=await prepareCapturedText({pdf:{path:changed.pdfFile,sha256:'sha256:'+changed.pdfSha256},text:{path:textFile,sha256:'sha256:'+sha(text)},basis:{path:basisFile,sha256:'sha256:'+sha(JSON.stringify(basis))}},{});assert.equal(prepared.extractionAssociation,'caller_asserted');assert.equal(prepared.extractorExecution,'not_observed');
   const preparedFile=path.join(scratch,'prepared.json');await writeFile(preparedFile,JSON.stringify(prepared));const importArgs=[path.join(root,'examples/civic-records/import-prepared.mjs'),'--cli',cli,'--bundle',bundle,'--actor','process:civic-capture-test','--derived-at','2026-01-05T00:00:00.000Z','--prepared',preparedFile,'--apply'];
-  assert.equal(JSON.parse((await run(process.execPath,importArgs)).stdout).created,1);assert.equal(JSON.parse((await run(process.execPath,importArgs)).stdout).unchanged,1);
+  const imported=JSON.parse((await run(process.execPath,importArgs)).stdout);assert.equal(imported.created,1);const textBefore=await native(['doc','read',imported.results[0].id]);assert.equal(JSON.parse((await run(process.execPath,importArgs.map(x=>x==='2026-01-05T00:00:00.000Z'?'2026-01-06T00:00:00.000Z':x))).stdout).unchanged,1);assert.equal((await native(['doc','read',imported.results[0].id])).head_version,textBefore.head_version);
   t.diagnostic('CLIpre6 installed from public npm; immutable byte revisions and first-capture metadata; synthetic local-only files, no provider access.');
  }finally{await workspace.close();}
 });
