@@ -1,8 +1,20 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {mkdir,writeFile,readFile,cp} from 'node:fs/promises';import path from 'node:path';import {fileURLToPath} from 'node:url';import {createHash} from 'node:crypto';
+import {mkdir,writeFile,readFile,cp,symlink} from 'node:fs/promises';import path from 'node:path';import {fileURLToPath,pathToFileURL} from 'node:url';import {createHash} from 'node:crypto';
 import {createWorkspace,isolatedEnvironment,runProcess} from './vendor/package-verification/src/harness.mjs';
 import {prepareCapturedText} from '../integrations/civic-records/src/operation.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),sha=x=>createHash('sha256').update(x).digest('hex');
+test('civic importer executes through ancestor aliases but imported modules stay inert',async()=>{
+ const workspace=await createWorkspace(),scratch=workspace.root,home=path.join(scratch,'home');await mkdir(home);
+ const env=isolatedEnvironment({home,values:{PATH:path.dirname(process.execPath)}});
+ const run=(args,expected=0)=>runProcess(process.execPath,args,{cwd:scratch,env,expected});
+ try{
+  const aliasRoot=path.join(scratch,'source-alias');await symlink(root,aliasRoot,'dir');
+  const aliasImporter=path.join(aliasRoot,'examples/civic-records/import-prepared.mjs');
+  const invalid=JSON.parse((await run([aliasImporter,'--unknown'],1)).stdout);assert.equal(invalid.error,'CIVIC_ARGUMENTS');
+  const importOnly=path.join(scratch,'import-only.mjs');await writeFile(importOnly,`import ${JSON.stringify(pathToFileURL(aliasImporter).href)};process.stdout.write('import-safe');\n`);
+  assert.equal((await run([importOnly,'--unknown'])).stdout,'import-safe');
+ }finally{await workspace.close();}
+});
 test('local civic importer: installed public CLI, no-op, concurrent human edits, partial restart and uncertain acknowledgement',async t=>{
  const workspace=await createWorkspace(),scratch=workspace.root,home=path.join(scratch,'home');await mkdir(home);
  const env=isolatedEnvironment({home,values:{PATH:path.dirname(process.execPath)}});
@@ -42,6 +54,18 @@ test('local civic importer: installed public CLI, no-op, concurrent human edits,
   const wrapper=path.join(scratch,'lost-ack.mjs');await writeFile(wrapper,`#!${process.execPath}\nimport{spawnSync}from'node:child_process';const args=process.argv.slice(2);const r=spawnSync(${JSON.stringify(cli)},args,{encoding:'utf8'});if(args[0]==='new'&&r.status===0){process.exit(1);}process.stdout.write(r.stdout);process.stderr.write(r.stderr);process.exit(r.status??1);\n`,{mode:0o700});
   const lost=await invoke([revised],{apply:true,expected:1,executable:wrapper});assert.equal(lost.error,'CIVIC_CREATE_STOPPED');assert.equal(lost.results[0].outcome,'refused-or-unknown');
   const reconciled=await invoke([revised],{apply:true});assert.equal(reconciled.created,0);assert.equal(reconciled.unchanged,1);
+  // A matching readback cannot turn malformed success JSON into a confirmed create.
+  for(const [name,mutate]of [['null','null'],['object','{}'],['array','[]'],['id',"({...JSON.parse(r.stdout),id:'civic-texts/other'})"],['type',"({...JSON.parse(r.stdout),type:'Civic Record'})"],['version',"({...JSON.parse(r.stdout),version:''})"],['new',"({...JSON.parse(r.stdout),new:'other'})"]]){
+   const candidate={...changed,extractionLabel:changed.extractionLabel+' bad-ack-'+name},input=path.join(scratch,`bad-ack-${name}.json`);await writeFile(input,JSON.stringify(candidate));
+   const wrapper=path.join(scratch,`bad-ack-${name}.mjs`);await writeFile(wrapper,`#!${process.execPath}\nimport{spawnSync}from'node:child_process';const args=process.argv.slice(2);const r=spawnSync(${JSON.stringify(cli)},args,{encoding:'utf8'});process.stdout.write(args[0]==='new'&&r.status===0?JSON.stringify(${mutate}):r.stdout);process.stderr.write(r.stderr);process.exit(r.status??1);\n`,{mode:0o700});
+   const invalid=await invoke([input],{apply:true,expected:1,executable:wrapper});assert.equal(invalid.error,'CIVIC_NATIVE_RECEIPT_UNKNOWN');assert.equal(invalid.created,0);assert.equal(invalid.results[0].outcome,'create-outcome-unknown');
+   const recovered=await invoke([input],{apply:true});assert.equal(recovered.created,0);assert.equal(recovered.unchanged,1);
+  }
+  // A well-shaped acknowledgement still must bind the exact readback version.
+  const versionInput=path.join(scratch,'wrong-version.json');await writeFile(versionInput,JSON.stringify({...changed,extractionLabel:changed.extractionLabel+' wrong-version'}));
+  const versionWrapper=path.join(scratch,'wrong-version.mjs');await writeFile(versionWrapper,`#!${process.execPath}\nimport{spawnSync}from'node:child_process';const args=process.argv.slice(2);const r=spawnSync(${JSON.stringify(cli)},args,{encoding:'utf8'});process.stdout.write(args[0]==='new'&&r.status===0?JSON.stringify({...JSON.parse(r.stdout),version:'sha256:'+ '0'.repeat(64)}):r.stdout);process.stderr.write(r.stderr);process.exit(r.status??1);\n`,{mode:0o700});
+  const wrongVersion=await invoke([versionInput],{apply:true,expected:1,executable:versionWrapper});assert.equal(wrongVersion.error,'CIVIC_READBACK_CONFLICT');assert.equal(wrongVersion.created,0);assert.equal(wrongVersion.results[0].outcome,'created-unconfirmed');
+  assert.equal((await invoke([versionInput],{apply:true})).unchanged,1);
   // A second document is fully validated before the first could be written.
   changed.extractionLabel+=' invalid';const fresh=path.join(scratch,'fresh.json');await writeFile(fresh,JSON.stringify(changed));const broken=path.join(scratch,'broken.json');await writeFile(broken,'{}');
   const preflight=await invoke([fresh,broken],{apply:true,expected:1});assert.equal(preflight.created,0);assert.equal((await invoke([fresh])).results[0].outcome,'would-create');
