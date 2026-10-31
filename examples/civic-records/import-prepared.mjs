@@ -22,8 +22,8 @@ export function projection(p,record,derivedAt){
  if(record.id!==p.recordId||record.type!=='Civic Record'||record.jurisdiction_key!==p.jurisdictionKey||record.provider_document_id!==p.documentId||record.content_sha256!==p.pdfSha256||record.source_url!==p.sourceUrl||record.page_count!==p.pageCount||!string(record.title,500))fail('CIVIC_SOURCE_RECORD_MISMATCH');
  if(!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(derivedAt)||new Date(derivedAt).toISOString()!==derivedAt)fail('CIVIC_DERIVED_AT');
  // Domain-specific, unambiguous newline framing (all variable strings exclude controls), not a shared JSON canonicalizer.
- const basis=['civic-import-v1',p.recordId,p.pdfSha256,p.textSha256,p.markdownSha256,p.extractionLabel].join('\n');
- return {id:'civic-texts/import-v1-'+hash(basis),type:'Civic Text',fields:{title:record.title+' — supplied complete text',jurisdiction_key:p.jurisdictionKey,source_record_id:p.recordId,source_url:p.sourceUrl,source_content_sha256:p.pdfSha256,extraction_version:p.formatVersion,text_sha256:p.markdownSha256,page_count:p.pageCount,derived_at:derivedAt,access_scope:p.accessScope,extraction_note:`Caller-asserted PDF/text association; converter execution not observed. Supplied label: ${p.extractionLabel}. Input text SHA256: ${p.textSha256}.`},body:p.markdown};
+ const basis=['civic-import-v2',p.recordId,p.pdfSha256,p.textSha256,p.markdownSha256,p.extractionLabel].join('\n');
+ return {id:'civic-texts/import-v2-'+hash(basis),type:'Civic Text',fields:{title:record.title+' — supplied complete text',jurisdiction_key:p.jurisdictionKey,source_record_id:p.recordId,source_url:p.sourceUrl,source_content_sha256:p.pdfSha256,extraction_version:p.formatVersion,formatter_version:p.formatVersion,input_text_sha256:p.textSha256,extraction_association:p.extractionAssociation,extractor_execution:p.extractorExecution,text_sha256:p.markdownSha256,page_count:p.pageCount,derived_at:derivedAt,access_scope:p.accessScope,extraction_note:`Caller-asserted PDF/text association; converter execution not observed. Supplied label: ${p.extractionLabel}. Input text SHA256: ${p.textSha256}.`},body:p.markdown};
 }
 function matches(actual,wanted){return actual.type===wanted.type&&actual.body===wanted.body&&Object.entries(wanted.fields).every(([k,v])=>actual[k]===v);}
 export function nativeCli(cli,bundle){
@@ -44,7 +44,7 @@ export function nativeCli(cli,bundle){
  }};
 }
 export async function importPrepared({cli='superbee',bundle,files,derivedAt,actor,apply=false}){
- const receipt={schema:'civic-local-import/v1',scope:'local-only; no sync or publication',apply,results:[],created:0,unchanged:0};
+ const receipt={schema:'civic-local-import/v2',scope:'local-only; no sync or publication',apply,results:[],created:0,unchanged:0};
  let temp;
  try{
   if(!path.isAbsolute(bundle)||!Array.isArray(files)||files.length<1||files.length>10||!string(actor,200)||!/^process:[a-zA-Z0-9._-]+$/.test(actor))fail('CIVIC_IMPORT_SELECTION');
@@ -58,6 +58,8 @@ export async function importPrepared({cli='superbee',bundle,files,derivedAt,acto
   };
   await local();
   const kind=await native.read('conventions/civic-text');if(kind?.governs!=='Civic Text'||kind.path!=='civic-texts/')fail('CIVIC_KIND_REQUIRED');
+  const declared=new Set([...(kind.fields?.required??[]),...(kind.fields?.optional??[])]);
+  if(!['formatter_version','input_text_sha256','extraction_association','extractor_execution'].every(k=>declared.has(k)))fail('CIVIC_RECIPE_UPGRADE_REQUIRED');
   const proposals=[],seen=new Set();
   for(const file of files){
    const stat=await lstat(file);if(!stat.isFile()||stat.nlink!==1||stat.size>70000)fail('CIVIC_INPUT_FILE');
