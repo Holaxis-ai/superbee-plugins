@@ -1,6 +1,8 @@
 # Civic records: experimental captured-text plugin
 
-Status: learning prototype, not an admitted eCode360 crawler or public publisher. The canonical
+Status: explicit captured-input processing, not an admitted eCode360 crawler or public publisher.
+[Captured listing discovery and native PDF extraction](CAPTURE.md) add two separately bound local
+capabilities. The existing supplied-text operation below retains its original contract. The canonical
 [`Civic Records` recipe](../../recipes/civic-records) is source-neutral and municipality-neutral.
 The local operation `local.civic.prepare-text.v1` prepares page-linked Markdown from a deliberately
 selected PDF, its supplied extracted text, and a closed association basis. It creates no records,
@@ -78,7 +80,7 @@ local records whose data never enters this public repository. Search for somethi
 initial summary; compare page-level text and rendered originals. Track failures and effort, not
 just document counts. See [the experiment plan](../../examples/civic-records/README.md).
 
-A concrete current friction is Poppler `pdftotext -v`: the public binder currently admits only
-`--version` or `-version` probes. This adapter deliberately avoids bypassing tool identity by
-spawning an unbound converter. It consumes already captured text. Whether to extend the owning
-public tool contract or use another properly bound converter is a future measured decision.
+Poppler's explicit `-v`/stderr binding is now supported by the public CLI and exercised by the
+new extraction capability. See [CAPTURE.md](CAPTURE.md) for finite inputs, native execution evidence,
+refusals and composition with the existing formatter/importer. Provider fetching and managed
+execution still require the caller's existing transport and authority.

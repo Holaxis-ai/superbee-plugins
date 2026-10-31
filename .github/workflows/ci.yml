@@ -32,7 +32,7 @@ jobs:
       - name: Provision native synthetic media test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes ffmpeg python3-venv
+          sudo apt-get install --yes ffmpeg python3-venv poppler-utils
           python3 -m venv --copies "$RUNNER_TEMP/blender-media-python"
           "$RUNNER_TEMP/blender-media-python/bin/python" -I -m pip install Pillow==11.3.0
           echo "SUPERBEE_TEST_PYTHON=$RUNNER_TEMP/blender-media-python/bin/python" >> "$GITHUB_ENV"

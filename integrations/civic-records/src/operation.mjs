@@ -1,5 +1,6 @@
 /** Experimental captured-PDF/text preparation. No network, tool execution or bundle mutation. */
 import {readFile,lstat} from 'node:fs/promises';
+import {discoveryDescriptor,extractionDescriptor,discoverCapturedPdfs,extractCapturedPdf} from './capture.mjs';
 import {createHash} from 'node:crypto';
 export const FORMAT='civic-layout-markdown-v1';
 const sha=b=>createHash('sha256').update(b).digest('hex');
@@ -48,9 +49,9 @@ export async function prepareCapturedText(resources,input,{signal}={}){
  signal?.throwIfAborted();
  return {schema:'civic-prepared-text/v1',formatVersion:FORMAT,jurisdictionKey:basis.jurisdictionKey,documentId:basis.documentId,recordId:basis.recordId,sourceUrl:basis.sourceUrl,pdfSha256:basis.pdfSha256,textSha256:basis.textSha256,markdownSha256:sha(markdown),pageCount:pages.length,extractionLabel:basis.extractionLabel,extractionAssociation:'caller_asserted',extractorExecution:'not_observed',accessScope:'local-private-research',markdown};
 }
-export function createLocalCapabilities({port,resources}){
+export function createLocalCapabilities({port,resources,invocation}){
  return [{...descriptor,execute:async(input,context)=>{
   const prepared=await prepareCapturedText(resources,input,context);await port.writeJson('prepared-civic-text.json',prepared);
   return {formatVersion:FORMAT,pageCount:prepared.pageCount,pdfSha256:prepared.pdfSha256,textSha256:prepared.textSha256,markdownSha256:prepared.markdownSha256,extractionAssociation:prepared.extractionAssociation,extractorExecution:prepared.extractorExecution,outputs:[{role:'prepared',path:'prepared-civic-text.json',mimeType:'application/json'}]};
- }}];
+ }}, {...discoveryDescriptor,execute:async(input,context)=>{const value=await discoverCapturedPdfs(resources,input,context);await port.writeJson('discovered-pdfs.json',value);return {observedCandidates:value.observedCandidates,coverage:value.coverage,outputs:[{role:'discovery',path:'discovered-pdfs.json',mimeType:'application/json'}]};}}, {...extractionDescriptor,execute:(input,context)=>extractCapturedPdf({port,resources,invocation},input,context)}];
 }
