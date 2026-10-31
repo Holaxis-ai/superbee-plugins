@@ -9,7 +9,7 @@ fetches no provider, executes no converter and makes no approval or official-aut
 This is an actual native local-operation package, not a `SourceProfile` disguised as one. The
 source engine observes and overlays deliberately linked targets; it is not a full-document mirror
 or record creator. Keep Core's parser, snapshot admission, transport, credentials and reconciliation
-out of this repository's adapter. Future source discovery/conversion/import remain separate work.
+out of this repository's adapter. Source discovery/conversion remain separate work. A separate [local importer experiment](../../examples/civic-records/README.md#local-importer-experiment) now projects prepared exports through native create-only commands; the registered operation itself still performs no bundle writes.
 
 ## Compatibility and acquisition
 
