@@ -18,7 +18,9 @@ From this repository's reviewed checkout, explicitly install the example's pinne
 public dependency. This is separate from recipe installation:
 
 ```sh
-npm ci --prefix examples/recipe-preflight --ignore-scripts --no-audit --no-fund
+cd examples/recipe-preflight
+npm ci --ignore-scripts --no-audit --no-fund
+cd ../..
 node examples/recipe-preflight/check.mjs \
   --plan examples/recipe-preflight/place-plan.json \
   --bundle /absolute/path/to/a/selected/bundle
