@@ -118,7 +118,7 @@ Bind `listing` (captured JSON, at most 4MiB/10000 rows) and `basis`, with no too
 These are synthetic instance values. Another municipality and document type supply their own
 observed identifiers/title; the recipe has no Fairport defaults. The captured type/customer and
 selected category must match. Only explicit public, uncorrupted `DOCUMENT` records with original
-and served PDF extensions, no external URL, and a valid declared meeting date in the selected year
+and served PDF extensions, no external URL, and a valid provider date in the selected year (date role remains unknown)
 are projected. Private/unknown visibility, undated records, other formats and linked external files
 are deliberately excluded. No approval, creator identity, contacts or document interpretation is
 projected. Category/type titles and dates remain provider metadata, not independent verification.

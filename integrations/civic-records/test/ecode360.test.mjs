@@ -10,3 +10,13 @@ test('same captured ID with inconsistent metadata refuses; matching repeats dedu
 test('non-finite identifiers and wrong source URL/extra settings refuse',async t=>{await assert.rejects(discoverEcode360(await input(t,[row(-1,'2030-01-01')]),{}),/CIVIC_ECODE_RECORD/);for(const b of [{...basis,listingUrl:'https://ecode360.com/api/YY0002/pub-doc/type/12'},{...basis,registryUrl:'https://user:pass@ecode360.com/ZZ0001/documents/Minutes'},{...basis,maxDocuments:101}])await assert.rejects(discoverEcode360(await input(t,[],b),{}),/CIVIC_ECODE_/);await assert.rejects(discoverEcode360(await input(t,[]),{fetch:true}),/CIVIC_ECODE_ARGUMENTS/);});
 test('provider profile extends to a second municipality/document type without instance defaults',async t=>{const b={...basis,jurisdictionCode:'YY0002',typeTitle:'Agendas',typeId:56,categoryId:78,registryUrl:'https://ecode360.com/YY0002/documents/Agendas',listingUrl:'https://ecode360.com/api/YY0002/pub-doc/type/56'};const r=row(123,'2030-01-01',{categoryId:78,category:{...row(1).category,id:78,custId:'YY0002',typeId:56,typeTitle:'Agendas'}});assert.equal((await discoverEcode360(await input(t,[r],b),{})).candidates[0].sourceUrl,'https://ecode360.com/YY0002/document/123.pdf');});
 test('source policy and new capability are inert until explicit execution',async()=>{const caps=createLocalCapabilities({});assert.deepEqual(caps.find(c=>c.name===ecodeDescriptor.name).inputSchema,ecodeDescriptor.inputSchema);});
+
+test('conflicting visibility, eligibility or provider dates refuse in either row order',async t=>{
+ const original=row(1,'2030-01-01');
+ for(const changed of [{private:true},{corrupt:true},{date:'2029-01-01'},{url:'https://elsewhere.test/x.pdf'},{extension:'docx'},{category:{...original.category,private:true}}]){
+  const conflicting={...original,...changed};
+  for(const rows of [[original,conflicting],[conflicting,original]])await assert.rejects(discoverEcode360(await input(t,rows),{}),/CIVIC_ECODE_DUPLICATE_CONFLICT/);
+ }
+ const candidate=(await discoverEcode360(await input(t,[original]),{})).candidates[0];
+ assert.equal(candidate.providerDate,'2030-01-01');assert.equal(candidate.dateRole,'unknown');assert.equal('meetingDate' in candidate,false);
+});

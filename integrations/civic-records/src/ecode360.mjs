@@ -16,19 +16,25 @@ export async function discoverEcode360(resources,input,{signal}={}){
  const raw=await readCapturedBytes(resources.listing,4*1024*1024);let list;
  try{list=JSON.parse(capturedUtf8(raw));}catch(e){if(e.message?.startsWith('CIVIC_'))throw e;fail('CIVIC_ECODE_JSON');}
  if(!obj(list)||!Array.isArray(list.documents)||list.documents.length>10000||!obj(list.type)||list.type.id!==b.typeId||list.type.custId!==b.jurisdictionCode||list.type.title!==b.typeTitle)fail('CIVIC_ECODE_RESPONSE');
- const selected=new Map();let observedPublicPdfs=0;
+ const selected=new Map(),observed=new Map();let observedPublicPdfs=0;
  for(const row of list.documents){
   if(!obj(row)||row.categoryId!==b.categoryId)continue;
   if(!obj(row.category)||row.category.id!==b.categoryId||row.category.custId!==b.jurisdictionCode||row.category.typeId!==b.typeId||row.category.typeTitle!==b.typeTitle||!text(row.category.title,200))fail('CIVIC_ECODE_CATEGORY_SCOPE');
+  // Compare source-relevant metadata before filtering: a private or out-of-year repeat
+  // must not silently leave an earlier public row eligible. Never project private fields.
+  if(!positive(row.id))fail('CIVIC_ECODE_RECORD');
+  const identity=JSON.stringify([row.title,row.date,row.private,row.category.private,row.corrupt,row.type,row.origExtension,row.extension,row.url,row.category.title]);
+  if(observed.has(row.id)&&observed.get(row.id)!==identity)fail('CIVIC_ECODE_DUPLICATE_CONFLICT');
+  observed.set(row.id,identity);
   if(row.private!==false||row.category.private!==false||row.corrupt!==false||row.type!=='DOCUMENT'||row.origExtension!=='pdf'||row.extension!=='pdf'||row.url!==null)continue;
   if(!positive(row.id)||!text(row.title,500))fail('CIVIC_ECODE_RECORD');
   if(typeof row.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(row.date)||!Number.isFinite(Date.parse(row.date+'T00:00:00.000Z'))||new Date(row.date+'T00:00:00.000Z').toISOString().slice(0,10)!==row.date)continue;
   observedPublicPdfs++;
   if(Number(row.date.slice(0,4))!==b.year)continue;
-  const candidate={sourceUrl:`https://ecode360.com/${b.jurisdictionCode}/document/${row.id}.pdf`,documentId:String(row.id),label:row.title,meetingDate:row.date,categoryId:b.categoryId,categoryTitle:row.category.title};
+  const candidate={sourceUrl:`https://ecode360.com/${b.jurisdictionCode}/document/${row.id}.pdf`,documentId:String(row.id),label:row.title,providerDate:row.date,dateRole:'unknown',categoryId:b.categoryId,categoryTitle:row.category.title};
   if(selected.has(row.id)&&JSON.stringify(selected.get(row.id))!==JSON.stringify(candidate))fail('CIVIC_ECODE_DUPLICATE_CONFLICT');selected.set(row.id,candidate);
  }
- const candidates=[...selected.values()].sort((a,b)=>b.meetingDate.localeCompare(a.meetingDate,'en')||a.documentId.localeCompare(b.documentId,'en'));
+ const candidates=[...selected.values()].sort((a,b)=>b.providerDate.localeCompare(a.providerDate,'en')||a.documentId.localeCompare(b.documentId,'en'));
  signal?.throwIfAborted();
  return {schema:'civic-discovered-pdfs/v1',provider:'ecode360',registryUrl:b.registryUrl,listingUrl:b.listingUrl,listingSha256:createHash('sha256').update(raw).digest('hex'),selection:{jurisdictionCode:b.jurisdictionCode,typeId:b.typeId,categoryId:b.categoryId,year:b.year},coverage:'selected-only-unknown-tail',httpObservation:'not_observed',observedRows:list.documents.length,observedPublicPdfs,observedCandidates:candidates.length,truncated:candidates.length>b.maxDocuments,candidates:candidates.slice(0,b.maxDocuments),deletionInference:false};
 }
