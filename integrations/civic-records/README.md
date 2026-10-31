@@ -1,7 +1,7 @@
 # Civic records: experimental captured-text plugin
 
 Status: explicit captured-input processing, not an admitted eCode360 crawler or public publisher.
-[Captured listing discovery and native PDF extraction](CAPTURE.md) add two separately bound local
+[Captured listing discovery, native PDF extraction and undated Evidence](CAPTURE.md) add separately bound local
 capabilities. The existing supplied-text operation below retains its original contract. The canonical
 [`Civic Records` recipe](../../recipes/civic-records) is source-neutral and municipality-neutral.
 The local operation `local.civic.prepare-text.v1` prepares page-linked Markdown from a deliberately
