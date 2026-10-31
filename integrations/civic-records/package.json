@@ -1,0 +1,49 @@
+{
+  "name": "@superbee/integration-civic-records",
+  "version": "0.1.0-pre.1",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Experimental local captured civic PDF/text preparation; caller-associated evidence only",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "superbeeLocalOperations": {
+    "contract": 1,
+    "id": "civic-records",
+    "core": "0.2.0-pre.41",
+    "helper": 1,
+    "entry": "dist/operation.mjs",
+    "assets": [],
+    "operations": [
+      {
+        "id": "local.civic.prepare-text.v1",
+        "capability": {
+          "name": "civic_prepare_text",
+          "implementationId": "civic-prepare-text.v1",
+          "description": "Prepare page-linked Markdown from explicitly captured PDF and extracted text. Caller-associated extraction only; no PDF conversion, official-authenticity claim or publication.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "maximumOutputBytes": 65536
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "node --check src/operation.mjs",
+    "test": "node --test test/*.test.mjs",
+    "prepublishOnly": "node -e \"process.exit(1)\""
+  }
+}

@@ -22,9 +22,9 @@ test('private integration metadata retains optional compatibility and lockfile c
   assert.equal(root.devDependencies['@superbee/core'],undefined);
   assert.equal(lock.packages['node_modules/@superbee/core'],undefined,'npm ci must not require unpublished Core');
   for (const [name,row] of Object.entries(lock.packages)) {
-    if (row.link) assert.ok(['integrations/github','integrations/blender','integrations/verification'].includes(row.resolved));
+    if (row.link) assert.ok(['integrations/github','integrations/blender','integrations/verification','integrations/civic-records'].includes(row.resolved));
     else if (name.startsWith('node_modules/')) assert.match(row.resolved,/^https:\/\/registry\.npmjs\.org\//,'no local candidate paths in committed dependency sources');
-    else assert.ok(['', 'integrations/github', 'integrations/blender', 'integrations/verification'].includes(name),'only the intended plugin workspace belongs in the lockfile');
+    else assert.ok(['', 'integrations/github', 'integrations/blender', 'integrations/verification', 'integrations/civic-records'].includes(name),'only the intended plugin workspace belongs in the lockfile');
   }
   assert.deepEqual(lock.packages['integrations/github'].peerDependencies,pkg.peerDependencies);
   assert.deepEqual(lock.packages['integrations/github'].peerDependenciesMeta,pkg.peerDependenciesMeta);
@@ -41,4 +41,13 @@ test('Blender local operation retains exact Core compatibility',async () => {
 test('verification local operation retains exact Core compatibility',async () => {
   const verification = await readJson('../integrations/verification/package.json');
   assert.equal(verification.superbeeLocalOperations.core,'0.2.0-pre.41');
+});
+
+test('civic-records local operation retains private publication and exact Core compatibility',async()=>{
+  const civic=await readJson('../integrations/civic-records/package.json');
+  assert.equal(civic.private,true);
+  assert.equal(civic.superbeeLocalOperations.core,'0.2.0-pre.41');
+  assert.deepEqual(civic.superbeeLocalOperations.assets,[]);
+  assert.match(civic.scripts.prepublishOnly,/process\.exit\(1\)/);
+  assert.equal(civic.dependencies,undefined);
 });
