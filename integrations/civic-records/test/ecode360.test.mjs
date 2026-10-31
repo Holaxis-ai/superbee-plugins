@@ -13,7 +13,7 @@ test('source policy and new capability are inert until explicit execution',async
 
 test('conflicting visibility, eligibility or provider dates refuse in either row order',async t=>{
  const original=row(1,'2030-01-01');
- for(const changed of [{private:true},{corrupt:true},{date:'2029-01-01'},{url:'https://elsewhere.test/x.pdf'},{extension:'docx'},{category:{...original.category,private:true}}]){
+ for(const changed of [{private:true,categoryId:999},{categoryId:999},{private:true},{corrupt:true},{date:'2029-01-01'},{url:'https://elsewhere.test/x.pdf'},{extension:'docx'},{category:{...original.category,private:true}}]){
   const conflicting={...original,...changed};
   for(const rows of [[original,conflicting],[conflicting,original]])await assert.rejects(discoverEcode360(await input(t,rows),{}),/CIVIC_ECODE_DUPLICATE_CONFLICT/);
  }

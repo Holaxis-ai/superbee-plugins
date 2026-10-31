@@ -17,15 +17,17 @@ export async function discoverEcode360(resources,input,{signal}={}){
  try{list=JSON.parse(capturedUtf8(raw));}catch(e){if(e.message?.startsWith('CIVIC_'))throw e;fail('CIVIC_ECODE_JSON');}
  if(!obj(list)||!Array.isArray(list.documents)||list.documents.length>10000||!obj(list.type)||list.type.id!==b.typeId||list.type.custId!==b.jurisdictionCode||list.type.title!==b.typeTitle)fail('CIVIC_ECODE_RESPONSE');
  const selected=new Map(),observed=new Map();let observedPublicPdfs=0;
+ const selectedIds=new Set(list.documents.filter(row=>obj(row)&&row.categoryId===b.categoryId).map(row=>row.id));
  for(const row of list.documents){
-  if(!obj(row)||row.categoryId!==b.categoryId)continue;
-  if(!obj(row.category)||row.category.id!==b.categoryId||row.category.custId!==b.jurisdictionCode||row.category.typeId!==b.typeId||row.category.typeTitle!==b.typeTitle||!text(row.category.title,200))fail('CIVIC_ECODE_CATEGORY_SCOPE');
+  if(!obj(row)||!selectedIds.has(row.id))continue;
   // Compare source-relevant metadata before filtering: a private or out-of-year repeat
   // must not silently leave an earlier public row eligible. Never project private fields.
   if(!positive(row.id))fail('CIVIC_ECODE_RECORD');
-  const identity=JSON.stringify([row.title,row.date,row.private,row.category.private,row.corrupt,row.type,row.origExtension,row.extension,row.url,row.category.title]);
+  const identity=JSON.stringify([row.title,row.date,row.private,row.categoryId,row.category?.id,row.category?.custId,row.category?.typeId,row.category?.typeTitle,row.category?.private,row.corrupt,row.type,row.origExtension,row.extension,row.url,row.category?.title]);
   if(observed.has(row.id)&&observed.get(row.id)!==identity)fail('CIVIC_ECODE_DUPLICATE_CONFLICT');
   observed.set(row.id,identity);
+  if(row.categoryId!==b.categoryId)continue;
+  if(!obj(row.category)||row.category.id!==b.categoryId||row.category.custId!==b.jurisdictionCode||row.category.typeId!==b.typeId||row.category.typeTitle!==b.typeTitle||!text(row.category.title,200))fail('CIVIC_ECODE_CATEGORY_SCOPE');
   if(row.private!==false||row.category.private!==false||row.corrupt!==false||row.type!=='DOCUMENT'||row.origExtension!=='pdf'||row.extension!=='pdf'||row.url!==null)continue;
   if(!positive(row.id)||!text(row.title,500))fail('CIVIC_ECODE_RECORD');
   if(typeof row.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(row.date)||!Number.isFinite(Date.parse(row.date+'T00:00:00.000Z'))||new Date(row.date+'T00:00:00.000Z').toISOString().slice(0,10)!==row.date)continue;
