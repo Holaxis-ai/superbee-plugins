@@ -160,7 +160,7 @@ to a retained original becomes valid only after the caller's admitted native cus
 Undated staging requires public CLI `0.4.4-pre.11` for actual stored-MIME readback; earlier
 clients must refuse. The full reviewed Git checkout supplies `examples/civic-records/stage-evidence.mjs`, reusing public
 Core Kind validation and native CLI only. Its admitted target is one explicit original bound hosted
-checkout. The caller first retains the original at the prepared `civic-originals/<sha256>.pdf` key
+checkout. The caller first retains the original at the prepared `evidence/source-bytes/<sha256>.pdf` key
 with ordinary native `promote`, and records its actual acknowledgement. Hosted promotion requires
 the original file at that canonical checkout path; never move/copy/adopt the checkout binding.
 The stager itself does not retain bytes, sync or publish, and does not create a journal or retry.
@@ -195,3 +195,7 @@ claiming retained research. Machine authentication, scope, current serving, sync
 qualification are separate from local consumer doubles. Private labels and JSON hashes are not
 ACLs or authentication. H&M must use a distinct explicit Evidence-to-Signal adapter and the reviewed
 same-run handoff; never disguise Evidence as a Civic Record or weaken attended principal checks.
+
+The original-byte key follows the existing pilot custody convention, shared across sources.
+Existing originals keep their keys and bytes; this extension does not introduce a second blob
+namespace or migrate historical files.
