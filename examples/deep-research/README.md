@@ -113,3 +113,10 @@ shape/link controls. No executable adapter or provider access is part of the tes
 The examples are deliberately small. A real next investigation should assess new
 question recovery, citation relevance, repeat-work avoidance and maintenance cost
 against ordinary organized notes. Semantic validity still requires research review.
+
+## Check a selected local extension combination
+
+The optional [local preflight author example](preflight/README.md) collects explicit
+local definition snapshots for the existing public Core structural checker. It
+keeps consumer requirements authored, creates no research instances and is never
+run by recipe installation. Its dependency setup and scope are separate.

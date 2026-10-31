@@ -1,0 +1,9 @@
+{
+  "name": "deep-research-local-preflight-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Opt-in local evidence collection for the public recipe-set preflight",
+  "engines": {"node": ">=22.14.0"},
+  "dependencies": {"@superbee/core": "0.2.0-pre.41"}
+}
