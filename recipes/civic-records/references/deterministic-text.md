@@ -19,3 +19,12 @@ Full minutes include public commenters and sometimes home addresses. Unlike the 
 ## Packaged experiment boundary
 
 The repository's integrations/civic-records local operation is narrower than the original external PDF-conversion prototype: it consumes captured PDF + supplied extracted text + basis and exports prepared Markdown as JSON. No converter execution, document discovery, bundle mutation, search or automatic insight extraction happens inside this plugin. PDF/text association is caller_asserted and extractor execution is not_observed. This is deliberately weaker provenance than a separately observed conversion. See the integration README and synthetic consumer experiment; do not infer one from the other.
+
+
+## Explicit hosted staging
+
+The base recipe0.5.0-pre.1 adds private-research as intended audience metadata, not an ACL, grant or confidentiality proof. Preserve historical local-private-research values unchanged. The supplied-text operation still emits its local-private-research processing contract, caller_asserted association and not_observed converter execution.
+
+The separate civic hosted staging caller maps an explicitly selected prepared export into the private-research audience under a distinct import-hosted-v1 immutable identity. It stages through native strict create/read verbs in an already-bound selected checkout; local matching or staging is never remote commitment. The operator uses ordinary native sync/original-outcome reconciliation and independent fresh hosted readback. Existing local callers retain local-only guards and IDs.
+
+Original PDF evidence custody is a separate native ordinary-file promotion/readback step. A captured Record's evidence_path remains its original local pointer, not proof another host reader can retrieve it. Retain a private manifest linking RecordID, blob key and exact digest only after real native blob confirmation. Do not silently rewrite a capture-v1 record's mapped fields to claim custody.

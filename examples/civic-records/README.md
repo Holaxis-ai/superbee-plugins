@@ -234,3 +234,34 @@ question and may correctly refuse on observed local adaptation.
 Resident-facing use reuses the existing Civic Finding editorial/freshness fields plus the add-on's
 handoff reference. Source adapters, research relationships and Here & Main contribution/review/release
 remain distinct interfaces. No new editorial Kind or publication permission was invented for a demo.
+
+
+## Explicit private hosted staging
+
+`stage-hosted.mjs` is a separate **stage-only** civic caller, not a switch that removes the existing local callers' guards. It consumes the same finite capture manifests/prepared exports, an already-bound hosted checkout and an explicit expected host/workspace/bundle/principal. It uses native complete reads, current Kind validation and strict create-only writes; it never calls sync, publishes, adopts a folder, creates a grant or stores credentials. Native reads can refresh the working copy through its existing authenticated authority.
+
+Use a reviewed full checkout and public Core41/CLI0.4.4-pre.10 with Node26.8.2 for this additional caller. A fresh full recipe skeleton can be built locally before approved native hosted publication. Existing bundles require explicit reviewed additive recipe evolution; this caller never upgrades their model. Recipe0.5.0-pre.1 preserves historical `local-private-research` values and adds `private-research` as intended audience only, not access control or a confidentiality guarantee.
+
+```sh
+node examples/civic-records/stage-hosted.mjs capture \
+  --cli /explicit/trusted/superbee --bundle /absolute/bound/private-checkout \
+  --expected-host https://selected-workspace.example \
+  --expected-workspace EXACT_NATIVE_WORKSPACE --expected-bundle EXACT_NATIVE_BUNDLE \
+  --expected-principal EXACT_NATIVE_PRINCIPAL --actor process:civic-hosted-import \
+  --manifest /absolute/private/captures.json
+# Inspect would-stage, then explicitly repeat the same selection with --apply.
+node examples/civic-records/stage-hosted.mjs text \
+  --cli /explicit/trusted/superbee --bundle /absolute/bound/private-checkout \
+  --expected-host https://selected-workspace.example \
+  --expected-workspace EXACT_NATIVE_WORKSPACE --expected-bundle EXACT_NATIVE_BUNDLE \
+  --expected-principal EXACT_NATIVE_PRINCIPAL --actor process:civic-hosted-import \
+  --derived-at 2026-01-03T00:00:00.000Z --prepared /absolute/private/prepared.json
+```
+
+Read the actual `bundle locate --dir <checkout> --json` receipt for exact expected values; an informational checkout marker is not authority. A wrong binding, local/Git/unbound copy, observed root replacement, missing or changed Source/Record/Kind, incomplete read or mapped human edit refuses. Explicitly selected inputs/paths/times stay fixed on repeat. Extra human fields are preserved. Capture uses the existing unchanged capture-v1 projection/ID; text uses `civic-texts/import-hosted-v1-` plus SHA256 of the newline-joined tuple `civic-hosted-import-v1`, RecordID, PDF/text/Markdown digests, extraction label, `private-research` (no trailing newline). The fixed derivation time is mapped content, not an automatic freshness clock. Input processing scope and caller_asserted/not_observed extraction provenance remain explicit; historical import-v2 derivatives are not rewritten or globally deduplicated.
+
+Every result reports `hostedConfirmed:0` and `needsNativeSync:true`. `staged-local` means only native local acknowledgement/readback; `locally-matching` may be unsent and never proves a hosted no-op. A batch may leave partial local staging. An uncertain/refused acknowledgement stops without retry; use the native checkout's normal sync/outcome protocol before reconsidering work. Do not invent request identities, automatically resolve conflicts, accept deletes or take matching files as proof of remote commit.
+
+The operator—not this caller—first settles any existing native sync outcomes, then stages, invokes ordinary native sync and checks its complete genuine terminal v2 rows/counts. Conflict/held/refused/unknown/paused outcomes remain unresolved; a zero native exit without the expected terminal evidence is insufficient. Independently reacquire the same hosted bundle into a new native checkout and compare authored content and versions. Never copy/move/adopt bound folders to manufacture fresh readback. Only that joined evidence can report confirmed hosted content. Repeats need zero new stages/commits and stable independently observed versions.
+
+PDF/blob custody is separate: a capture's local evidence_path is deliberately not rewritten. Use existing native ordinary-file promote and fresh blob readback, then retain a private manifest linking RecordID/blob key/SHA256. Recipe installation, stage output or private audience labels do not prove raw evidence is durably retrievable or grant publication. This caller is not a scheduler, managed hosted plugin admission, converter or Here & Main publisher. Synthetic hosted-selection doubles qualify caller behavior only; root-owned actual native receipts remain necessary for any live claim.
