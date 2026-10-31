@@ -26,6 +26,12 @@ export function projection(p,record,derivedAt){
  const basis=['civic-import-v2',p.recordId,p.pdfSha256,p.textSha256,p.markdownSha256,p.extractionLabel].join('\n');
  return {id:'civic-texts/import-v2-'+hash(basis),type:'Civic Text',fields:{title:record.title+' — supplied complete text',jurisdiction_key:p.jurisdictionKey,source_record_id:p.recordId,source_url:p.sourceUrl,source_content_sha256:p.pdfSha256,extraction_version:p.formatVersion,formatter_version:p.formatVersion,input_text_sha256:p.textSha256,extraction_association:p.extractionAssociation,extractor_execution:p.extractorExecution,text_sha256:p.markdownSha256,page_count:p.pageCount,derived_at:derivedAt,access_scope:p.accessScope,extraction_note:`Caller-asserted PDF/text association; converter execution not observed. Supplied label: ${p.extractionLabel}. Input text SHA256: ${p.textSha256}.`},body:p.markdown};
 }
+/** Existing text revision: derivation time belongs to its first materialization. */
+export function existingTextMatches(actual,wanted){
+ const at=actual.derived_at;
+ if(typeof at!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(at)||!Number.isFinite(Date.parse(at))||new Date(at).toISOString()!==at)return false;
+ return actual.type===wanted.type&&actual.body===wanted.body&&Object.entries(wanted.fields).every(([key,value])=>key==='derived_at'||actual[key]===value);
+}
 function matches(actual,wanted){return actual.type===wanted.type&&actual.body===wanted.body&&Object.entries(wanted.fields).every(([k,v])=>actual[k]===v);}
 export function nativeCli(cli,bundle){
  const call=(args)=>{
@@ -69,7 +75,7 @@ export async function importPrepared({cli='superbee',bundle,files,derivedAt,acto
    if(!p||typeof p.recordId!=='string'||!/^civic-records\/[a-z0-9][a-z0-9._-]{0,200}$/.test(p.recordId))fail('CIVIC_RECORD_ID');
    const source=await native.read(p.recordId);if(!source)fail('CIVIC_SOURCE_REQUIRED');
    const wanted=projection(p,source,derivedAt);if(seen.has(wanted.id))fail('CIVIC_DUPLICATE');seen.add(wanted.id);
-   const actual=await native.read(wanted.id);if(actual&&!matches(actual,wanted))fail('CIVIC_EXISTING_CONFLICT');
+   const actual=await native.read(wanted.id);if(actual&&!existingTextMatches(actual,wanted))fail('CIVIC_EXISTING_CONFLICT');
    proposals.push({wanted,source,existing:actual});
   }
   // Preflight is read-only, bounded and complete. Native 'new' remains the atomic expected-absent boundary.
@@ -78,7 +84,7 @@ export async function importPrepared({cli='superbee',bundle,files,derivedAt,acto
   for(const {wanted,source} of proposals){
    await local();if(!await native.read(kind.id,kind.head_version)||!await native.read(source.id,source.head_version))fail('CIVIC_PREREQUISITE_CHANGED');
    const current=await native.read(wanted.id);
-   if(current){if(!matches(current,wanted))fail('CIVIC_EXISTING_CONFLICT');receipt.results.push({id:wanted.id,outcome:'up-to-date',version:current.head_version});receipt.unchanged++;continue;}
+   if(current){if(!existingTextMatches(current,wanted))fail('CIVIC_EXISTING_CONFLICT');receipt.results.push({id:wanted.id,outcome:'up-to-date',version:current.head_version});receipt.unchanged++;continue;}
    const bodyFile=path.join(temp,'body.md');await writeFile(bodyFile,wanted.body,{mode:0o600});
    const args=['new',wanted.type,wanted.id,...Object.entries(wanted.fields).map(([k,v])=>`--${k}=${v}`),'--body-file',bodyFile,'--actor',actor];
    await local();

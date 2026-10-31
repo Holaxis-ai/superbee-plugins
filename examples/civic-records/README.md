@@ -99,9 +99,12 @@ pointer to checked supplied bytes, not immutable custody or proof of official or
 Record ids use `civic-records/capture-v1-` followed by SHA256 of the UTF-8, newline-joined tuple
 `civic-capture-v1`, Source id, jurisdiction key, provider document id, PDF SHA256, with no trailing
 newline. Same URL with changed PDF bytes creates another immutable revision; prior records and
-links are untouched. Same source/document/bytes reuse the id. **Keep the original `capturedAt`,
-file path and mapped metadata fixed on retry.** A new observation time or changed metadata for the
-same bytes conflicts; it does not silently rewrite history or mint a revision. This namespace
+links are untouched. Same source/document/bytes reuse the id. Existing semantic matches retain
+the first valid `observed_at` and `evidence_path` verbatim, even when a new run supplies another
+valid capture time or local path. Other mapped metadata and the complete body must still match;
+a human correction is never overwritten. Fresh run observations belong in separate evidence,
+not in the original record. New-create acknowledgements/readback still compare every field
+exactly, including the supplied time/path. This namespace
 does not globally deduplicate historical/manual record ids: inspect existing records before
 registering old captures, and retain their ids for existing derivatives.
 
@@ -140,8 +143,10 @@ node examples/civic-records/import-prepared.mjs \
 ```
 
 Use the chosen record-derivation/materialization time, explicitly supplied as canonical UTC
-milliseconds, for `derived-at`; it must remain fixed on retries, not become a new freshness
-clock. It is caller metadata, not an assertion of converter execution or its missing timestamp. Tests qualify installed public CLI `0.4.4-pre.6`,
+milliseconds, for `derived-at`. A matching existing text retains its first valid derivation
+time and exact native version even if the caller supplies a later time. That time is never a
+new freshness clock. All semantic fields/body remain exact, and new-create readback remains
+exact for every field. It is caller metadata, not an assertion of converter execution or its missing timestamp. Tests qualify installed public CLI `0.4.4-pre.6`,
 Core41; the operation's exact compatibility pin remains unchanged. The importer invokes an explicit
 trusted CLI executable with argv, no shell. No hosted credential lookup or sync is requested.
 

@@ -241,7 +241,9 @@ why retaining full text is useful. Query snippets can truncate; use complete nat
 passages. No semantic recall, legal correctness or complete municipal monitoring is claimed.
 
 Repeat the original registrar and importer `--apply` commands: expect zero creations, `up-to-date`
-and the same native versions. Do not regenerate capture or derivation times. Repeat prepare to a
+and the same native versions. Later valid capture/derivation times and a new checked local PDF
+path preserve first stored provenance on an otherwise exact semantic match; they do not refresh
+old records. Keep those new observations in separate run evidence. Repeat prepare to a
 **different absent path inside the same operation-output directory**, then compare exported bytes.
 Repeating a strict `new` refuses rather than replaces existing data. Changed bound bytes refuse;
 inspect/rebind deliberately, never automatically retry a write or invent a sync journal.

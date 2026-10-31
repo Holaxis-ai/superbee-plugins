@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {createHash}from'node:crypto';
-import {projection}from'../../../examples/civic-records/import-prepared.mjs';
+import {projection,existingTextMatches}from'../../../examples/civic-records/import-prepared.mjs';
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const p={schema:'civic-prepared-text/v1',formatVersion:'civic-layout-markdown-v1',jurisdictionKey:'synthetic-town',documentId:'1',recordId:'civic-records/synthetic-1',sourceUrl:'https://example.org/1.pdf',pdfSha256:'a'.repeat(64),textSha256:'b'.repeat(64),markdownSha256:hash('Synthetic complete supplied text.\n'),pageCount:1,extractionLabel:'caller supplied, no converter ran',extractionAssociation:'caller_asserted',extractorExecution:'not_observed',accessScope:'local-private-research',markdown:'Synthetic complete supplied text.\n'};
 const record={id:p.recordId,type:'Civic Record',title:'Synthetic minutes',jurisdiction_key:p.jurisdictionKey,provider_document_id:p.documentId,content_sha256:p.pdfSha256,source_url:p.sourceUrl,page_count:1};
@@ -11,3 +11,10 @@ test('projection is stable, exact-source-bound and keeps interpretation out of t
 });
 for(const [label,change]of Object.entries({extra:{privilege:'write'},digest:{markdownSha256:'c'.repeat(64)},execution:{extractorExecution:'observed'},association:{extractionAssociation:'host_observed'},scope:{accessScope:'public'},format:{formatVersion:'unknown'},root:{recordId:'docs/bundle'},url:{sourceUrl:'https://user:password@example.org/1.pdf'},page:{pageCount:0},controls:{extractionLabel:'a\nb'},body:{markdown:'changed\n'},null:{markdown:null}}))test('refuses '+label,()=>assert.throws(()=>projection({...p,...change},record,at)));
 test('source mismatch, absent source and ambiguous date refuse',()=>{assert.throws(()=>projection(p,{...record,content_sha256:'d'.repeat(64)},at));assert.throws(()=>projection(p,record,'2026-01-03'));});
+
+test('existing text preserves valid first derivation only; substantive edits and malformed provenance conflict',()=>{
+ const wanted=projection(p,record,'2026-01-04T00:00:00.000Z');
+ const existing={type:wanted.type,...wanted.fields,body:wanted.body,derived_at:at};
+ assert.equal(existingTextMatches(existing,wanted),true);
+ for(const changed of [{derived_at:'invalid'},{derived_at:'2026-02-31T00:00:00.000Z'},{title:'Human correction'},{body:'Human correction\n'},{input_text_sha256:'f'.repeat(64)}])assert.equal(existingTextMatches({...existing,...changed},wanted),false);
+});

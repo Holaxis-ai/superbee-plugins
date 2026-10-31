@@ -33,6 +33,12 @@ export function captureProjection(entry,source){
  const body=normalizeDocumentBodyForStorage('## Supplied capture\n\nOperator-supplied local PDF bytes checked against the supplied SHA256. Source URL, capture time, meeting metadata, extraction status and page count are caller assertions. PDF magic and byte identity do not establish official authenticity, PDF validity or conversion execution. The evidence path is a local pointer, not immutable evidence custody.\n\nCoverage: selected files only; unexamined discovery tails remain unknown. No approval, supersession, disappearance, source freshness or publication is inferred.\n\n[from source](../'+source.id+'.md)\n');
  return {id,type:'Civic Record',fields,body};
 }
+/** Existing semantic revision: preserve its first observation/custody pointer verbatim. */
+export function existingCaptureMatches(actual,wanted){
+ const at=actual.observed_at;
+ if(typeof at!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(at)||!Number.isFinite(Date.parse(at))||new Date(at).toISOString()!==at||!string(actual.evidence_path,4000)||!path.isAbsolute(actual.evidence_path))return false;
+ return actual.type===wanted.type&&actual.body===wanted.body&&Object.entries(wanted.fields).every(([key,value])=>['observed_at','evidence_path'].includes(key)||actual[key]===value);
+}
 function matches(actual,wanted){return actual.type===wanted.type&&actual.body===wanted.body&&Object.entries(wanted.fields).every(([key,value])=>actual[key]===value);}
 async function boundedFile(file,max){
  let handle;try{
@@ -64,13 +70,13 @@ export async function registerCaptured({cli='superbee',bundle,manifest,actor,app
    const wanted=captureProjection(entry,source);if(seen.has(wanted.id))fail('CIVIC_CAPTURE_DUPLICATE');seen.add(wanted.id);
    const pdf=await boundedFile(entry.pdfFile,8*1024*1024);if(!pdf.subarray(0,5).equals(Buffer.from('%PDF-'))||hash(pdf)!==entry.pdfSha256)fail('CIVIC_CAPTURE_PDF_IDENTITY');
    if(validateAgainstKind({id:wanted.id,frontmatter:{type:wanted.type,...wanted.fields},body:wanted.body},definition).length)fail('CIVIC_CAPTURE_KIND_INVALID');
-   const existing=await native.read(wanted.id);if(existing&&!matches(existing,wanted))fail('CIVIC_EXISTING_CONFLICT');proposals.push({wanted,existing});
+   const existing=await native.read(wanted.id);if(existing&&!existingCaptureMatches(existing,wanted))fail('CIVIC_EXISTING_CONFLICT');proposals.push({wanted,existing});
   }
   if(!apply){receipt.results=proposals.map(({wanted,existing})=>({id:wanted.id,outcome:existing?'up-to-date':'would-create'}));return receipt;}
   temp=await mkdtemp(path.join(tmpdir(),'civic-capture-body-'));
   for(const {wanted}of proposals){
    await local();if(!await native.read(kind.id,kind.head_version)||!await native.read(source.id,source.head_version))fail('CIVIC_PREREQUISITE_CHANGED');
-   const current=await native.read(wanted.id);if(current){if(!matches(current,wanted))fail('CIVIC_EXISTING_CONFLICT');receipt.results.push({id:wanted.id,outcome:'up-to-date',version:current.head_version});receipt.unchanged++;continue;}
+   const current=await native.read(wanted.id);if(current){if(!existingCaptureMatches(current,wanted))fail('CIVIC_EXISTING_CONFLICT');receipt.results.push({id:wanted.id,outcome:'up-to-date',version:current.head_version});receipt.unchanged++;continue;}
    const bodyFile=path.join(temp,'body.md');await writeFile(bodyFile,wanted.body,{mode:0o600});
    await local();receipt.results.push({id:wanted.id,outcome:'create-outcome-unknown'});
    const result=native.call(['new',wanted.type,wanted.id,...Object.entries(wanted.fields).map(([key,value])=>`--${key}=${value}`),'--body-file',bodyFile,'--actor',actor]);
