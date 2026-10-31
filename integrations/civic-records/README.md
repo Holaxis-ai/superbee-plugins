@@ -84,3 +84,8 @@ Poppler's explicit `-v`/stderr binding is now supported by the public CLI and ex
 new extraction capability. See [CAPTURE.md](CAPTURE.md) for finite inputs, native execution evidence,
 refusals and composition with the existing formatter/importer. Provider fetching and managed
 execution still require the caller's existing transport and authority.
+
+For explicit local/hosted caller composition, use the supported
+[`@superbee/integration-civic-records/host` entry](CAPTURE.md#supported-host-composition).
+It packages the existing stage-only helpers and native operation sequence; it does not enable a
+service, schedule or credentials. Historical example commands remain compatible wrappers.

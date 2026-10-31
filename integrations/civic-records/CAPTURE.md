@@ -199,3 +199,42 @@ same-run handoff; never disguise Evidence as a Civic Record or weaken attended p
 The original-byte key follows the existing pilot custody convention, shared across sources.
 Existing originals keep their keys and bytes; this extension does not introduce a second blob
 namespace or migrate historical files.
+
+## Supported host composition
+
+Build the reviewed package once, then import its explicit host entry:
+
+```js
+import {createCivicOperations, stageHostedEvidence, stageHosted}
+  from '@superbee/integration-civic-records/host';
+```
+
+The built standalone package contains `dist/operation.mjs` and `dist/host.mjs`; no runtime
+example or sibling source checkout is needed. Public Core `0.2.0-pre.41` is an exact peer of
+this host entry and remains an installed external dependency, never a bundled storage engine.
+The package remains private with npm publication blocked. A reviewed Git checkout or explicitly
+packed local artifact is its delivery mechanism; adding this entry does not authorize a release.
+
+`createCivicOperations({cli, packageRoot, outDir})` explicitly initializes an absent `operations`
+subfolder in an existing caller-owned run directory, registers the trusted fixed package and returns
+`invoke(operationId, resources, tools = {})`. It invokes the five declared civic operations through
+public CLI `0.4.4-pre.11`, retaining native binding/input/operation receipts and exporting the
+operation's exact output role. It creates no research records. The caller must first acquire,
+review and freshly build its pinned package and provision its CLI/tools; this helper does not
+validate a publisher signature, grant credentials, approve a person's consent screen or sandbox
+trusted JavaScript. It performs native local digest acceptance only in that explicitly authorized
+host context. Unknown operations refuse. Existing run folders/outputs must not be reused.
+
+`stageHosted(config)` retains its existing `capture`/`text` modes. `stageHostedEvidence(config)`
+retains its explicit target, original-blob pin and stage-only contract above. `registerCaptured`
+and `importPrepared` retain their existing local-only refusal rules. Their configuration objects
+are unchanged from the documented example commands. No helper logs in, creates a bundle grant,
+promotes original blobs, syncs, authenticates an Actions handoff, raises application Signals or
+starts background work. Importing the host entry has no execution side effects.
+
+The four historical `examples/civic-records` commands remain compatibility wrappers over these
+same canonical implementations. A caller selects acquisition/scope, invokes plugin processing,
+retains the original through native blob custody, stages the appropriate representation and then
+uses normal native sync and complete fresh readback. Only the caller's confirmed outcome may feed
+its application-specific attention or publishing flow. Stop on refused, unknown or partial outcomes;
+there is no automatic changed-identity retry or cross-bundle transaction.

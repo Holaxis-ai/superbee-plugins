@@ -127,11 +127,17 @@
   },
   "scripts": {
     "build": "node build.mjs",
-    "typecheck": "node --check src/operation.mjs && node --check src/capture.mjs && node --check src/ecode360.mjs && node --check src/layout.mjs && node --check src/evidence.mjs",
+    "typecheck": "node --check src/operation.mjs && node --check src/capture.mjs && node --check src/ecode360.mjs && node --check src/layout.mjs && node --check src/evidence.mjs && node --check src/host.mjs && node --check src/host/operations.mjs && node --check src/host/import-prepared.mjs && node --check src/host/register-captured.mjs && node --check src/host/stage-hosted.mjs && node --check src/host/stage-evidence.mjs",
     "test": "node --test test/*.test.mjs",
     "prepublishOnly": "node -e \"process.exit(1)\""
   },
   "devDependencies": {
     "parse5": "8.0.0"
+  },
+  "exports": {
+    "./host": "./dist/host.mjs"
+  },
+  "peerDependencies": {
+    "@superbee/core": "0.2.0-pre.41"
   }
 }

@@ -110,7 +110,17 @@ test('undated Evidence staging preserves existing lanes and first provenance, wi
   const scope={host:'https://workspace.example',workspace:'synthetic-workspace',bundle_id:'synthetic-research',principal:'person:synthetic'};
   const wrapperText=(change='')=>`#!${process.execPath}\nimport{spawnSync}from'node:child_process';import{readFileSync,writeFileSync}from'node:fs';const args=process.argv.slice(2);if(args[0]==='sync'||args[0]==='promote')throw Error('stage must not sync or retain blobs');const r=spawnSync(${JSON.stringify(cli)},args.filter(x=>x!=='--from-host'),{encoding:'utf8'});if(r.status===0){let d=JSON.parse(r.stdout);if(args[0]==='bundle'&&args[1]==='locate'){d.home='hosted';d.hosted=${JSON.stringify(scope)};}if(args[0]==='pull'&&args.includes('--from-host'))d.source='hosted';${change};process.stdout.write(JSON.stringify(d));}else process.stdout.write(r.stdout);process.stderr.write(r.stderr);process.exit(r.status??1);\n`;
   const wrapper=path.join(scratch,'selection.mjs');await writeFile(wrapper,wrapperText(),{mode:0o700});
-  const stager=path.join(root,'examples/civic-records/stage-evidence.mjs');
+  // Consume only the actual package archive, not a sibling example/source import.
+  const packed=JSON.parse((await run(process.execPath,[process.env.npm_execpath,'pack',path.join(root,'integrations/civic-records'),'--ignore-scripts','--pack-destination',scratch,'--json'])).stdout)[0];
+  assert.ok(packed.files.some(f=>f.path==='dist/host.mjs'));assert.equal(packed.files.some(f=>f.path.startsWith('src/')||f.path.startsWith('examples/')),false);
+  await run(process.execPath,[process.env.npm_execpath,'install',path.join(scratch,packed.filename),'--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  const stager=path.join(scratch,'stage-packaged-evidence.mjs');
+  await writeFile(stager,`import {stageHostedEvidence} from '@superbee/integration-civic-records/host';
+const config={},names={'--cli':'cli','--bundle':'bundle','--expected-host':'expectedHost','--expected-workspace':'expectedWorkspace','--expected-bundle':'expectedBundle','--expected-principal':'expectedPrincipal','--actor':'actor','--prepared':'preparedFile','--observed-at':'observedAt','--expected-blob-version':'expectedBlobVersion'};
+for(let i=2;i<process.argv.length;i++){if(process.argv[i]==='--apply')config.apply=true;else config[names[process.argv[i]]]=process.argv[++i];}
+try{console.log(JSON.stringify(await stageHostedEvidence(config)));}catch(e){console.log(JSON.stringify(e.receipt));process.exitCode=1;}
+`);
+
   const invoke=async(entry,{expected=0,executable=wrapper,apply=true,observed='2026-01-03T00:00:00.000Z',pin=blob.version}={})=>JSON.parse((await run(process.execPath,[stager,'--cli',executable,'--bundle',bundle,'--expected-host',scope.host,'--expected-workspace',scope.workspace,'--expected-bundle',scope.bundle_id,'--expected-principal',scope.principal,'--actor',actor,'--prepared',entry.file,'--observed-at',observed,'--expected-blob-version',pin,...(apply?['--apply']:[])],expected)).stdout);
   const preview=await invoke(first,{apply:false});assert.equal(preview.verifiedExistingBlob,true);assert.deepEqual(preview.results.map(r=>r.outcome),['would-stage','would-stage']);
   const made=await invoke(first);assert.equal(made.stagedLocal,2);assert.equal(made.hostedConfirmed,0);assert.equal(made.needsNativeSync,true);
