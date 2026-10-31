@@ -53,7 +53,7 @@ export async function stageHostedEvidence(config){
   // A known dated original stays in its existing Record/Text lane. This is a bounded local
   // snapshot check, not a cross-document transaction or global exactly-once guarantee.
   const dated=await queryHeads({root:target.root},{type:'Civic Record'});if(dated.length>200)fail('CIVIC_DATED_LOOKUP_BOUNDED');
-  for(const row of dated){const d=await read(row.id);if(d?.jurisdiction_key===prepared.jurisdictionKey&&d.content_sha256===prepared.pdfSha256&&d.source_url===prepared.sourceUrl&&d.provider_document_id===prepared.documentId&&parseLinksFromDoc({id:d.id,frontmatter:{},body:d.body}).some(l=>l.to===source.id&&l.text==='from source'))fail('CIVIC_DATED_RECORD_EXISTS');}
+  for(const row of dated){const d=await read(row.id);if(d?.jurisdiction_key===prepared.jurisdictionKey&&d.content_sha256===prepared.pdfSha256&&d.source_url===prepared.sourceUrl&&d.provider_document_id===prepared.documentId)fail('CIVIC_DATED_RECORD_EXISTS');}
   const known=await queryHeads({root:target.root},{type:'Civic Evidence'});if(known.length>200)fail('CIVIC_EVIDENCE_LOOKUP_BOUNDED');
   for(const row of known){if(proposals.some(p=>p.id===row.id))continue;const d=await read(row.id);if(d?.jurisdiction_key===prepared.jurisdictionKey&&d.source_url===prepared.sourceUrl&&d.original_content_sha256===prepared.pdfSha256)fail('CIVIC_EXISTING_EVIDENCE_REQUIRES_REUSE');}
   temp=await mkdtemp(path.join(tmpdir(),'civic-evidence-stage-'));

@@ -180,7 +180,9 @@ native version through `pull --from-host`; local filename MIME is insufficient. 
 refused host read stops. Source/Kind versions and physical checkout identity are checked around
 writes. There is no exactly-once or transaction guarantee across the blob and documents.
 
-Known genuine Record/Text originals must be reused in their dated lane. An existing differently
+Known genuine Record/Text originals must be reused in their dated lane. The original tuple
+(jurisdiction/provider document/URL/PDF digest) is the reuse guard; renaming or removing a helper
+link in a human-edited Record body does not make that original eligible for duplicate Evidence. An existing differently
 named Evidence representation for the same source/original requires reuse or owning disposition,
 not silent duplicate creation. The bounded current snapshot lookup refuses above 200 known heads
 per relevant Kind; it is not an exhaustive history/tombstone or concurrent-writer guarantee.
