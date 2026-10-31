@@ -30,14 +30,14 @@ The consumer test has five subtests plus the parent test:
    independent path and records unreviewed state; no automatic truth cascade occurs.
 4. Interview records retain source assertion, bounded negative and unresolved
    authority separately.
-5. Existing-target and invalid-enum refusals preserve authored data. Wrong target
+5. Existing-target, enclosing-bundle, non-bundle-directory, invalid-case and invalid-enum refusals preserve authored data. Wrong target
    types are refused or detectable by native lint. A supported-shaped claim with
    no support edge remains possible, explicitly demonstrating the semantic limit.
 
 Both recipe validators report success. The clean example graphs have no malformed,
 unresolved, orphan, link-type or conformance issues before deliberate negative
 controls. JavaScript syntax checks and whitespace checks are also part of the local
-review. Fixtures total 28 invented records across three independent case bundles.
+review. Fixtures total 29 invented records across three independent case bundles.
 
 These are deterministic consumer checks, not a measured agent study, evidence of
 source authenticity, provider capture, interview accuracy, benchmark execution,
@@ -48,3 +48,12 @@ the unrelated integration test matrix is outside this contribution's qualificati
 The next useful validation is one real new investigation compared with ordinary
 organized notes. Optional readers, attempt/run/capture companions and any actual
 historical/civic migration require their own consumer-driven scope.
+
+## Independent review corrections
+
+Review of the initial candidate caught two mixed researcher conclusions mislabeled
+as source assertions. They are now inferences; the interview example has a separate
+literal source-assertion Claim and an explicit dependency. Review also identified
+inherited JavaScript property names as invalid starter cases; an own-key check now
+rejects them before initialization. The consumer suite adds those cases and native
+refusals for enclosing bundles and occupied non-bundle destinations.

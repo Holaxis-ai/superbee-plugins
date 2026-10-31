@@ -18,8 +18,8 @@ for (let i = 0; i < args.length; i += 2) {
 }
 if (!options['--case'] || !options['--bundle']) throw new Error('--case and --bundle are required');
 const cases = JSON.parse(await readFile(path.join(here, 'cases.json'), 'utf8'));
+if (!Object.hasOwn(cases, options['--case'])) throw new Error('Unknown synthetic case');
 const selected = cases[options['--case']];
-if (!selected) throw new Error('Unknown synthetic case');
 const bundle = path.resolve(options['--bundle']);
 const cli = options['--cli'] ?? 'superbee';
 const actor = 'process:deep-research-example';

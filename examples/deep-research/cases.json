@@ -83,7 +83,7 @@
           "title": "The index provides a deed pointer; relocation remains unproved",
           "statement": "The inspected index provides a transfer pointer, but does not establish a cottage relocation.",
           "scope": "Only the inspected Register R row; contents of D12/4 remain unknown.",
-          "assertion_mode": "source_assertion",
+          "assertion_mode": "inference",
           "evidence_state": "supported",
           "review_state": "reviewed",
           "review_note": "Synthetic authored review, not human authorization or native verification."
@@ -317,6 +317,20 @@
       },
       {
         "kind": "Research Claim",
+        "id": "research-claims/interview-reported",
+        "fields": {
+          "title": "The supplied notes attribute a preference to Delta",
+          "statement": "The supplied notes attribute the remark \"Dark mode would be nice\" to Delta.",
+          "scope": "Only the synthetic supplied notes, turn 4; not a verified recording or all users.",
+          "assertion_mode": "source_assertion",
+          "evidence_state": "supported",
+          "review_state": "reviewed",
+          "review_note": "Fictional example review of the source assertion, not authentication of a speaker or authorization."
+        },
+        "body": "# Assertion and scope\nThe supplied notes attribute the remark \"Dark mode would be nice\" to Delta. This claim concerns what the notes say.\n\n# Evidence\n[supported by](../research-observations/interview-remark.md)\n\n# Reasoning and alternatives\nThe observation supports the attribution in these supplied notes. The accuracy of the notes and the identity or authority of Delta are not established.\n\n# Review\nA fictional authored review, not human approval.\n"
+      },
+      {
+        "kind": "Research Claim",
         "id": "research-claims/interview-policy",
         "fields": {
           "title": "Earlier interpretation of a remark as policy",
@@ -336,12 +350,12 @@
           "title": "A preference was reported; policy is unresolved",
           "statement": "The notes report one preference; they do not establish approval or general user demand.",
           "scope": "Delta as represented by the supplied notes, not all users or an authenticated decision maker.",
-          "assertion_mode": "source_assertion",
+          "assertion_mode": "inference",
           "evidence_state": "supported",
           "review_state": "reviewed",
           "review_note": "Synthetic authored review, not human authorization or native verification."
         },
-        "body": "# Assertion and scope\nThe notes report one preference; they do not establish approval or general user demand.\n\nScope: Delta as represented by the supplied notes, not all users or an authenticated decision maker.\n\n# Evidence\n[supported by](../research-observations/interview-remark.md)\n\n[supersedes claim](../research-claims/interview-policy.md)\n\n# Reasoning and alternatives\nSeparate faithful observation, population-level inference and human authority. No recording was checked and no publication or implementation permission follows.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
+        "body": "# Assertion and scope\nThe notes report one preference; they do not establish approval or general user demand.\n\nScope: Delta as represented by the supplied notes, not all users or an authenticated decision maker.\n\n# Evidence\n[supported by](../research-observations/interview-remark.md)\n\n[supersedes claim](../research-claims/interview-policy.md)\n\n[depends on claim](../research-claims/interview-reported.md)\n\n# Reasoning and alternatives\nSeparate faithful observation, population-level inference and human authority. No recording was checked and no publication or implementation permission follows.\n\n# Review\nThis is a fictional example assessment. Keep earlier records; no automated truth promotion occurred.\n"
       },
       {
         "kind": "Research Question",

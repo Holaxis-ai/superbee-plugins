@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {cp, mkdir, mkdtemp, readFile, readdir, rm} from 'node:fs/promises';
+import {cp, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -115,7 +115,9 @@ test('Deep Research public CLI consumer: inert core, evidence graph, corrections
     await t.test('interview remark and bounded negative do not become authority or universal absence', () => {
       const b = bundles.interview;
       const c = read(b, 'research-claims/interview-preference');
-      assert.equal(c.assertion_mode, 'source_assertion');
+      assert.equal(c.assertion_mode, 'inference');
+      assert.equal(read(b, 'research-claims/interview-reported').assertion_mode, 'source_assertion');
+      assert.equal(links(b, c.id, 'depends on claim').outbound[0].to, 'research-claims/interview-reported');
       assert.match(c.scope, /not all users/);
       assert.match(c.statement, /do not establish approval/);
       assert.equal(read(b, 'research-questions/interview-authority').superbee_progress_status, 'open');
@@ -128,6 +130,24 @@ test('Deep Research public CLI consumer: inert core, evidence graph, corrections
       const repeat = exec(process.execPath, [starter, '--case', 'interview', '--bundle', b, '--cli', cli], {env});
       assert.notEqual(repeat.status, 0);
       assert.deepEqual(await readFile(path.join(b, 'research-claims/interview-preference.md')), before);
+      for (const name of ['constructor', 'toString', '__proto__', 'unknown-case']) {
+        const destination = path.join(scratch, `invalid-${name}`);
+        const invalidCase = exec(process.execPath, [starter, '--case', name, '--bundle', destination, '--cli', cli], {env});
+        assert.notEqual(invalidCase.status, 0);
+        assert.match(invalidCase.stderr, /Unknown synthetic case/);
+        await assert.rejects(stat(destination), {code: 'ENOENT'}, 'invalid case must refuse before mutation');
+      }
+      const nested = path.join(b, 'nested-study');
+      const nestedResult = exec(process.execPath, [starter, '--case', 'interview', '--bundle', nested, '--cli', cli], {env});
+      assert.notEqual(nestedResult.status, 0);
+      await assert.rejects(stat(path.join(nested, 'index.md')), {code: 'ENOENT'}, 'cannot publish a nested bundle');
+      const occupied = path.join(scratch, 'existing-non-bundle');
+      await mkdir(occupied);
+      await writeFile(path.join(occupied, 'keep.txt'), 'Existing user content');
+      const occupiedResult = exec(process.execPath, [starter, '--case', 'interview', '--bundle', occupied, '--cli', cli], {env});
+      assert.notEqual(occupiedResult.status, 0);
+      assert.equal(await readFile(path.join(occupied, 'keep.txt'), 'utf8'), 'Existing user content');
+      assert.deepEqual(await readdir(occupied), ['keep.txt']);
       const invalid = invoke(['new', 'Research Source', 'bad', '--title', 'Invalid', '--citation', 'Fictional', '--inspection_state', 'proven-true', '--dir', b]);
       assert.notEqual(invalid.status, 0, 'inspection is not truth');
       assert.match(invalid.stderr + invalid.stdout, /inspection_state|proven-true/);
