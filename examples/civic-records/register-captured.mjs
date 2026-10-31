@@ -15,6 +15,12 @@ const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 const exact=(x,required,optional=[])=>object(x)&&required.every(k=>Object.hasOwn(x,k))&&Object.keys(x).every(k=>required.includes(k)||optional.includes(k));
 const required=['documentId','pdfFile','pdfSha256','sourceUrl','capturedAt','title','bodyName','meetingDate','recordKind','sessionKind','extractionStatus','pageCount'];
 const optional=['sourceLabel','secondaryDateRaw','statusNote'];
+export function assertCapturedSourceUrl(entry,source){
+ if(!string(source?.provider,128))fail('CIVIC_CAPTURE_SOURCE');
+ let url,registry;try{url=new URL(entry.sourceUrl);registry=new URL(source.registry_url);}catch{fail('CIVIC_CAPTURE_URL');}
+ if(!string(entry.sourceUrl,2000)||url.protocol!=='https:'||url.username||url.password||url.hash||/[<>\s]/.test(entry.sourceUrl)||url.href!==entry.sourceUrl||registry.protocol!=='https:'||registry.username||registry.password||url.origin!==registry.origin)fail('CIVIC_CAPTURE_URL');
+ if(source.provider==='ecode360'&&(!/^[A-Z]{2}\d{4}$/.test(source.provider_jurisdiction_id)||registry.hostname!=='ecode360.com'||!/^\d{1,128}$/.test(entry.documentId)||url.search||url.pathname!==`/${source.provider_jurisdiction_id}/document/${entry.documentId}.pdf`))fail('CIVIC_CAPTURE_URL');
+}
 export function captureProjection(entry,source){
  if(!exact(entry,required,optional))fail('CIVIC_CAPTURE_ENTRY_SHAPE');
  if(!string(source.id,220)||!/^civic-sources\/[a-z0-9][a-z0-9._-]{0,200}$/.test(source.id)||source.type!=='Civic Source'||!string(source.jurisdiction_key,128)||!string(source.body_name,500)||!string(source.provider,128))fail('CIVIC_CAPTURE_SOURCE');
@@ -23,9 +29,7 @@ export function captureProjection(entry,source){
  if(!/^[a-f0-9]{64}$/.test(entry.pdfSha256)||!Number.isSafeInteger(entry.pageCount)||entry.pageCount<1||entry.pageCount>250)fail('CIVIC_CAPTURE_METADATA');
  for(const key of ['meetingDate','recordKind','sessionKind','extractionStatus'])if(!string(entry[key],100))fail('CIVIC_CAPTURE_METADATA');
  for(const key of optional)if(Object.hasOwn(entry,key)&&!string(entry[key],1000))fail('CIVIC_CAPTURE_METADATA');
- let url,registry;try{url=new URL(entry.sourceUrl);registry=new URL(source.registry_url);}catch{fail('CIVIC_CAPTURE_URL');}
- if(!string(entry.sourceUrl,2000)||url.protocol!=='https:'||url.username||url.password||url.hash||/[<>\s]/.test(entry.sourceUrl)||url.href!==entry.sourceUrl||registry.protocol!=='https:'||registry.username||registry.password||url.origin!==registry.origin)fail('CIVIC_CAPTURE_URL');
- if(source.provider==='ecode360'&&(!/^[A-Z]{2}\d{4}$/.test(source.provider_jurisdiction_id)||registry.hostname!=='ecode360.com'||!/^\d{1,128}$/.test(entry.documentId)||url.search||url.pathname!==`/${source.provider_jurisdiction_id}/document/${entry.documentId}.pdf`))fail('CIVIC_CAPTURE_URL');
+ assertCapturedSourceUrl(entry,source);
  // All framed inputs exclude controls. No trailing newline; this is a domain identity, not a shared canonicalizer.
  const id='civic-records/capture-v1-'+hash(['civic-capture-v1',source.id,source.jurisdiction_key,entry.documentId,entry.pdfSha256].join('\n'));
  const fields={title:entry.title,jurisdiction_key:source.jurisdiction_key,body_name:entry.bodyName,meeting_date:entry.meetingDate,record_kind:entry.recordKind,session_kind:entry.sessionKind,provider_document_id:entry.documentId,source_url:entry.sourceUrl,content_sha256:entry.pdfSha256,observed_at:entry.capturedAt,approval_status:'unknown',extraction_status:entry.extractionStatus,page_count:entry.pageCount,evidence_path:entry.pdfFile};

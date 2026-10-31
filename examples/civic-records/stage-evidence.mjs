@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';import path from 'node:path';import {fileURLToPat
 import {buildKindRegistry,validateAgainstKind} from '@superbee/core/kinds';
 import {queryHeads,parseLinksFromDoc} from '@superbee/core';
 import {readHostedCivicJson,selectHostedCivicTarget} from './stage-hosted.mjs';
+import {assertCapturedSourceUrl} from './register-captured.mjs';
 import {readCapturedBytes} from '../../integrations/civic-records/src/capture.mjs';
 import {originalEvidenceId,textEvidenceId,EVIDENCE_FORMAT} from '../../integrations/civic-records/src/evidence.mjs';
 const hash=x=>createHash('sha256').update(x).digest('hex');
@@ -20,8 +21,7 @@ export function evidenceProjections(p,source,observedAt){
  const keys=['schema','formatVersion','jurisdictionKey','documentId','sourceId','sourceUrl','title','documentKind','pdfSha256','textSha256','pageCount','association','extractorExecution','accessScope','representations'];
  if(!exact(p,keys)||p.schema!=='civic-prepared-evidence/v1'||p.formatVersion!==EVIDENCE_FORMAT||p.association!=='caller_asserted'||p.extractorExecution!=='not_observed'||p.accessScope!=='private-research'||!instant(observedAt)||!text(p.jurisdictionKey,128)||!text(p.documentId,128)||!text(p.title,500)||!hex(p.pdfSha256)||!hex(p.textSha256)||!Number.isSafeInteger(p.pageCount)||p.pageCount<1||p.pageCount>250)fail('CIVIC_EVIDENCE_CONTRACT');
  if(source?.id!==p.sourceId||source.type!=='Civic Source'||source.jurisdiction_key!==p.jurisdictionKey||!/^civic-sources\/[a-z0-9][a-z0-9._-]{0,200}$/.test(p.sourceId))fail('CIVIC_EVIDENCE_SOURCE');
- let url,registry;try{url=new URL(p.sourceUrl);registry=new URL(source.registry_url);}catch{fail('CIVIC_EVIDENCE_SOURCE');}
- if(!text(p.sourceUrl,2000)||url.protocol!=='https:'||url.username||url.password||url.hash||/[<>\s]/.test(p.sourceUrl)||url.href!==p.sourceUrl||registry.protocol!=='https:'||registry.username||registry.password||url.origin!==registry.origin)fail('CIVIC_EVIDENCE_SOURCE');
+ assertCapturedSourceUrl({sourceUrl:p.sourceUrl,documentId:p.documentId},source);
  if(!Array.isArray(p.representations)||p.representations.length!==2)fail('CIVIC_EVIDENCE_REPRESENTATIONS');
  const [a,b]=p.representations;
  if(!exact(a,['role','id','blobKey','contentType','representationSha256','bodySha256','body'])||!exact(b,['role','id','contentType','representationSha256','bodySha256','body'])||a.role!=='original'||b.role!=='text'||a.contentType!=='application/pdf'||b.contentType!=='text/markdown'||a.blobKey!==`civic-originals/${p.pdfSha256}.pdf`||a.representationSha256!==p.pdfSha256||b.representationSha256!==b.bodySha256)fail('CIVIC_EVIDENCE_REPRESENTATIONS');
