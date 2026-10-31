@@ -37,6 +37,84 @@ The development Task retains actual run receipts, failures, effort and follow-up
 passing synthetic case is not recorded as a real municipal capture. Experiments should be cheap
 to repeat or discard and should leave official source bytes and editorial decisions intact.
 
+## Register deliberately supplied PDF revisions
+
+`register-captured.mjs` supplies the missing step before text preparation: register immutable
+Civic Records for 1–10 explicitly supplied local PDFs against an **existing** Civic Source and
+installed Civic Record Kind. It uses installed public Core `0.2.0-pre.41` for body/Kind semantics
+and an explicit trusted native CLI (qualified with `0.4.4-pre.6`); follow the root dependency setup.
+It creates no Sources, performs no discovery/download/conversion, and installs no source plugin,
+recipe upgrade, schedule, finding or publication.
+
+```sh
+node examples/civic-records/register-captured.mjs \
+  --cli /explicit/installed/superbee \
+  --bundle /absolute/private/local-bundle \
+  --manifest /absolute/private/captures.json \
+  --actor process:civic-capture-pilot
+# Inspect the read-only proposal, then repeat the exact selection with --apply.
+```
+
+The closed UTF-8 manifest is at most 64KiB. Its exact top-level keys are `schema`, `sourceId`,
+`captureBasis`, `coverage` and `entries`:
+
+```json
+{
+  "schema": "civic-captured-records/v1",
+  "sourceId": "civic-sources/synthetic-council",
+  "captureBasis": "operator-supplied-files",
+  "coverage": "selected-only-unknown-tail",
+  "entries": [{
+    "documentId": "1001",
+    "pdfFile": "/absolute/private/evidence/synthetic-1001.pdf",
+    "pdfSha256": "<actual lowercase 64-hex SHA256>",
+    "sourceUrl": "https://ecode360.com/ZZ0001/document/1001.pdf",
+    "capturedAt": "2026-01-03T00:00:00.000Z",
+    "title": "Synthetic council minutes",
+    "bodyName": "Synthetic Council",
+    "meetingDate": "2026-01-02",
+    "recordKind": "minutes",
+    "sessionKind": "regular",
+    "extractionStatus": "text-extracted",
+    "pageCount": 1
+  }]
+}
+```
+
+Only `sourceLabel`, `secondaryDateRaw` and `statusNote` may additionally appear on entries.
+The PDF must be an ordinary single-link local file of at most 8MiB with PDF magic and a matching
+digest. Magic does not validate PDF structure. The URL must share the selected Source registry's
+HTTPS origin. For `ecode360`, the exact `/JURISDICTION/document/ID.pdf` path must match the
+Source's `provider_jurisdiction_id` and decimal document id, without query. The Source supplies
+jurisdiction; `bodyName` must match its body. Capture time, page count, extraction status and
+meeting metadata are caller assertions. No converter execution is claimed. Approval defaults to
+`unknown`; this caller takes no approval or supersession inputs. A local evidence path is a
+pointer to checked supplied bytes, not immutable custody or proof of official origin.
+
+Record ids use `civic-records/capture-v1-` followed by SHA256 of the UTF-8, newline-joined tuple
+`civic-capture-v1`, Source id, jurisdiction key, provider document id, PDF SHA256, with no trailing
+newline. Same URL with changed PDF bytes creates another immutable revision; prior records and
+links are untouched. Same source/document/bytes reuse the id. **Keep the original `capturedAt`,
+file path and mapped metadata fixed on retry.** A new observation time or changed metadata for the
+same bytes conflicts; it does not silently rewrite history or mint a revision. This namespace
+does not globally deduplicate historical/manual record ids: inspect existing records before
+registering old captures, and retain their ids for existing derivatives.
+
+The caller validates all entries and the selected installed Kind before writing. Native strict
+`new` is each document's expected-absent boundary. Complete native readback compares mapped fields
+and the body normalized by public Core; extra human fields survive, mapped human edits conflict.
+The physical local root and Source/Kind versions are checked around writes, without claiming an
+OS capability or transaction across documents. Git/hosted homes refuse. A batch can partially
+commit; errors retain actual outcomes and stop, including uncertain acknowledgements. Rerun the
+same manifest with the real CLI to distinguish matching committed records from absent/conflicting
+ones. No custom journal, automatic retry, overwrite, delete or sync is implemented.
+
+Use the returned Record id and exact source/PDF metadata as the basis of the existing explicit
+`prepare-text.v1` selection, then import that export as below. This caller does not run either step.
+Discovery coverage stays unknown beyond the selected files; an omitted file never means deletion,
+source freshness or an exhaustive archive. Browser-assisted selection is compatible with this
+boundary, while lazy archive hydration remains outside the caller's capabilities.
+
 ## Local importer experiment
 
 `import-prepared.mjs` is a separate caller/orchestrator, **not** a registered local operation,
