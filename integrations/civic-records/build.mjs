@@ -1,2 +1,3 @@
 import {build} from 'esbuild';
-await build({entryPoints:[new URL('./src/operation.mjs',import.meta.url).pathname],outfile:new URL('./dist/operation.mjs',import.meta.url).pathname,bundle:true,platform:'node',format:'esm',target:'node22',legalComments:'eof'});
+import {fileURLToPath} from 'node:url';
+await build({entryPoints:[fileURLToPath(new URL('./src/operation.mjs',import.meta.url))],outfile:fileURLToPath(new URL('./dist/operation.mjs',import.meta.url)),bundle:true,platform:'node',format:'esm',target:'node22',legalComments:'eof'});
