@@ -50,7 +50,7 @@ async function destination(file,root){
  return {target,check};
 }
 export function runInput(receipt){
- if(!object(receipt)||receipt.status!=='bound'||receipt.operation!=='local.civic.prepare-text.v1'||!string(receipt.binding,200)||!/^sha256:[a-f0-9]{64}$/.test(receipt.digest??'')||!object(receipt.expectedInputs)||Object.keys(receipt.expectedInputs).sort().join('|')!=='basis|pdf|text'||Object.values(receipt.expectedInputs).some(x=>!/^sha256:[a-f0-9]{64}$/.test(x)))fail('CIVIC_PLAN_BINDING_RECEIPT');
+ if(!object(receipt)||receipt.status!=='bound'||receipt.operation!=='local.civic.prepare-text.v1'||!string(receipt.binding,200)||(typeof receipt.digest!=='string'||!/^sha256:[a-f0-9]{64}$/.test(receipt.digest))||!object(receipt.expectedInputs)||Object.keys(receipt.expectedInputs).sort().join('|')!=='basis|pdf|text'||Object.values(receipt.expectedInputs).some(x=>typeof x!=='string'||!/^sha256:[a-f0-9]{64}$/.test(x)))fail('CIVIC_PLAN_BINDING_RECEIPT');
  // Caller-supplied receipt projection, not receipt authentication or authority to execute.
  return {expectedInputs:receipt.expectedInputs,settings:{}};
 }

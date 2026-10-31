@@ -7,6 +7,7 @@ test('planner argument and native receipt boundaries are explicit',()=>{
  for(const args of [[],['--bundle','/x','--unknown','x'],['--bundle','/x','--bundle','/y'],['--bundle','/x','--from-binding','/receipt'],['--bundle','/x','--from-binding','/receipt','--run-input','/out','--pdf','/pdf']])assert.throws(()=>parseArguments(args),/CIVIC_PLAN_ARGUMENTS/);
  const valid={status:'bound',operation:'local.civic.prepare-text.v1',binding:'native-binding-id',digest:'sha256:'+'1'.repeat(64),expectedInputs:{pdf:'sha256:'+'2'.repeat(64),text:'sha256:'+'3'.repeat(64),basis:'sha256:'+'4'.repeat(64)}};
  assert.deepEqual(runInput(valid),{expectedInputs:valid.expectedInputs,settings:{}});
+ for(const malformed of [[valid.digest],{toString:()=>valid.digest},null]){assert.throws(()=>runInput({...valid,digest:malformed}),/CIVIC_PLAN_BINDING_RECEIPT/);for(const role of ['pdf','text','basis'])assert.throws(()=>runInput({...valid,expectedInputs:{...valid.expectedInputs,[role]:malformed}}),/CIVIC_PLAN_BINDING_RECEIPT/);}
  for(const change of [{status:'proposed'},{operation:'another-operation'},{binding:''},{digest:'guessed'},{expectedInputs:{pdf:'sha256:'+'2'.repeat(64)}},{expectedInputs:{...valid.expectedInputs,extra:'sha256:'+'5'.repeat(64)}}])assert.throws(()=>runInput({...valid,...change}),/CIVIC_PLAN_BINDING_RECEIPT/);
 });
 test('public supplied-file onboarding: two records/texts, native query/repeats and boundary refusals',async t=>{
