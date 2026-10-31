@@ -85,7 +85,9 @@ export async function registerCaptured({cli='superbee',bundle,manifest,actor,app
  }catch(error){const code=/^CIVIC_[A-Z_]+$/.test(error.message)?error.message:'CIVIC_CAPTURE_FAILED';const stopped=Error(code);stopped.receipt={...receipt,error:code,complete:false};throw stopped;}
  finally{if(temp)await rm(temp,{recursive:true,force:true});}
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+// Node resolves module URLs physically; argv may retain a symlinked ancestor such as /tmp.
+const isMain=process.argv[1]&&(await realpath(process.argv[1]).catch(()=>null))===await realpath(fileURLToPath(import.meta.url));
+if(isMain){
  try{const config={apply:false},names={'--cli':'cli','--bundle':'bundle','--manifest':'manifest','--actor':'actor'};for(let i=2;i<process.argv.length;i++){const flag=process.argv[i];if(flag==='--apply'&&!config.apply)config.apply=true;else if(names[flag]&&!config[names[flag]]&&process.argv[i+1]&&!process.argv[i+1].startsWith('--'))config[names[flag]]=process.argv[++i];else fail('CIVIC_CAPTURE_ARGUMENTS');}console.log(JSON.stringify(await registerCaptured(config)));}
  catch(error){console.log(JSON.stringify(error.receipt??{error:/^CIVIC_[A-Z_]+$/.test(error.message)?error.message:'CIVIC_CAPTURE_FAILED'}));process.exitCode=1;}
 }

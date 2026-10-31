@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {mkdir,writeFile,readFile,symlink,link} from 'node:fs/promises';import path from 'node:path';import {fileURLToPath} from 'node:url';import {createHash} from 'node:crypto';
+import {mkdir,writeFile,readFile,symlink,link} from 'node:fs/promises';import path from 'node:path';import {fileURLToPath,pathToFileURL} from 'node:url';import {createHash} from 'node:crypto';
 import {createWorkspace,isolatedEnvironment,runProcess} from './vendor/package-verification/src/harness.mjs';
 import {prepareCapturedText} from '../integrations/civic-records/src/operation.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),sha=x=>createHash('sha256').update(x).digest('hex');
@@ -17,8 +17,13 @@ test('finite capture registrar: installed public CLI, revisions, conflicts, unce
   const make=async(n,pdf=`%PDF-1.4\nSYNTHETIC fixture ${n} only; not a real PDF\n`)=>{const pdfFile=path.join(scratch,`capture-${n}-${sha(pdf).slice(0,12)}.pdf`);await writeFile(pdfFile,pdf);return {documentId:String(n),pdfFile,pdfSha256:sha(pdf),sourceUrl:`https://ecode360.com/ZZ0001/document/${n}.pdf`,capturedAt:'2026-01-03T00:00:00.000Z',title:`Synthetic council minutes ${n}`,bodyName:'Synthetic Council',meetingDate:'2026-01-02',recordKind:'minutes',sessionKind:'regular',extractionStatus:'text-extracted',pageCount:1};};
   const firstEntry=await make(1),secondEntry=await make(2),manifest=path.join(scratch,'manifest.json');
   const registrar=path.join(root,'examples/civic-records/register-captured.mjs');
-  const invoke=async(entries,{apply=false,expected=0,executable=cli,source=sourceId,extra={}}={})=>{await writeFile(manifest,JSON.stringify({schema:'civic-captured-records/v1',sourceId:source,captureBasis:'operator-supplied-files',coverage:'selected-only-unknown-tail',entries,...extra}));return JSON.parse((await run(process.execPath,[registrar,'--cli',executable,'--bundle',bundle,'--manifest',manifest,'--actor','process:civic-capture-test',...(apply?['--apply']:[])],expected)).stdout);};
-  assert.deepEqual((await invoke([firstEntry,secondEntry])).results.map(x=>x.outcome),['would-create','would-create']);
+  const invoke=async(entries,{apply=false,expected=0,executable=cli,source=sourceId,extra={},script=registrar}={})=>{await writeFile(manifest,JSON.stringify({schema:'civic-captured-records/v1',sourceId:source,captureBasis:'operator-supplied-files',coverage:'selected-only-unknown-tail',entries,...extra}));return JSON.parse((await run(process.execPath,[script,'--cli',executable,'--bundle',bundle,'--manifest',manifest,'--actor','process:civic-capture-test',...(apply?['--apply']:[])],expected)).stdout);};
+  // Executing through an ancestor alias must run main; importing it must remain inert.
+  const aliasRoot=path.join(scratch,'source-alias');await symlink(root,aliasRoot,'dir');const aliasRegistrar=path.join(aliasRoot,'examples/civic-records/register-captured.mjs');
+  const aliasInvalid=JSON.parse((await run(process.execPath,[aliasRegistrar,'--unknown'],1)).stdout);assert.equal(aliasInvalid.error,'CIVIC_CAPTURE_ARGUMENTS');
+  const importOnly=path.join(scratch,'import-only.mjs');await writeFile(importOnly,`import ${JSON.stringify(pathToFileURL(aliasRegistrar).href)};process.stdout.write('import-safe');\n`);assert.equal((await run(process.execPath,[importOnly,'--unknown'])).stdout,'import-safe');
+  assert.deepEqual((await invoke([firstEntry,secondEntry],{script:aliasRegistrar})).results.map(x=>x.outcome),['would-create','would-create']);
+
   const created=await invoke([firstEntry],{apply:true});assert.equal(created.created,1);const id=created.results[0].id;
   const before=await native(['doc','read',id]);assert.equal(before.approval_status,'unknown');assert.match(before.body,/caller assertions/);assert.match(before.body,/unexamined discovery tails remain unknown/);
   const resumed=await invoke([firstEntry,secondEntry],{apply:true});assert.equal(resumed.created,1);assert.equal(resumed.unchanged,1);
