@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
-  "description": "Experimental local captured civic PDF/text preparation; caller-associated evidence only",
+  "description": "Bounded civic listing discovery, native PDF extraction and captured-text preparation",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CAPTURE.md"
   ],
   "superbeeLocalOperations": {
     "contract": 1,
@@ -37,13 +38,58 @@
           },
           "maximumOutputBytes": 65536
         }
+      },
+      {
+        "id": "local.civic.discover-pdfs.v1",
+        "capability": {
+          "name": "civic_discover_pdfs",
+          "implementationId": "civic-discover-pdfs.v1",
+          "description": "Discover bounded same-origin PDF candidates from a captured listing. No network fetch, archive completeness, deletion inference or source authenticity claim.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "maximumOutputBytes": 65536
+        }
+      },
+      {
+        "id": "local.civic.extract-pdf.v1",
+        "capability": {
+          "name": "civic_extract_pdf",
+          "implementationId": "civic-extract-pdf.v1",
+          "description": "Extract a captured PDF through an explicitly bound pdftotext tool. No direct process spawn, OCR, bundle writes or publication.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {}
+          },
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": false
+          },
+          "maximumOutputBytes": 65536
+        }
       }
     ]
   },
   "scripts": {
     "build": "node build.mjs",
-    "typecheck": "node --check src/operation.mjs",
+    "typecheck": "node --check src/operation.mjs && node --check src/capture.mjs",
     "test": "node --test test/*.test.mjs",
     "prepublishOnly": "node -e \"process.exit(1)\""
+  },
+  "dependencies": {
+    "parse5": "8.0.0"
   }
 }

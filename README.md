@@ -20,8 +20,9 @@ isolated tools, both recipes, explicit preparation/import, native queries and sa
 The experimental [Civic Records recipe](recipes/civic-records) separates source, immutable record,
 complete text and interpretation without encoding a municipality in the definitions. The
 [captured-text local operation](integrations/civic-records) is an explicit finite-input prototype,
-with [synthetic experiments and learning questions](examples/civic-records). It does not crawl
-providers, execute PDF conversion, create domain records or publish civic news. Keep real municipal
+with [synthetic experiments and learning questions](examples/civic-records). Its [captured-input capabilities](integrations/civic-records/CAPTURE.md) now discover PDF links
+from captured listings and execute an explicitly bound native PDF converter. They do not crawl
+providers, create domain records, schedule work or publish civic news. Keep real municipal
 capture evidence in private/local research, not repository fixtures.
 
 ## GitHub reference integration
