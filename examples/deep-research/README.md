@@ -140,9 +140,13 @@ run by recipe installation. Its dependency setup and scope are separate.
 
 Start with the short synthesis, then follow the Question's answer, the Claim's
 support/challenge/dependency links, and each Observation's source and locator.
-`superbee doc read <id> --offset 0 --dir <bundle> --json` returns the full body;
-the default may be a clearly marked preview. Use `superbee status` for structural
-checks, not a guessed `check` command. Neither command verifies research truth.
+`superbee doc read <id> --body-out - --dir <bundle>` returns the complete body
+on its documented byte-output channel; the ordinary default may be a clearly
+marked preview. For JSON paging, start with `--offset 0 --json`, then follow
+`range.next_offset` with the first response's `head_version` passed through
+`--expected-version` until the final page. The first page is not proof of a
+complete long document. Use `superbee status` for structural checks, not a guessed
+`check` command. Neither command verifies research truth.
 
 A Source that says bytes were retained must locate them: record the exact path,
 its base (study root, bundle root or Source document), and which representation

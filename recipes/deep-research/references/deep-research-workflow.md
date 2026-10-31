@@ -42,7 +42,10 @@ Keep evidence and draft Markdown outside the bundle root; `--dir` names that roo
 itself. The own-study example uses a `.superbee` child so narrative and temporary
 files do not accidentally become indexed records. A short synthesis remains the
 human entrypoint; the graph supports a later audit, not a requirement to read every
-record for every answer. Use `doc read --offset 0` when a default preview is truncated.
+record for every answer. For a complete body use `doc read <id> --body-out -`.
+JSON `--offset 0` starts paging; follow `range.next_offset` and pass the first
+`head_version` with `--expected-version` until the final page. Do not equate the
+first page with the complete document.
 
 ## Attempt log template
 
