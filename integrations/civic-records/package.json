@@ -89,7 +89,7 @@
     "test": "node --test test/*.test.mjs",
     "prepublishOnly": "node -e \"process.exit(1)\""
   },
-  "dependencies": {
+  "devDependencies": {
     "parse5": "8.0.0"
   }
 }
