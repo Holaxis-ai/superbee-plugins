@@ -22,6 +22,13 @@ an explicitly invoked new-bundle starter, a small disjoint place-history extensi
 and focused installed-public-CLI checks. Existing research migrations, optional
 readers/companions and real-use effectiveness remain separate work.
 
+## Optional recipe-author tooling
+
+The [local recipe preflight example](examples/recipe-preflight/README.md) prepares
+explicit local evidence for Superbee's existing compatibility checker. It is
+independent of the research recipe, runs only when invoked, and is not installed
+by any recipe. Its supplied research/place plan is one example input.
+
 ## Civic records experiment
 
 Start with the [two-document supplied-file walkthrough](examples/civic-records/getting-started.md):

@@ -131,7 +131,7 @@ against ordinary organized notes. Semantic validity still requires research revi
 
 ## Check a selected local extension combination
 
-The optional [local preflight author example](preflight/README.md) collects explicit
+The optional [local preflight author example](../recipe-preflight/README.md) collects explicit
 local definition snapshots for the existing public Core structural checker. It
 keeps consumer requirements authored, creates no research instances and is never
 run by recipe installation. Its dependency setup and scope are separate.

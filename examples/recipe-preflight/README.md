@@ -5,7 +5,8 @@ still choose the recipes and state what their consumer needs. The adapter reads
 local bytes and computes digests, observations and a complete convention inventory;
 it does not infer requirements or implement compatibility semantics.
 
-This is an experimental opt-in example, outside the inert recipe payload. It
+This is optional recipe-author tooling, outside every recipe payload. It is not
+required to install or use Deep Research; that recipe supplies one example plan. It
 supports **OKF 0.2 folders and definitions-only convention/reference recipes**.
 Views, Connectors, remote placement, dependency fetching, installation, migration
 and instance validation are outside its scope. Existing Core remains the semantic
@@ -17,9 +18,9 @@ From this repository's reviewed checkout, explicitly install the example's pinne
 public dependency. This is separate from recipe installation:
 
 ```sh
-npm ci --prefix examples/deep-research/preflight --ignore-scripts --no-audit --no-fund
-node examples/deep-research/preflight/check.mjs \
-  --plan examples/deep-research/preflight/place-plan.json \
+npm ci --prefix examples/recipe-preflight --ignore-scripts --no-audit --no-fund
+node examples/recipe-preflight/check.mjs \
+  --plan examples/recipe-preflight/place-plan.json \
   --bundle /absolute/path/to/a/selected/bundle
 ```
 
@@ -82,7 +83,7 @@ preserves it.
 ## Verify and compare
 
 ```sh
-npm exec -- node --test scripts/deep-research-preflight.test.mjs
+npm exec -- node --test scripts/recipe-preflight.test.mjs
 ```
 
 The consumer test copies the example outside this checkout, installs its locked

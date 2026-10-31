@@ -60,22 +60,6 @@ inherited JavaScript property names as invalid starter cases; an own-key check n
 rejects them before initialization. The consumer suite adds those cases and native
 refusals for enclosing bundles and occupied non-bundle destinations.
 
-## Optional local author adapter
-
-The separate `preflight/` example delegates to locked public
-`@superbee/core@0.2.0-pre.41`; it is not part of recipe installation. Run
-`npm exec -- node --test scripts/deep-research-preflight.test.mjs`. Seven subtests
-plus their parent pass after the initial independent review correction: collection
-must preserve a leading UTF-8 BOM. The regression proves its bytes and observed
-snapshot identity change; it deliberately leaves structural-equivalence verdicts
-to Core (which accepts this encoding-only case).
-
-The selected-plan comparison requires four authored requirements and zero authored
-hash/snapshot fields. The adapter prepares the same bounded structural question as
-the handwritten runner. This demonstrates reusable collection plumbing, not
-measured human-time savings or a new schema/solver capability. Source review and
-subsequent bounded QA receipts belong to the owning Development task.
-
 ## Fresh-agent onboarding observation
 
 A history-free agent started from the user-facing README and investigated an

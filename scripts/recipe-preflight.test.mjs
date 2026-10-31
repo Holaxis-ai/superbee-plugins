@@ -21,7 +21,7 @@ test('local recipe author adapter delegates to public Core on explicit snapshots
     const options = {env, cwd: scratch};
     assert.ok(process.env.npm_execpath, 'Run through npm exec -- node --test');
     const adapter = path.join(scratch, 'adapter');
-    await cp(path.join(root, 'examples/deep-research/preflight'), adapter, {recursive: true, filter: p => !p.split(path.sep).includes('node_modules')});
+    await cp(path.join(root, 'examples/recipe-preflight'), adapter, {recursive: true, filter: p => !p.split(path.sep).includes('node_modules')});
     let p = exec([process.env.npm_execpath, 'ci', '--ignore-scripts', '--no-audit', '--no-fund'], {...options, cwd: adapter});
     assert.equal(p.status, 0, p.stderr);
     const tool = path.join(scratch, 'tool');
@@ -32,6 +32,9 @@ test('local recipe author adapter delegates to public Core on explicit snapshots
     await cp(path.join(root, 'recipes/deep-research'), core, {recursive: true});
     await cp(path.join(root, 'examples/deep-research/extensions/place-history'), extension, {recursive: true});
     const plan = JSON.parse(await readFile(path.join(adapter, 'place-plan.json'), 'utf8'));
+    const suppliedPlanRoot = path.join(root, 'examples/recipe-preflight');
+    assert.equal(path.resolve(suppliedPlanRoot, plan.recipes[0].path), path.join(root, 'recipes/deep-research'));
+    assert.equal(path.resolve(suppliedPlanRoot, plan.recipes[1].path), path.join(root, 'examples/deep-research/extensions/place-history'));
     plan.recipes[0].path = core; plan.recipes[1].path = extension;
     const planPath = path.join(scratch, 'plan.json');
     async function save(value = plan) { await writeFile(planPath, JSON.stringify(value, null, 2)); }
