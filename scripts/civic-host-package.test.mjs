@@ -10,7 +10,7 @@ test('standalone civic host package imports inertly and composes public native d
   await writeFile(path.join(scratch,'package.json'),JSON.stringify({private:true,type:'module'}));
   const packed=JSON.parse((await run(process.execPath,[process.env.npm_execpath,'pack',path.join(root,'integrations/civic-records'),'--ignore-scripts','--pack-destination',scratch,'--json'])).stdout)[0];
   assert.ok(packed.files.some(f=>f.path==='dist/host.mjs'));assert.equal(packed.files.some(f=>f.path.startsWith('src/')||f.path.startsWith('examples/')),false);
-  await run(process.execPath,[process.env.npm_execpath,'install',path.join(scratch,packed.filename),'superbee@0.4.4-pre.11','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  await run(process.execPath,[process.env.npm_execpath,'install',path.join(scratch,packed.filename),'@superbee/core@0.2.0-pre.41','superbee@0.4.4-pre.11','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
   const before=await readdir(scratch);const inert=path.join(scratch,'inert.mjs');await writeFile(inert,"import * as api from '@superbee/integration-civic-records/host';console.log(JSON.stringify(Object.keys(api)));\n");
   const exports=JSON.parse((await run(process.execPath,[inert,'--apply','--unknown'])).stdout);assert.ok(exports.includes('stageHostedEvidence'));assert.ok(exports.includes('createCivicOperations'));assert.deepEqual((await readdir(scratch)).sort(),[...before,'inert.mjs'].sort());
   const tool=await realpath(process.env.SUPERBEE_TEST_PDFTOTEXT??spawnSync('/usr/bin/which',['pdftotext'],{encoding:'utf8'}).stdout.trim());assert.ok(path.isAbsolute(tool));

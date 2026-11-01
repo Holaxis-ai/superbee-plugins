@@ -113,7 +113,7 @@ test('undated Evidence staging preserves existing lanes and first provenance, wi
   // Consume only the actual package archive, not a sibling example/source import.
   const packed=JSON.parse((await run(process.execPath,[process.env.npm_execpath,'pack',path.join(root,'integrations/civic-records'),'--ignore-scripts','--pack-destination',scratch,'--json'])).stdout)[0];
   assert.ok(packed.files.some(f=>f.path==='dist/host.mjs'));assert.equal(packed.files.some(f=>f.path.startsWith('src/')||f.path.startsWith('examples/')),false);
-  await run(process.execPath,[process.env.npm_execpath,'install',path.join(scratch,packed.filename),'--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  await run(process.execPath,[process.env.npm_execpath,'install',path.join(scratch,packed.filename),'@superbee/core@0.2.0-pre.41','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
   const stager=path.join(scratch,'stage-packaged-evidence.mjs');
   await writeFile(stager,`import {stageHostedEvidence} from '@superbee/integration-civic-records/host';
 const config={},names={'--cli':'cli','--bundle':'bundle','--expected-host':'expectedHost','--expected-workspace':'expectedWorkspace','--expected-bundle':'expectedBundle','--expected-principal':'expectedPrincipal','--actor':'actor','--prepared':'preparedFile','--observed-at':'observedAt','--expected-blob-version':'expectedBlobVersion'};

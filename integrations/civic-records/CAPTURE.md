@@ -212,6 +212,8 @@ import {createCivicOperations, stageHostedEvidence, stageHosted}
 The built standalone package contains `dist/operation.mjs` and `dist/host.mjs`; no runtime
 example or sibling source checkout is needed. Public Core `0.2.0-pre.41` is an exact peer of
 this host entry and remains an installed external dependency, never a bundled storage engine.
+The peer is optional for operation-only installations, matching the repository convention; host
+callers must explicitly install Core41. A missing Core refuses the host import with no fallback.
 The package remains private with npm publication blocked. A reviewed Git checkout or explicitly
 packed local artifact is its delivery mechanism; adding this entry does not authorize a release.
 
