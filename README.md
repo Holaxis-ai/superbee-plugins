@@ -11,6 +11,18 @@ contributing to this repository does not automatically enable code in a user's C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
+## My House
+
+The data-only [`my-house`](recipes/my-house/recipe.md) core and its
+[`maintenance`](recipes/my-house-maintenance/recipe.md) and
+[`costs`](recipes/my-house-costs/recipe.md) extensions supply seven Kinds for homes,
+spaces, assets, service history, projects and money records. Basic quotes, budgets,
+invoices and actual reported payments are included; alternatives, billed amounts
+and cash spent stay separate. The [fictional consumer example](examples/my-house/README.md)
+qualifies explicit composition, native field validation and scoped read-time domain
+checks against public artifacts. Installation creates no household records, schedules,
+model bindings, vendor messages or financial transactions.
+
 ## Deep, Deep Research (experimental)
 
 The data-only [`deep-research`](recipes/deep-research/recipe.md) recipe supplies four

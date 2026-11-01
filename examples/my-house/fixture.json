@@ -1,0 +1,513 @@
+{
+  "fictional": true,
+  "scope": {
+    "kind": "project",
+    "id": "my-house/projects/pr02"
+  },
+  "home_scope": {
+    "kind": "home",
+    "id": "my-house/homes/h02"
+  },
+  "plan_id": "my-house/maintenance/p01",
+  "stages": {
+    "quotes": [
+      "my-house/money/b1",
+      "my-house/money/e1",
+      "my-house/money/qa",
+      "my-house/money/qb"
+    ],
+    "authorized": [
+      "my-house/money/b1",
+      "my-house/money/e1",
+      "my-house/money/qa",
+      "my-house/money/qb",
+      "my-house/money/c1"
+    ],
+    "invoiced": [
+      "my-house/money/b1",
+      "my-house/money/e1",
+      "my-house/money/qa",
+      "my-house/money/qb",
+      "my-house/money/c1",
+      "my-house/money/c1r",
+      "my-house/money/i1"
+    ],
+    "partial": [
+      "my-house/money/b1",
+      "my-house/money/e1",
+      "my-house/money/qa",
+      "my-house/money/qb",
+      "my-house/money/c1",
+      "my-house/money/c1r",
+      "my-house/money/i1",
+      "my-house/money/p1"
+    ],
+    "mistyped": [
+      "my-house/money/b1",
+      "my-house/money/e1",
+      "my-house/money/qa",
+      "my-house/money/qb",
+      "my-house/money/c1",
+      "my-house/money/c1r",
+      "my-house/money/i1",
+      "my-house/money/p1",
+      "my-house/money/p2"
+    ],
+    "corrected": [
+      "my-house/money/b1",
+      "my-house/money/e1",
+      "my-house/money/qa",
+      "my-house/money/qb",
+      "my-house/money/c1",
+      "my-house/money/c1r",
+      "my-house/money/i1",
+      "my-house/money/p1",
+      "my-house/money/p2",
+      "my-house/money/p2r"
+    ],
+    "refunded": [
+      "my-house/money/b1",
+      "my-house/money/e1",
+      "my-house/money/qa",
+      "my-house/money/qb",
+      "my-house/money/c1",
+      "my-house/money/c1r",
+      "my-house/money/i1",
+      "my-house/money/p1",
+      "my-house/money/p2",
+      "my-house/money/p2r",
+      "my-house/money/cr1",
+      "my-house/money/rf1"
+    ]
+  },
+  "documents": [
+    {
+      "id": "my-house/homes/h01",
+      "frontmatter": {
+        "type": "My House Home",
+        "title": "Mina apartment",
+        "occupancy_role": "renter",
+        "timezone": "Europe/London",
+        "basis": "reported"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/homes/h02",
+      "frontmatter": {
+        "type": "My House Home",
+        "title": "Dev home",
+        "occupancy_role": "owner",
+        "timezone": "America/New_York",
+        "basis": "reported"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/assets/a01",
+      "frontmatter": {
+        "type": "My House Asset",
+        "title": "Mina portable purifier",
+        "asset_category": "appliance",
+        "mobility": "movable",
+        "responsibility": "self",
+        "placement_status": "recorded"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[at home](../homes/h01.md)\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/spaces/s02",
+      "frontmatter": {
+        "type": "My House Space",
+        "title": "Kitchen",
+        "space_category": "kitchen"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[home](../homes/h02.md)\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/assets/a02",
+      "frontmatter": {
+        "type": "My House Asset",
+        "title": "Existing kitchen faucet",
+        "asset_category": "fixture",
+        "mobility": "installed",
+        "placement_status": "recorded"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[located in](../spaces/s02.md)\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/maintenance/p01",
+      "frontmatter": {
+        "type": "My House Maintenance Plan",
+        "title": "Clean portable purifier",
+        "procedure": "Clean exterior and washable prefilter",
+        "plan_status": "enabled",
+        "schedule_mode": "manual_date",
+        "next_due_on": "2026-12-01",
+        "schedule_timezone": "Europe/London",
+        "schedule_basis": "Owner-selected date; manufacturer cadence not established"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[asset](../assets/a01.md)\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/services/s01",
+      "frontmatter": {
+        "type": "My House Service Record",
+        "title": "Purifier cleaning reported by Mina",
+        "work_performed": "Cleaned exterior and washable prefilter; no replacement claimed",
+        "occurred_on": "2026-11-02",
+        "result": "completed",
+        "plan_result": "satisfied",
+        "reported_by": "Mina",
+        "basis": "reported",
+        "source_event_key": "fictional-mina:purifier-clean-1"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[asset](../assets/a01.md)\n\n[plan](../maintenance/p01.md)\n\n[performed at home](../homes/h01.md)\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/projects/pr02",
+      "frontmatter": {
+        "type": "My House Project",
+        "title": "Replace kitchen faucet",
+        "scope_note": "Replace faucet; scope/tax exclusions must be compared explicitly",
+        "project_status": "active",
+        "responsibility": "Dev"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[home](../homes/h02.md)\n\n[space](../spaces/s02.md)\n\n[asset](../assets/a02.md)\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/b1",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional budget b1",
+        "record_kind": "budget",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 150000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-03",
+        "counterparty_name": "Dev",
+        "counterparty_key": "fictional-dev",
+        "document_number": "EXAMPLE-b1",
+        "source_fact_key": "fictional-b1",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "1500.00 USD"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/b1. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/e1",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional estimate e1",
+        "record_kind": "estimate",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 120000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-03",
+        "counterparty_name": "Dev",
+        "counterparty_key": "fictional-dev",
+        "document_number": "EXAMPLE-e1",
+        "source_fact_key": "fictional-e1",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "1200.00 USD"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/e1. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/qa",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional quote qa",
+        "record_kind": "quote",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 110000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-03",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-qa",
+        "source_fact_key": "fictional-qa",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "1100.00 USD",
+        "selection": "preferred",
+        "valid_until": "2026-12-01",
+        "line_items": [
+          {
+            "line_id": "materials",
+            "description": "Materials",
+            "amount_minor": 78000,
+            "inclusion": "included"
+          },
+          {
+            "line_id": "labor",
+            "description": "Labor",
+            "amount_minor": 30000,
+            "inclusion": "included"
+          },
+          {
+            "line_id": "tax",
+            "description": "Supplier stated tax",
+            "amount_minor": 2000,
+            "inclusion": "included"
+          },
+          {
+            "line_id": "optional",
+            "description": "Optional accessory excluded from base quote",
+            "amount_minor": 9000,
+            "inclusion": "optional"
+          }
+        ]
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/qa. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/qb",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional quote qb",
+        "record_kind": "quote",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 125000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-03",
+        "counterparty_name": "Vendor B",
+        "counterparty_key": "fictional-vendor-b",
+        "document_number": "EXAMPLE-qb",
+        "source_fact_key": "fictional-qb",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "1250.00 USD",
+        "selection": "unselected",
+        "valid_until": "2026-12-01"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/qb. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/c1",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional commitment c1",
+        "record_kind": "commitment",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 110000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-03",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-c1",
+        "source_fact_key": "fictional-c1",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "1100.00 USD",
+        "authorized_by": "Dev",
+        "authorization_basis": "Dev reports authorizing this order; no legal supplier acceptance inferred"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n[based on](qa.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/c1. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/c1r",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional commitment c1r",
+        "record_kind": "commitment",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 112000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-04",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-c1r",
+        "source_fact_key": "fictional-c1",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "1120.00 USD",
+        "authorized_by": "Dev",
+        "authorization_basis": "Dev reports authorizing the documented 20 USD adapter variation",
+        "revision_reason": "New authorized order total replaces the earlier snapshot"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n[revises](c1.md)\n\n[based on](qa.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/c1r. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/i1",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional invoice i1",
+        "record_kind": "invoice",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 112000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-05",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-i1",
+        "source_fact_key": "fictional-i1",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "1120.00 USD",
+        "due_on": "2026-12-05",
+        "line_items": [
+          {
+            "line_id": "materials",
+            "description": "Materials and adapter",
+            "amount_minor": 80000,
+            "inclusion": "included"
+          },
+          {
+            "line_id": "labor",
+            "description": "Labor",
+            "amount_minor": 30000,
+            "inclusion": "included"
+          },
+          {
+            "line_id": "tax",
+            "description": "Supplier stated tax",
+            "amount_minor": 2000,
+            "inclusion": "included"
+          }
+        ]
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n[bills commitment](c1r.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/i1. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/p1",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional payment p1",
+        "record_kind": "payment",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 40000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-06",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-p1",
+        "source_fact_key": "fictional-p1",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "400.00 USD"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n[settles invoice](i1.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/p1. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/p2",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional payment p2",
+        "record_kind": "payment",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 70000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-07",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-p2",
+        "source_fact_key": "fictional-p2",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "700.00 USD"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n[settles invoice](i1.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/p2. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/p2r",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional payment p2r",
+        "record_kind": "payment",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 72000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-07",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-p2r",
+        "source_fact_key": "fictional-p2",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "720.00 USD",
+        "revision_reason": "Transcription correction: receipt was 720 USD, not 700 USD; not another payment"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n[corrects](p2.md)\n\n[settles invoice](i1.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/p2r. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/cr1",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional credit cr1",
+        "record_kind": "credit",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 5000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-08",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-cr1",
+        "source_fact_key": "fictional-cr1",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "50.00 USD"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n[credits invoice](i1.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/cr1. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    },
+    {
+      "id": "my-house/money/rf1",
+      "frontmatter": {
+        "type": "My House Money Record",
+        "title": "Fictional refund rf1",
+        "record_kind": "refund",
+        "entry_status": "recorded",
+        "allocation_status": "direct",
+        "amount_minor": 5000,
+        "currency": "USD",
+        "currency_scale": 2,
+        "currency_basis": "my-house-currency-v1-six-2026-09-17",
+        "effective_on": "2026-11-09",
+        "counterparty_name": "Vendor A",
+        "counterparty_key": "fictional-vendor-a",
+        "document_number": "EXAMPLE-rf1",
+        "source_fact_key": "fictional-rf1",
+        "scope_note": "Fictional faucet job; source totals include the stated work and tax",
+        "tax_basis": "included",
+        "source_amount_text": "50.00 USD",
+        "refund_allocation_effect": "reverses_payment_allocation"
+      },
+      "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[project](../projects/pr02.md)\n\n[refunds payment](p2r.md)\n\n# Evidence\n\nFictional source only: https://example.invalid/my-house/rf1. No actual quote, order or transfer exists.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
+    }
+  ]
+}

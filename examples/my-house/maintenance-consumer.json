@@ -1,0 +1,118 @@
+{
+  "id": "my-house-maintenance-reference-reader",
+  "owner": "maintenance",
+  "requirements": [
+    {
+      "id": "home",
+      "provider": "core",
+      "kind": "My House Home",
+      "required": true,
+      "fields": [
+        "title"
+      ]
+    },
+    {
+      "id": "space",
+      "provider": "core",
+      "kind": "My House Space",
+      "required": true,
+      "fields": [
+        "title"
+      ],
+      "links": [
+        {
+          "label": "home",
+          "target": {
+            "provider": "core",
+            "kind": "My House Home"
+          }
+        }
+      ]
+    },
+    {
+      "id": "asset",
+      "provider": "core",
+      "kind": "My House Asset",
+      "required": true,
+      "fields": [
+        "title",
+        "mobility"
+      ],
+      "links": [
+        {
+          "label": "located in",
+          "target": {
+            "provider": "core",
+            "kind": "My House Space"
+          }
+        },
+        {
+          "label": "at home",
+          "target": {
+            "provider": "core",
+            "kind": "My House Home"
+          }
+        }
+      ]
+    },
+    {
+      "id": "plan",
+      "provider": "maintenance",
+      "kind": "My House Maintenance Plan",
+      "required": true,
+      "fields": [
+        "procedure",
+        "plan_status",
+        "schedule_mode",
+        "next_due_on",
+        "override_due_on",
+        "override_basis"
+      ],
+      "links": [
+        {
+          "label": "asset",
+          "target": {
+            "provider": "core",
+            "kind": "My House Asset"
+          }
+        }
+      ]
+    },
+    {
+      "id": "service",
+      "provider": "maintenance",
+      "kind": "My House Service Record",
+      "required": true,
+      "fields": [
+        "work_performed",
+        "occurred_on",
+        "occurred_at",
+        "result",
+        "plan_result"
+      ],
+      "links": [
+        {
+          "label": "plan",
+          "target": {
+            "provider": "maintenance",
+            "kind": "My House Maintenance Plan"
+          }
+        },
+        {
+          "label": "asset",
+          "target": {
+            "provider": "core",
+            "kind": "My House Asset"
+          }
+        },
+        {
+          "label": "corrects",
+          "target": {
+            "provider": "maintenance",
+            "kind": "My House Service Record"
+          }
+        }
+      ]
+    }
+  ]
+}
