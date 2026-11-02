@@ -1,10 +1,10 @@
 ---
 type: Reference
-title: My House maintenance operating contract v1
+title: My Home maintenance operating contract v1
 ---
-# My House maintenance operating contract v1
+# My Home maintenance operating contract v1
 
-Select My House core before this recipe. A Plan expresses intended work; a Service records what
+Select My Home core before this recipe. A Plan expresses intended work; a Service records what
 someone reports actually occurred. Installation runs no reminder or job. A Task checkbox alone
 is not evidence a filter was replaced or a contractor attended.
 

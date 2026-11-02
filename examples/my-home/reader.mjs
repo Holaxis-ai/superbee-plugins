@@ -5,7 +5,7 @@
  */
 import {parseLinksFromDoc, kindFieldTypeProblem, isPresent as present} from '@superbee/core';
 
-const PREFIX = 'My House ';
+const PREFIX = 'My Home ';
 const MONEY = PREFIX + 'Money Record';
 const SERVICE = PREFIX + 'Service Record';
 const PRIMARY = ['project', 'home', 'asset'];
@@ -133,7 +133,7 @@ export function assessMoney(documents,options={}) {
     const primary=scopeOf(doc);if(!primary)return {match:true,problem:'missing/ambiguous primary scope in the supplied snapshot'};
     const explicit=targets(doc,'incurred for home');
     if(explicit.length>1)return {match:true,problem:'historical Home attribution is ambiguous'};
-    if(explicit.some(id=>scopeTargetProblem({kind:'home',id},index)))return {match:true,problem:'historical Home attribution target must be an inspected My House Home'};
+    if(explicit.some(id=>scopeTargetProblem({kind:'home',id},index)))return {match:true,problem:'historical Home attribution target must be an inspected My Home Home'};
     if(primary.kind==='home'){
       const problem=scopeTargetProblem(primary,index);
       if(problem)return {match:true,problem};
@@ -145,7 +145,7 @@ export function assessMoney(documents,options={}) {
     if(primary.kind==='project'){
       const project=index.get(primary.id), homes=project?targets(project,'home'):[];
       if(project&&fm(project).type===PREFIX+'Project'&&homes.length===1){
-        if(scopeTargetProblem({kind:'home',id:homes[0]},index))return {match:true,problem:'Project Home attribution target must be an inspected My House Home'};
+        if(scopeTargetProblem({kind:'home',id:homes[0]},index))return {match:true,problem:'Project Home attribution target must be an inspected My Home Home'};
         return {match:homes[0]===scope.id,problem:explicit.length&&explicit[0]!==homes[0]?'conflicting historical Home attribution':null};
       }
       return {match:true,problem:'Project Home attribution is missing/ambiguous in the selected Home assessment'};

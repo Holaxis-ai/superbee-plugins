@@ -1,11 +1,11 @@
 {
-  "id": "my-house-scoped-reference-reader",
-  "owner": "costs",
+  "id": "my-home-maintenance-reference-reader",
+  "owner": "maintenance",
   "requirements": [
     {
       "id": "home",
       "provider": "core",
-      "kind": "My House Home",
+      "kind": "My Home Home",
       "required": true,
       "fields": [
         "title"
@@ -14,7 +14,7 @@
     {
       "id": "space",
       "provider": "core",
-      "kind": "My House Space",
+      "kind": "My Home Space",
       "required": true,
       "fields": [
         "title"
@@ -24,7 +24,7 @@
           "label": "home",
           "target": {
             "provider": "core",
-            "kind": "My House Home"
+            "kind": "My Home Home"
           }
         }
       ]
@@ -32,7 +32,7 @@
     {
       "id": "asset",
       "provider": "core",
-      "kind": "My House Asset",
+      "kind": "My Home Asset",
       "required": true,
       "fields": [
         "title",
@@ -43,14 +43,14 @@
           "label": "located in",
           "target": {
             "provider": "core",
-            "kind": "My House Space"
+            "kind": "My Home Space"
           }
         },
         {
           "label": "at home",
           "target": {
             "provider": "core",
-            "kind": "My House Home"
+            "kind": "My Home Home"
           }
         }
       ]
@@ -58,7 +58,7 @@
     {
       "id": "plan",
       "provider": "maintenance",
-      "kind": "My House Maintenance Plan",
+      "kind": "My Home Maintenance Plan",
       "required": true,
       "fields": [
         "procedure",
@@ -73,7 +73,7 @@
           "label": "asset",
           "target": {
             "provider": "core",
-            "kind": "My House Asset"
+            "kind": "My Home Asset"
           }
         }
       ]
@@ -81,7 +81,7 @@
     {
       "id": "service",
       "provider": "maintenance",
-      "kind": "My House Service Record",
+      "kind": "My Home Service Record",
       "required": true,
       "fields": [
         "work_performed",
@@ -97,78 +97,21 @@
           "label": "plan",
           "target": {
             "provider": "maintenance",
-            "kind": "My House Maintenance Plan"
+            "kind": "My Home Maintenance Plan"
           }
         },
         {
           "label": "asset",
           "target": {
             "provider": "core",
-            "kind": "My House Asset"
+            "kind": "My Home Asset"
           }
         },
         {
           "label": "corrects",
           "target": {
             "provider": "maintenance",
-            "kind": "My House Service Record"
-          }
-        }
-      ]
-    },
-    {
-      "id": "project",
-      "provider": "costs",
-      "kind": "My House Project",
-      "required": true,
-      "fields": [
-        "title"
-      ],
-      "links": [
-        {
-          "label": "home",
-          "target": {
-            "provider": "core",
-            "kind": "My House Home"
-          }
-        }
-      ]
-    },
-    {
-      "id": "money",
-      "provider": "costs",
-      "kind": "My House Money Record",
-      "required": true,
-      "fields": [
-        "record_kind",
-        "entry_status",
-        "amount_minor",
-        "currency",
-        "currency_scale",
-        "currency_basis",
-        "refund_allocation_effect",
-        "line_items"
-      ],
-      "links": [
-        {
-          "label": "project",
-          "target": {
-            "provider": "costs",
-            "kind": "My House Project"
-          }
-        },
-        {
-          "label": "corrects",
-          "target": {
-            "provider": "costs",
-            "kind": "My House Money Record"
-          }
-        },
-        {
-          "label": "settles invoice",
-          "target": {
-            "provider": "costs",
-            "kind": "My House Money Record"
+            "kind": "My Home Service Record"
           }
         }
       ]

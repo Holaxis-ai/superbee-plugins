@@ -1,8 +1,8 @@
 ---
 type: Reference
-title: My House core operating contract v1
+title: My Home core operating contract v1
 ---
-# My House core operating contract v1
+# My Home core operating contract v1
 
 Start with one useful record: a Home and one known Asset can support maintenance or money work
 without a room inventory, address, floor plan or 3D model. This applies to renters, owners and

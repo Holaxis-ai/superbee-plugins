@@ -1,10 +1,10 @@
 ---
 type: Reference
-title: My House money operating contract v1
+title: My Home money operating contract v1
 ---
-# My House money operating contract v1
+# My Home money operating contract v1
 
-Select My House core first. This recipe brings Project and Money Record; no maintenance, Vendor,
+Select My Home core first. This recipe brings Project and Money Record; no maintenance, Vendor,
 Receipt or planning Kind is required. A quote can be captured immediately. Later planning must
 reuse Project and this monetary authority rather than add competing conventions or amounts.
 
@@ -41,7 +41,7 @@ credit/refund role determines sign. No scale is inferred as 2. Native integer va
 verify positivity or currency denomination.
 
 currency_basis names an explicitly selected reviewed policy/source version. The example policy
-`my-house-currency-v1-six-2026-09-17` supports its documented subset only: USD scale2, JPY scale0,
+`my-home-currency-v1-six-2026-09-17` supports its documented subset only: USD scale2, JPY scale0,
 KWD scale3, sourced from the SIX list published 2026-09-17. Another policy needs deliberate source
 and reader qualification. Installation/read never chooses, fetches or updates policy.
 

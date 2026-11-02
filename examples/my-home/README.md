@@ -1,8 +1,8 @@
-# My House: fictional consumer qualification
+# My Home: fictional consumer qualification
 
-This example exercises three inert recipes: [`my-house`](../../recipes/my-house/recipe.md),
-[`my-house-maintenance`](../../recipes/my-house-maintenance/recipe.md) and
-[`my-house-costs`](../../recipes/my-house-costs/recipe.md). Together they declare Home, Space,
+This example exercises three inert recipes: [`my-home`](../../recipes/my-home/recipe.md),
+[`my-home-maintenance`](../../recipes/my-home-maintenance/recipe.md) and
+[`my-home-costs`](../../recipes/my-home-costs/recipe.md). Together they declare Home, Space,
 Asset, Maintenance Plan, Service Record, Project and Money Record. Installing them creates no
 household inventory, model binding, scheduler, vendor contact, bank connection or payment.
 
@@ -10,12 +10,16 @@ Start with a Home and one useful item or job. Rooms, equipment and detailed hist
 when needed. The fictional renter needs no full inventory or address. Financial alternatives
 need no Option/Decision hierarchy: separate quotes already preserve the offers.
 
+The first recipe release is `0.1.0`. Its pre-merge name was changed consistently to `my-home`,
+including namespaced Kind labels, document paths and consumer requirements. Home remains the
+same dwelling concept; no live installation or data migration is implied by this source rename.
+
 ## Run the executable example
 
 From a reviewed checkout with its locked development dependencies installed:
 
 ```sh
-npm exec -- node --test scripts/my-house-consumer.test.mjs
+npm exec -- node --test scripts/my-home-consumer.test.mjs
 ```
 
 The test acquires public CLI `0.4.4-pre.9` and Core `0.2.0-pre.41` into a disposable workspace

@@ -7,11 +7,11 @@ import {createRequire} from 'node:module';
 import {createWorkspace, isolatedEnvironment, runProcess} from './vendor/package-verification/src/harness.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const actor = 'process:my-house-fictional-consumer';
+const actor = 'process:my-home-fictional-consumer';
 const packages = [
-  ['core', 'my-house', 'base'],
-  ['maintenance', 'my-house-maintenance', 'extension'],
-  ['costs', 'my-house-costs', 'extension'],
+  ['core', 'my-home', 'base'],
+  ['maintenance', 'my-home-maintenance', 'extension'],
+  ['costs', 'my-home-costs', 'extension'],
 ];
 async function files(dir, prefix = '') {
   const result = [];
@@ -23,7 +23,7 @@ async function files(dir, prefix = '') {
   return result;
 }
 
-test('My House: installed public artifacts, inert composition and scoped fictional journeys', {timeout: 300_000}, async t => {
+test('My Home: installed public artifacts, inert composition and scoped fictional journeys', {timeout: 300_000}, async t => {
   const workspace = await createWorkspace();
   const scratch = workspace.root;
   try {
@@ -31,7 +31,7 @@ test('My House: installed public artifacts, inert composition and scoped fiction
     await mkdir(home);
     const env = isolatedEnvironment({home, values: {PATH: process.env.PATH ?? path.dirname(process.execPath)}});
     const run = (command, args, expected = 0) => runProcess(command, args, {cwd: scratch, env, expected, timeout: 120_000, maxBuffer: 8 * 1024 * 1024});
-    assert.ok(process.env.npm_execpath, 'Run with npm exec -- node --test scripts/my-house-consumer.test.mjs');
+    assert.ok(process.env.npm_execpath, 'Run with npm exec -- node --test scripts/my-home-consumer.test.mjs');
     await writeFile(path.join(scratch, 'package.json'), JSON.stringify({private: true, type: 'module'}));
     await run(process.execPath, [process.env.npm_execpath, 'install', 'superbee@0.4.4-pre.9', '@superbee/core@0.2.0-pre.41', '--ignore-scripts', '--no-audit', '--no-fund', '--package-lock=false', '--registry=https://registry.npmjs.org/']);
     const require = createRequire(path.join(scratch, 'package.json'));
@@ -55,7 +55,7 @@ test('My House: installed public artifacts, inert composition and scoped fiction
 
     // Consume copied artifacts outside the checkout. Never install into an ambient bundle.
     const example = path.join(scratch, 'example');
-    await cp(path.join(root, 'examples/my-house'), example, {recursive: true});
+    await cp(path.join(root, 'examples/my-home'), example, {recursive: true});
     const parsed = new Map(), selected = [], recipeDirs = [];
     for (const [key, name, role] of packages) {
       const dir = path.join(scratch, name);
@@ -89,7 +89,7 @@ test('My House: installed public artifacts, inert composition and scoped fiction
       assert.equal(ready.externalConsumers, 'unknown-out-of-scope');
       assert.equal((await preflightRecipeSet(proposed(selected.filter(s => s.key !== 'core')))).verdict, 'refused');
       const collision = proposed();
-      collision.placementInventories[0].files.push({path: 'conventions/duplicate-home.md', bytes: collision.observations[0].definitions.find(d => d.id === 'conventions/my-house-home').bytes});
+      collision.placementInventories[0].files.push({path: 'conventions/duplicate-home.md', bytes: collision.observations[0].definitions.find(d => d.id === 'conventions/my-home-home').bytes});
       assert.equal((await preflightRecipeSet(collision)).verdict, 'refused');
       const unsupported = proposed();
       unsupported.consumers = structuredClone(unsupported.consumers);
@@ -125,7 +125,7 @@ test('My House: installed public artifacts, inert composition and scoped fiction
       observed.placementInventories[0].observedVersion = 'native-owned-single-writer-fixture';
       assert.equal((await preflightRecipeSet(observed)).verdict, 'valid', 'actual installed bytes, separately from proposed evidence');
       for (const dir of recipeDirs) assert.equal((await native(['recipe', 'add', dir, '--actor', actor])).changed, false);
-      const id = 'conventions/my-house-home';
+      const id = 'conventions/my-home-home';
       const existing = await native(['doc', 'read', id]);
       await native(['doc', 'update', id, '--body', `${existing.body}\nLocal fictional customization.\n`, '--expected-version', existing.head_version, '--actor', actor]);
       const bytes = await readFile(path.join(bundle, `${id}.md`));
@@ -141,7 +141,7 @@ test('My House: installed public artifacts, inert composition and scoped fiction
         ['fraction', ['--record_kind', 'payment', '--amount_minor', '1.5']],
         ['unsafe', ['--record_kind', 'payment', '--amount_minor', '9007199254740992']],
       ]) {
-        const result = await sb(['new', 'My House Money Record', `my-house/money/${id}`, '--title', 'Fictional invalid input', ...args, '--actor', actor, '--dir', bundle], 2);
+        const result = await sb(['new', 'My Home Money Record', `my-home/money/${id}`, '--title', 'Fictional invalid input', ...args, '--actor', actor, '--dir', bundle], 2);
         assert.match(JSON.stringify(result), /KIND_FIELD_TYPE|KIND_FIELD_VALUE/);
         assert.equal((await native(['list', '--limit', '0'])).docs.some(d => d.id.endsWith(`/${id}`)), false);
       }
@@ -183,7 +183,7 @@ async function exerciseReaders(t, reader, documents, policy, fixture) {
       refunded: ['112000', '107000', '112000', '107000', '0'],
     };
     for (const [stage, ids] of Object.entries(fixture.stages)) {
-      const input = documents.filter(d => d.frontmatter.type !== 'My House Money Record' || ids.includes(d.id));
+      const input = documents.filter(d => d.frontmatter.type !== 'My Home Money Record' || ids.includes(d.id));
       const report = reader.assessMoney(input, {scope: fixture.scope, policy});
       assert.deepEqual(report.unresolved, [], `${stage}: ${JSON.stringify(report)}`);
       const group = report.groups[0];
@@ -196,12 +196,12 @@ async function exerciseReaders(t, reader, documents, policy, fixture) {
   await t.test('native readback supports reported maintenance history; ownership moves do not move the old service', () => {
     const report = reader.assessMaintenance(documents, fixture.plan_id);
     assert.deepEqual(report.unresolved, []);
-    assert.equal(report.last_completion.id, 'my-house/services/s01');
+    assert.equal(report.last_completion.id, 'my-home/services/s01');
     assert.equal(report.last_completion.occurred_on, '2026-11-02');
     assert.equal(report.next_recorded_date.date, '2026-12-01');
     const changed = structuredClone(documents);
-    changed.find(d => d.id === 'my-house/assets/a01').body = '[at home](/my-house/homes/h02.md)';
-    assert.equal(reader.assessMaintenance(changed, fixture.plan_id).last_completion.location.id, 'my-house/homes/h01');
+    changed.find(d => d.id === 'my-home/assets/a01').body = '[at home](/my-home/homes/h02.md)';
+    assert.equal(reader.assessMaintenance(changed, fixture.plan_id).last_completion.location.id, 'my-home/homes/h01');
   });
   await t.test('household rollup counts each effective monetary fact once and does not roll project budgets into house budget', () => {
     const report = reader.assessMoney(documents, {scope: fixture.home_scope, policy});
