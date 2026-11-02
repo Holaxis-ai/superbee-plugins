@@ -1,0 +1,17 @@
+{
+  "id": "my-home-currency-v1-six-2026-09-17",
+  "version": 1,
+  "currencies": {
+    "USD": 2,
+    "JPY": 0,
+    "KWD": 3
+  },
+  "source": {
+    "url": "https://www.six-group.com/dam/download/financial-information/data-center/iso-currrency/lists/list-one.xml",
+    "published_on": "2026-09-17",
+    "retrieved_on": "2026-11-01",
+    "sha256": "33139b438657d1cee116ba737807ea71d19d6de4b90f799a09c56f0cc6a1b0ff",
+    "scope": "Reviewed three-currency subset of the retrieved ISO 4217 List One. Digest identifies the complete retrieved XML, not these derived JSON bytes."
+  },
+  "unsupported": "Other and historical currencies remain source-text capture until a reviewed policy adds them. Never infer scale 2 or adopt a payment-provider denomination."
+}
