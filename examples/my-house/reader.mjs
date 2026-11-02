@@ -83,7 +83,12 @@ export function assessMaintenance(documents, planId) {
   if(subjectProblem)unresolved.push(issue(planId,'PLAN_SUBJECT',subjectProblem));
   if(!text(fm(plan).procedure))unresolved.push(issue(planId,'PROCEDURE_UNKNOWN','procedure is required for a qualifying-completion conclusion'));
   const services=documents.filter(d=>fm(d).type===SERVICE);
-  const resolved=families(services,['corrects'],()=>true,(a,b)=>!text(fm(a).work_performed)?'a correction must describe the work':null);
+  const resolved=families(services,['corrects'],()=>true,(a,b)=>{
+    if(!text(fm(a).correction_reason))return 'a service correction needs an explicit correction_reason';
+    if(!text(fm(a).work_performed))return 'a correction must describe the work';
+    if(text(fm(a).source_event_key)&&text(fm(b).source_event_key)&&fm(a).source_event_key!==fm(b).source_event_key)return 'correction identity unresolved: known source_event_key values differ';
+    return null;
+  });
   for(const family of resolved.families){
     const relevant=family.members.some(d=>targets(d,'plan').includes(planId));if(!relevant)continue;
     if(family.issues.length){unresolved.push(...family.issues);continue;}
@@ -115,22 +120,37 @@ export function assessMaintenance(documents, planId) {
   report.status=unresolved.length?'partial':'assessed';return report;
 }
 
-export function assessMoney(documents,{scope,policy,asOf}={}) {
+export function assessMoney(documents,options={}) {
+  if(Object.hasOwn(options,'asOf'))throw new TypeError('Historical cutoff/asOf reports are unsupported; supply the explicit selected snapshot instead.');
+  const {scope,policy}=options;
   const index=inputIndex(documents);
   if(!scope || !PRIMARY.includes(scope.kind)||!text(scope.id))throw new TypeError('an explicit project/home/asset scope is required');
-  if(asOf!==undefined&&!typed('date',asOf))throw new TypeError('asOf must satisfy Core date');
   const all=documents.filter(d=>fm(d).type===MONEY), unresolved=[], excluded=[], included=[], warnings=[];
-  const report={assurance:'scoped-read-time-example',scope:{...scope},policy:policy?.id??null,as_of:asOf??null,assessed:proof(documents),included,excluded,unresolved,warnings,groups:[]};
+  const report={assurance:'scoped-read-time-example',scope:{...scope},policy:policy?.id??null,assessed:proof(documents),included,excluded,unresolved,warnings,groups:[]};
+  const requestedScopeProblem=scopeTargetProblem(scope,index);
+  if(requestedScopeProblem){report.status='partial';unresolved.push(issue(scope.id,'SCOPE_TARGET_MISSING',requestedScopeProblem));return report;}
   function membership(doc) {
     const primary=scopeOf(doc);if(!primary)return {match:true,problem:'missing/ambiguous primary scope in the supplied snapshot'};
+    const explicit=targets(doc,'incurred for home');
+    if(explicit.length>1)return {match:true,problem:'historical Home attribution is ambiguous'};
+    if(explicit.some(id=>scopeTargetProblem({kind:'home',id},index)))return {match:true,problem:'historical Home attribution target must be an inspected My House Home'};
+    if(primary.kind==='home'){
+      const problem=scopeTargetProblem(primary,index);
+      if(problem)return {match:true,problem};
+      if(explicit.length&&explicit[0]!==primary.id)return {match:true,problem:'direct Home scope conflicts with incurred for home'};
+      return {match:sameScope(primary,scope)};
+    }
     if(sameScope(primary,scope))return {match:true};
     if(scope.kind!=='home')return {match:false};
     if(primary.kind==='project'){
       const project=index.get(primary.id), homes=project?targets(project,'home'):[];
-      if(project&&fm(project).type===PREFIX+'Project'&&homes.length===1){const explicit=targets(doc,'incurred for home');return {match:homes[0]===scope.id,problem:explicit.length&&(explicit.length!==1||explicit[0]!==homes[0])?'conflicting historical Home attribution':null};}
+      if(project&&fm(project).type===PREFIX+'Project'&&homes.length===1){
+        if(scopeTargetProblem({kind:'home',id:homes[0]},index))return {match:true,problem:'Project Home attribution target must be an inspected My House Home'};
+        return {match:homes[0]===scope.id,problem:explicit.length&&explicit[0]!==homes[0]?'conflicting historical Home attribution':null};
+      }
       return {match:true,problem:'Project Home attribution is missing/ambiguous in the selected Home assessment'};
     }
-    if(primary.kind==='asset'){const homes=targets(doc,'incurred for home');return {match:homes.length!==1||homes[0]===scope.id,problem:homes.length!==1?'historical Asset cost Home attribution is missing/ambiguous':null};}
+    if(primary.kind==='asset')return {match:explicit.length!==1||explicit[0]===scope.id,problem:explicit.length!==1?'historical Asset cost Home attribution is missing/ambiguous':null};
     return {match:false};
   }
   const recorded=d=>['recorded','disputed'].includes(fm(d).entry_status);
@@ -161,7 +181,6 @@ export function assessMoney(documents,{scope,policy,asOf}={}) {
     const scale=policy?.currencies?.[f.currency], expected=typeof scale==='number'?scale:scale?.scale;
     if(!text(policy?.id)||f.currency_basis!==policy.id||!typed('integer',f.currency_scale)||f.currency_scale!==expected)why.push('currency/scale/policy tuple is not supported');
     if(present(f.effective_on)&&!typed('date',f.effective_on))why.push('invalid effective date');
-    if(asOf!==undefined&&(!typed('date',f.effective_on)||f.effective_on>asOf)){excluded.push(issue(doc.id,'OUTSIDE_DATE_SCOPE','unknown/later effective date excluded from dated cutoff'));if(!present(f.effective_on))unresolved.push(issue(doc.id,'DATE_UNKNOWN','unknown date prevents an unqualified cutoff total'));continue;}
     if(f.record_kind==='commitment'&&(!text(f.authorization_basis)||!text(f.authorized_by)))why.push('authorization basis and reported authorizer required for committed conclusion');
     if(why.length){unresolved.push(issue(doc.id,'MONEY_UNRESOLVED',why.join('; ')));continue;}
     valid.set(doc.id,doc);
@@ -222,24 +241,29 @@ export function assessMoney(documents,{scope,policy,asOf}={}) {
       }
     }
     for(const [paymentId,amount]of refundedByPayment)if(amount>BigInt(fm(valid.get(paymentId)).amount_minor)){unresolved.push(issue(paymentId,'REFUND_EXCEEDS_PAYMENT','review refund classification/allocations'));const id=paymentInvoice.get(paymentId);if(id)invoices.get(id).issues.push('refund exceeds referenced payment');}
-    // An excluded malformed/disputed/replacement family can make a linked invoice balance
-    // unknowable. Never present exclusion as proof that the payment/credit did not happen.
-    for(const problem of unresolved){
-      const source=index.get(problem.id);if(!source)continue;
-      const family=resolved.byMember.get(source.id), members=family?.members??[source];
-      for(const member of members){
-        const references=[...targets(member,'settles invoice'),...targets(member,'credits invoice')];
-        for(const paymentId of targets(member,'refunds payment')){
-          const paymentFamily=resolved.byMember.get(paymentId);
-          for(const payment of paymentFamily?.members??(index.has(paymentId)?[index.get(paymentId)]:[]))references.push(...targets(payment,'settles invoice'));
-        }
-        for(const id of references){const target=resolve(id);if(target&&invoices.has(target.id))invoices.get(target.id).issues.push(`dependent fact unresolved: ${problem.id}`);}
-      }
-    }
     group.totals.net_spent=group.totals.gross_paid-group.totals.refunded;
     group.invoices=[...invoices.values()].map(inv=>{const balance=inv.invoiced-inv.credited-inv.allocated_paid+inv.allocation_reversals;return {id:inv.id,invoiced:inv.invoiced.toString(),credited:inv.credited.toString(),allocated_paid:inv.allocated_paid.toString(),allocation_reversals:inv.allocation_reversals.toString(),outstanding:inv.issues.length?null:balance.toString(),issues:inv.issues,overpaid_or_credit:!inv.issues.length&&balance<0n};});
     group.totals=Object.fromEntries(Object.entries(group.totals).map(([k,v])=>[k,v===null?null:v.toString()]));
     delete group.records;report.groups.push(group);
+  }
+  // Resolve dependency uncertainty only after every currency group has been assessed.
+  // A wrong-currency payment can affect a previously visited invoice group; document order
+  // must never turn the absence of an eligible allocation into a definite balance.
+  const allInvoices=new Map(report.groups.flatMap(group=>group.invoices.map(invoice=>[invoice.id,invoice])));
+  for(const problem of unresolved){
+    const source=index.get(problem.id);if(!source)continue;
+    const family=resolved.byMember.get(source.id), members=family?.members??[source];
+    for(const member of members){
+      const references=[...targets(member,'settles invoice'),...targets(member,'credits invoice')];
+      for(const paymentId of targets(member,'refunds payment')){
+        const paymentFamily=resolved.byMember.get(paymentId);
+        for(const payment of paymentFamily?.members??(index.has(paymentId)?[index.get(paymentId)]:[]))references.push(...targets(payment,'settles invoice'));
+      }
+      for(const id of references){
+        const target=resolve(id), invoice=target&&allInvoices.get(target.id);
+        if(invoice){const detail=`dependent fact unresolved: ${problem.id}`;if(!invoice.issues.includes(detail))invoice.issues.push(detail);invoice.outstanding=null;invoice.overpaid_or_credit=false;}
+      }
+    }
   }
   report.groups.sort((a,b)=>a.currency.localeCompare(b.currency));
   report.included.sort();report.status=unresolved.length?'partial':'assessed';

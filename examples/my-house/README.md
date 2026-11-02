@@ -29,7 +29,9 @@ pure read-only reference consumer of parsed documents and public Core links/type
 installed by a recipe or registered as a validator. Its assessed conclusions and test mutations
 demonstrate the operating contract; they do not make its domain checks universal write rules.
 Future apps can implement the same contract and run these fixtures, rather than importing this
-example as a new production service.
+example as a new production service. This reader assesses the explicitly supplied snapshot only;
+`asOf` historical cutoffs are rejected. Historical effective revisions and as-known reports need
+a separately qualified consumer and retained snapshots, not filtering the latest replacement.
 
 ## What the journeys establish
 

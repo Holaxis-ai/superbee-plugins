@@ -73,3 +73,41 @@ test('void needs an explicit reason rather than silently removing an asserted pa
  const docs=stage('partial');find(docs,'p1').frontmatter.entry_status='void';
  const r=money(docs);assert.equal(r.status,'partial');assert.ok(r.unresolved.some(x=>x.code==='VOID_REASON_UNKNOWN'));assert.equal(group(r).invoices[0].outstanding,null);
 });
+
+test('historical cutoffs are explicitly unsupported rather than apparent asOf reports',()=>{
+ for(const asOf of ['2026-11-06',null,undefined])assert.throws(()=>assessMoney(copy(),{scope:fixture.scope,policy,asOf}),/Historical cutoff\/asOf reports are unsupported/);
+});
+
+test('wrong-currency allocation withholds the invoice balance in either input order',()=>{
+ for(const paymentFirst of [true,false]){
+  const docs=stage('partial'), payment=find(docs,'p1');payment.frontmatter.currency='KWD';payment.frontmatter.currency_scale=3;
+  const ordered=docs.filter(d=>d!==payment);if(paymentFirst)ordered.unshift(payment);else ordered.push(payment);
+  const r=money(ordered);assert.equal(r.status,'partial');assert.ok(r.unresolved.some(x=>x.code==='PAYMENT_ALLOCATION'));assert.equal(group(r).invoices[0].outstanding,null);
+ }
+});
+
+test('requested scope and historical Home attribution need inspected correctly typed targets',()=>{
+ for(const mutate of [docs=>docs.filter(d=>d.id!==fixture.scope.id),docs=>{find(docs,'pr02').frontmatter.type='My House Asset';return docs;}]){
+  const r=money(mutate(copy()));assert.equal(r.status,'partial');assert.equal(r.groups.length,0);assert.ok(r.unresolved.some(x=>x.code==='SCOPE_TARGET_MISSING'));
+ }
+ const missingHome=copy().filter(d=>d.id!==fixture.home_scope.id);const h=money(missingHome,fixture.home_scope);assert.equal(h.status,'partial');assert.equal(h.groups.length,0);
+ const badAttribution=copy();find(badAttribution,'pr02').body=find(badAttribution,'pr02').body.replace('../homes/h02.md','../assets/a02.md');
+ const a=money(badAttribution,fixture.home_scope);assert.equal(a.status,'partial');assert.equal(a.groups.length,0);assert.ok(a.unresolved.some(x=>x.code==='SCOPE_UNRESOLVED'));
+});
+
+test('direct Home scope conflicts with a different incurred-for-home attribution',()=>{
+ const docs=stage('partial'),payment=find(docs,'p1');payment.body=payment.body.replace('[project](../projects/pr02.md)','[home](../homes/h02.md)');link(payment,'incurred for home','my-house/homes/h01');
+ const r=money(docs,fixture.home_scope);assert.equal(r.status,'partial');assert.ok(r.unresolved.some(x=>x.id===payment.id&&x.code==='SCOPE_UNRESOLVED'));assert.ok(!r.included.includes(payment.id));assert.equal(group(r).invoices[0].outstanding,null);
+});
+
+test('JPY zero-decimal policy preserves the supplied integer without multiplying by 100',()=>{
+ const docs=stage('quotes');for(const d of docs.filter(d=>d.frontmatter.type==='My House Money Record')){d.frontmatter.currency='JPY';d.frontmatter.currency_scale=0;delete d.frontmatter.line_items;}
+ const r=money(docs);assert.equal(r.status,'assessed');assert.equal(r.groups[0].currency,'JPY');assert.equal(r.groups[0].currency_scale,0);assert.equal(r.groups[0].totals.budget,'150000');assert.equal(r.groups[0].quotes.find(q=>q.id.endsWith('/qa')).amount_minor,'110000');
+});
+
+test('service correction needs a reason and differing known occurrence keys remain unresolved',()=>{
+ const docs=copy(),original=find(docs,'s01'),correction=structuredClone(original);correction.id='my-house/services/s02';correction.frontmatter.occurred_on='2026-11-03';correction.frontmatter.source_event_key='fictional-mina:different-occurrence';link(correction,'corrects',original.id);docs.push(correction);
+ let r=assessMaintenance(docs,fixture.plan_id);assert.equal(r.status,'partial');assert.equal(r.last_completion,null);assert.ok(r.unresolved.some(x=>x.code==='REPLACEMENT_INVALID'&&x.detail.includes('correction_reason')));
+ correction.frontmatter.correction_reason='The user says this replaces the earlier occurrence';r=assessMaintenance(docs,fixture.plan_id);assert.equal(r.last_completion,null);assert.ok(r.unresolved.some(x=>x.detail.includes('source_event_key')));
+ correction.frontmatter.source_event_key=original.frontmatter.source_event_key;r=assessMaintenance(docs,fixture.plan_id);assert.equal(r.status,'assessed');assert.equal(r.last_completion.id,correction.id);
+});

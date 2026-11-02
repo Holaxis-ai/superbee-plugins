@@ -79,3 +79,8 @@ A later reminder requires its own authorized scheduler binding, timezone and del
 completion cannot automatically report physical work. No Plan authorizes landlord-equipment
 alteration, purchase, communication, model edits or construction. Preserve the source and scope
 of any professional assessment; responsibility and enum state do not imply competence or approval.
+
+The reference reader requires nonempty `correction_reason` before a corrected Service can replace
+an occurrence in a derived answer. A conflict between known `source_event_key` values remains
+unresolved: a real later service is a separate occurrence, not a correction. Unknown-key identity
+still depends on the stated reason/evidence; this field does not authenticate physical truth.
