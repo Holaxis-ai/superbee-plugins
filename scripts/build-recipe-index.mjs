@@ -7,7 +7,7 @@
 //
 // --root <dir> selects another checkout. Digests and parsing come from Core's public APIs only.
 import {execFileSync} from 'node:child_process';
-import {readFile, readdir, realpath, writeFile} from 'node:fs/promises';
+import {lstat, readFile, readdir, realpath, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {recipeSourceDigest} from '@superbee/core/recipe-lifecycle';
@@ -22,6 +22,9 @@ const FORMAT = 'recipe-index/v1';
 const OKF_VERSION = '0.2';
 // Gitignored local noise. Any other unexpected file is left for Core to refuse.
 const IGNORED_FILES = new Set(['.DS_Store']);
+// Same bounds Core applies to the index; line and format controls could forge log lines or hide text.
+const LIMITS = {id: 128, version: 64, maintainer: 200, title: 200, summary: 1000, reason: 1000};
+const UNSAFE_TEXT = /[\p{Cc}\p{Cf}\u2028\u2029]/gu;
 
 export class RecipeIndexRefusal extends Error {
   constructor(problems) {
@@ -46,6 +49,25 @@ function arrayOf(value, where) {
   return value;
 }
 
+function freeText(value, where, max) {
+  if (typeof value !== 'string' || value.trim() === '' || value.length > max) refuse(`${where} must be a nonempty string of at most ${max} characters`);
+  if (value.search(UNSAFE_TEXT) !== -1) refuse(`${where} contains a control or format character`);
+}
+
+function plainId(value, where) {
+  if (typeof value !== 'string' || value.length > LIMITS.id || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(value)) refuse(`${where} is not a plain id`);
+}
+
+/** Case-insensitive hosts see `Alpha` and `alpha` as one folder, so no two spellings may coexist. */
+function refuseCaseVariants(ids) {
+  const spellings = new Map();
+  for (const id of ids) {
+    const first = spellings.get(id.toLowerCase());
+    if (first !== undefined && first !== id) refuse(`ids '${first}' and '${id}' differ only by case`);
+    spellings.set(id.toLowerCase(), id);
+  }
+}
+
 /** Checks the curated input. Core checks the generated index; only the input's own rules live here. */
 export function parseSource(text) {
   let source;
@@ -54,23 +76,45 @@ export function parseSource(text) {
   } catch (error) {
     refuse(`${SOURCE_FILE} is not valid JSON: ${error.message}`);
   }
-  exactKeys(source, ['source', 'title', 'recipes', 'cookbooks', 'removed'], SOURCE_FILE);
+  exactKeys(source, ['source', 'title', 'recipes', 'cookbooks', 'removed', 'removed_cookbooks'], SOURCE_FILE);
+  plainId(source.source, 'source');
+  freeText(source.title, 'title', LIMITS.title);
   arrayOf(source.recipes, 'recipes').forEach((entry, i) => {
     exactKeys(entry, ['id', 'designation', 'maintainer'], `recipes[${i}]`);
-    if (typeof entry.id !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(entry.id)) refuse(`recipes[${i}].id is not a plain folder name`);
+    plainId(entry.id, `recipes[${i}].id`);
+    freeText(entry.designation, `recipes[${i}].designation`, LIMITS.maintainer);
+    freeText(entry.maintainer, `recipes[${i}].maintainer`, LIMITS.maintainer);
   });
   arrayOf(source.cookbooks, 'cookbooks').forEach((entry, i) => {
     exactKeys(entry, ['id', 'title', 'summary', 'designation', 'maintainer', 'recipes'], `cookbooks[${i}]`);
+    plainId(entry.id, `cookbooks[${i}].id`);
+    freeText(entry.title, `cookbooks[${i}].title`, LIMITS.title);
+    freeText(entry.summary, `cookbooks[${i}].summary`, LIMITS.summary);
+    freeText(entry.designation, `cookbooks[${i}].designation`, LIMITS.maintainer);
+    freeText(entry.maintainer, `cookbooks[${i}].maintainer`, LIMITS.maintainer);
+    arrayOf(entry.recipes, `cookbooks[${i}].recipes`).forEach((member, j) => plainId(member, `cookbooks[${i}].recipes[${j}]`));
   });
-  const markers = new Set();
   arrayOf(source.removed, 'removed').forEach((entry, i) => {
     exactKeys(entry, ['id', 'last_version', 'reason'], `removed[${i}]`);
-    if (typeof entry.reason !== 'string' || entry.reason.trim() === '') refuse(`removed[${i}].reason must say why the recipe was removed`);
-    if (markers.has(entry.id)) refuse(`removed lists '${entry.id}' more than once`);
-    markers.add(entry.id);
+    plainId(entry.id, `removed[${i}].id`);
+    freeText(entry.last_version, `removed[${i}].last_version`, LIMITS.version);
+    freeText(entry.reason, `removed[${i}].reason`, LIMITS.reason);
   });
-  for (const {id} of source.recipes) {
-    if (markers.has(id)) refuse(`recipe '${id}' is marked removed and cannot be listed again; publish it under a new id`);
+  arrayOf(source.removed_cookbooks, 'removed_cookbooks').forEach((entry, i) => {
+    exactKeys(entry, ['id', 'reason'], `removed_cookbooks[${i}]`);
+    plainId(entry.id, `removed_cookbooks[${i}].id`);
+    freeText(entry.reason, `removed_cookbooks[${i}].reason`, LIMITS.reason);
+  });
+  refuseCaseVariants([...source.recipes, ...source.cookbooks, ...source.removed, ...source.removed_cookbooks].map(entry => entry.id));
+  for (const [kind, markers, listed] of [['recipe', source.removed, source.recipes], ['cookbook', source.removed_cookbooks, source.cookbooks]]) {
+    const ids = new Set();
+    for (const {id} of markers) {
+      if (ids.has(id)) refuse(`removal markers list ${kind} '${id}' more than once`);
+      ids.add(id);
+    }
+    for (const {id} of listed) {
+      if (ids.has(id)) refuse(`${kind} '${id}' is marked removed and cannot be listed again; publish it under a new id`);
+    }
   }
   return source;
 }
@@ -95,6 +139,9 @@ async function buildEntry(root, {id, designation, maintainer}, sourceId) {
   const dir = `${RECIPES_DIR}/${id}`;
   let names;
   try {
+    for (const location of [RECIPES_DIR, dir]) {
+      if (!(await lstat(path.join(root, location))).isDirectory()) refuse(`${location} must be a real directory, not a symlink or file`);
+    }
     names = (await listFiles(root, dir)).sort(compareCodeUnits);
   } catch (error) {
     if (error instanceof RecipeIndexRefusal) throw error;
@@ -239,11 +286,19 @@ export function compareIndexes(previous, next) {
     if (!kept || kept.last_version !== marker.last_version) refusals.push(`removed marker for '${marker.id}' must stay as it is; removed ids are not reused`);
   }
 
+  // Same reasoning as recipe markers: a removed cookbook id never comes back with other members.
+  const cookbookMarkers = new Map(next.source.removed_cookbooks.map(entry => [entry.id, entry]));
+  for (const {id} of previous.source.removed_cookbooks) {
+    if (!cookbookMarkers.has(id)) refusals.push(`removed marker for cookbook '${id}' must stay; removed ids are not reused`);
+  }
+
   const nextCookbooks = new Map(next.index.cookbooks.map(entry => [entry.id, entry]));
   for (const before of previous.index.cookbooks) {
     const after = nextCookbooks.get(before.id);
     if (!after) {
-      notices.push(`cookbook '${before.id}' is removed from the index`);
+      const marker = cookbookMarkers.get(before.id);
+      if (marker) notices.push(`cookbook '${before.id}' is removed from the index: ${marker.reason}`);
+      else refusals.push(`cookbook '${before.id}' was removed without a marker in ${SOURCE_FILE} 'removed_cookbooks'`);
       continue;
     }
     for (const key of ['designation', 'maintainer']) {
@@ -299,9 +354,17 @@ function parseArguments(argv) {
   return options;
 }
 
+/** GitHub's encoding for a workflow command's data, so a value cannot end the line and start a command. */
+export function escapeWorkflowData(text) {
+  return text.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+}
+
+/** Runners read commands from stderr too, so messages built from file content must stay on one line. */
+const oneLine = text => text.replace(UNSAFE_TEXT, ' ');
+
 function reportNotice(message) {
   const decision = `maintainer decision: ${message}`;
-  console.log(process.env.GITHUB_ACTIONS ? `::warning file=${SOURCE_FILE}::${decision}` : `notice: ${decision}`);
+  console.log(process.env.GITHUB_ACTIONS ? `::warning file=${SOURCE_FILE}::${escapeWorkflowData(decision)}` : `notice: ${oneLine(decision)}`);
 }
 
 async function main(argv) {
@@ -322,7 +385,7 @@ async function main(argv) {
   if (options.compare !== null) {
     const previous = readPrevious(options.root, options.compare);
     if (previous === null) console.log(`${options.compare} has no index, so every listing below is new`);
-    const {refusals, notices} = compareIndexes(previous ?? {index: {recipes: [], cookbooks: []}, source: {removed: []}}, built);
+    const {refusals, notices} = compareIndexes(previous ?? {index: {recipes: [], cookbooks: []}, source: {removed: [], removed_cookbooks: []}}, built);
     notices.forEach(reportNotice);
     if (refusals.length > 0) throw new RecipeIndexRefusal(refusals);
     console.log(`immutability holds against ${options.compare}`);
@@ -337,7 +400,7 @@ async function main(argv) {
 if (process.argv[1] && await realpath(process.argv[1]).catch(() => null) === fileURLToPath(import.meta.url)) {
   process.exitCode = await main(process.argv.slice(2)).catch(error => {
     if (!(error instanceof RecipeIndexRefusal)) throw error;
-    for (const problem of error.problems) console.error(`refused: ${problem}`);
+    for (const problem of error.problems) console.error(`refused: ${oneLine(problem)}`);
     return 1;
   });
 }

@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import {execFileSync, spawnSync} from 'node:child_process';
-import {mkdir, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
+import {copyFile, mkdir, mkdtemp, readFile, rename, rm, symlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
 import {parseRecipeIndex, resolveCookbook} from '@superbee/core/recipe-sources';
-import {buildRecipeIndex, compareVersions} from './build-recipe-index.mjs';
+import {buildRecipeIndex, compareVersions, escapeWorkflowData} from './build-recipe-index.mjs';
 
 const repo = fileURLToPath(new URL('../', import.meta.url));
 const script = fileURLToPath(new URL('./build-recipe-index.mjs', import.meta.url));
@@ -28,6 +28,7 @@ const baseSource = {
   ],
   cookbooks: [{id: 'both', title: 'Both', summary: 'Synthetic.', designation: 'community', maintainer: 'example-org', recipes: ['alpha', 'beta']}],
   removed: [],
+  removed_cookbooks: [],
 };
 
 async function fixture(t) {
@@ -209,6 +210,112 @@ test('a base without an index is a first publish, and an unresolvable base fails
   assert.match(first.stdout, /recipe 'alpha' is newly listed as community/);
   refused(generate(root, '--compare', 'no-such-ref'), /cannot resolve base ref/);
   refused(generate(root, '--compare', '--output=x'), /is not a git ref/);
+});
+
+test('removing a cookbook needs a marker, which then stays and blocks reuse', async t => {
+  const root = await published(t);
+  const without = {...baseSource, cookbooks: []};
+  await writeSource(root, without);
+  run(root);
+  refused(generate(root, '--compare', 'HEAD'), /cookbook 'both' was removed without a marker/);
+
+  const marked = {...without, removed_cookbooks: [{id: 'both', reason: 'Synthetic.'}]};
+  await writeSource(root, marked);
+  assert.match(run(root, '--compare', 'HEAD').stdout, /maintainer decision: cookbook 'both' is removed from the index: Synthetic\./);
+  run(root);
+  git(root, 'add', '.');
+  git(root, 'commit', '--quiet', '-m', 'remove cookbook');
+
+  await writeSource(root, {...baseSource, removed_cookbooks: marked.removed_cookbooks});
+  refused(generate(root), /cookbook 'both' is marked removed/);
+  await writeSource(root, without);
+  refused(generate(root, '--compare', 'HEAD'), /removed marker for cookbook 'both' must stay/);
+});
+
+const hostile = 'x\n::stop-commands::abc';
+const noCommandLine = result => assert.doesNotMatch(result.stdout + result.stderr, /^::stop-commands/m);
+
+test('every free-text field refuses control characters and excess length', async t => {
+  const fields = [
+    ['title', source => ({...source, title: hostile})],
+    ['recipes[0].maintainer', source => ({...source, recipes: [{...source.recipes[0], maintainer: hostile}, source.recipes[1]]})],
+    ['recipes[0].designation', source => ({...source, recipes: [{...source.recipes[0], designation: hostile}, source.recipes[1]]})],
+    ['cookbooks[0].title', source => ({...source, cookbooks: [{...source.cookbooks[0], title: hostile}]})],
+    ['cookbooks[0].summary', source => ({...source, cookbooks: [{...source.cookbooks[0], summary: hostile}]})],
+    ['cookbooks[0].maintainer', source => ({...source, cookbooks: [{...source.cookbooks[0], maintainer: hostile}]})],
+    ['removed[0].reason', source => ({...source, removed: [{id: 'gone', last_version: '1', reason: hostile}]})],
+    ['removed[0].last_version', source => ({...source, removed: [{id: 'gone', last_version: hostile, reason: 'Synthetic.'}]})],
+    ['removed_cookbooks[0].reason', source => ({...source, removed_cookbooks: [{id: 'gone', reason: hostile}]})],
+  ];
+  const root = await fixture(t);
+  for (const [where, change] of fields) {
+    await writeSource(root, change(baseSource));
+    const result = generate(root);
+    refused(result, new RegExp(`${where.replace(/[[\]]/g, '\\$&')} contains a control or format character`));
+    noCommandLine(result);
+  }
+  await writeSource(root, {...baseSource, removed: [{id: 'gone', last_version: '1', reason: 'r'.repeat(1001)}]});
+  refused(generate(root), /removed\[0\]\.reason must be a nonempty string of at most 1000/);
+  await writeSource(root, {...baseSource, recipes: [{...baseSource.recipes[0], maintainer: 'm'.repeat(201)}, baseSource.recipes[1]]});
+  refused(generate(root), /recipes\[0\]\.maintainer must be a nonempty string of at most 200/);
+  await writeSource(root, {...baseSource, removed: [{id: 'x\n::stop-commands::abc', last_version: '1', reason: 'r'}]});
+  refused(generate(root), /removed\[0\]\.id is not a plain id/);
+});
+
+test('workflow command data cannot start a new command', async t => {
+  assert.equal(escapeWorkflowData('50%\r\n::stop-commands::abc'), '50%25%0D%0A::stop-commands::abc');
+  const root = await fixture(t);
+  await writeFile(path.join(root, 'recipes/alpha/recipe.md'), manifest({id: '"a\\n::stop-commands::abc"'}));
+  const result = generate(root);
+  assert.equal(result.status, 1);
+  noCommandLine(result);
+});
+
+test('a symlinked recipe root is refused', async t => {
+  const root = await fixture(t);
+  await rename(path.join(root, 'recipes/alpha'), path.join(root, 'elsewhere'));
+  await symlink(path.join(root, 'elsewhere'), path.join(root, 'recipes/alpha'));
+  refused(generate(root), /recipes\/alpha must be a real directory/);
+  await rm(path.join(root, 'recipes/alpha'));
+  await rename(path.join(root, 'elsewhere'), path.join(root, 'recipes/alpha'));
+  await rename(path.join(root, 'recipes'), path.join(root, 'moved'));
+  await symlink(path.join(root, 'moved'), path.join(root, 'recipes'));
+  refused(generate(root), /recipes must be a real directory/);
+});
+
+test('ids differing only by case are refused across every list', async t => {
+  const root = await fixture(t);
+  const cases = [
+    {...baseSource, recipes: [...baseSource.recipes, {id: 'ALPHA', designation: 'community', maintainer: 'example-org'}]},
+    {...baseSource, cookbooks: [...baseSource.cookbooks, {...baseSource.cookbooks[0], id: 'Both'}]},
+    {...baseSource, cookbooks: [{...baseSource.cookbooks[0], id: 'Alpha'}]},
+    {...baseSource, removed: [{id: 'Beta', last_version: '1', reason: 'Synthetic.'}]},
+    {...baseSource, removed_cookbooks: [{id: 'BOTH', reason: 'Synthetic.'}]},
+  ];
+  for (const source of cases) {
+    await writeSource(root, source);
+    refused(generate(root), /differ only by case/);
+  }
+});
+
+test('a recipe and a cookbook may share one exact id', async t => {
+  const root = await fixture(t);
+  await writeSource(root, {...baseSource, cookbooks: [{...baseSource.cookbooks[0], id: 'alpha'}]});
+  run(root);
+});
+
+test('.gitattributes keeps digests stable through a line-ending-converting checkout', async t => {
+  const root = await fixture(t);
+  await copyFile(path.join(repo, '.gitattributes'), path.join(root, '.gitattributes'));
+  run(root);
+  git(root, 'init', '--quiet');
+  git(root, 'add', '.');
+  git(root, 'commit', '--quiet', '-m', 'publish');
+  const clone = await mkdtemp(path.join(tmpdir(), 'recipe-index-crlf-'));
+  t.after(() => rm(clone, {recursive: true, force: true}));
+  execFileSync('git', ['clone', '--quiet', '-c', 'core.autocrlf=true', '-c', 'core.eol=crlf', root, clone]);
+  assert.doesNotMatch(await readFile(path.join(clone, 'recipes/alpha/recipe.md'), 'utf8'), /\r/);
+  run(clone, '--check');
 });
 
 test('the committed index is current and Core accepts it', async () => {

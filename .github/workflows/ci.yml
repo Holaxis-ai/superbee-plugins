@@ -1,6 +1,8 @@
 name: CI
 on:
   pull_request:
+    # edited covers a retargeted base, which changes what the index must be compared against.
+    types: [opened, synchronize, reopened, edited]
   push:
     branches: [main]
   workflow_dispatch:
@@ -46,11 +48,15 @@ jobs:
       - name: Check recipe index against the recipes
         run: node scripts/build-recipe-index.mjs --check
       - name: Check recipe index immutability against the base
-        if: github.event_name != 'workflow_dispatch'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          git fetch --no-tags --depth=1 origin "$BASE_SHA"
-          node scripts/build-recipe-index.mjs --compare "$BASE_SHA"
+          if [ -n "$BASE_SHA" ]; then
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            node scripts/build-recipe-index.mjs --compare "$BASE_SHA"
+          else
+            git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+            node scripts/build-recipe-index.mjs --compare origin/main
+          fi
       - run: npm run test:unit
       - run: npm run test:packaged

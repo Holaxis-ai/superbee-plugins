@@ -72,7 +72,13 @@ superbee recipe add my-home --cookbook --index recipe-index.json --dir <tmp>/hom
 superbee kinds --dir <tmp>/home
 ```
 
-To remove a listed recipe, add `{"id", "last_version", "reason"}` to the input's `removed`. The
-marker stays in the input for good and the id is not listed again; republish under a new id. This
-keeps an old id plus version from returning with different bytes, since the index only remembers
-current versions. Installing by path from `recipes/` is unaffected.
+To remove a listed recipe, delete its id from `recipes` and from any cookbook, and add
+`{"id", "last_version", "reason"}` to the input's `removed`. The marker stays in the input for good
+and the id is not listed again; republish under a new id. This keeps an old id plus version from
+returning with different bytes, since the index only remembers current versions. Installing by path
+from `recipes/` is unaffected. To remove a cookbook, delete it from `cookbooks` and add
+`{"id", "reason"}` to `removed_cookbooks`, under the same permanent rule.
+
+`.github/CODEOWNERS` names the owners of the index files, the generator and the workflows. It has no
+effect until a branch rule requires code owner review, which is a separate repository setting.
+`.gitattributes` keeps recipe and index bytes unconverted, so digests match on any checkout.
