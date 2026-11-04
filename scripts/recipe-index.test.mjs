@@ -218,10 +218,10 @@ test('the committed index is current and Core accepts it', async () => {
   assert.deepEqual((await buildRecipeIndex(repo)).bytes, bytes);
   assert.deepEqual(parsed.index.recipes.map(entry => entry.id), ['deep-research', 'my-home', 'my-home-costs', 'my-home-maintenance']);
   assert.deepEqual(parsed.index.cookbooks.map(entry => [entry.id, entry.recipes]), [
-    ['deep-research', ['deep-research']],
     ['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']],
+    ['research', ['deep-research']],
   ]);
-  assert.match(parsed.index.cookbooks[0].summary, /experimental/i);
+  assert.match(parsed.index.cookbooks[1].summary, /experimental/i);
   assert.equal(parsed.index.recipes[0].version, '0.1.0-pre.2');
 });
 
@@ -232,7 +232,7 @@ test('both cookbooks resolve through a reader over this checkout, verifying ever
     seen.push(location);
     return readFile(path.join(repo, location));
   };
-  for (const [id, members] of [['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']], ['deep-research', ['deep-research']]]) {
+  for (const [id, members] of [['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']], ['research', ['deep-research']]]) {
     const result = await resolveCookbook(index, id, read);
     assert.equal(result.ok, true, JSON.stringify(result.error));
     assert.deepEqual(result.recipes.map(entry => entry.recipe.id), members);
@@ -243,7 +243,7 @@ test('both cookbooks resolve through a reader over this checkout, verifying ever
   const listed = index.recipes.flatMap(entry => entry.files.map(file => `${entry.root}/${file}`));
   assert.deepEqual(seen.sort(), listed.sort());
 
-  const tampered = await resolveCookbook(index, 'deep-research', async location => {
+  const tampered = await resolveCookbook(index, 'research', async location => {
     const bytes = await readFile(path.join(repo, location));
     return location.endsWith('recipe.md') ? Buffer.concat([bytes, Buffer.from(' ')]) : bytes;
   });

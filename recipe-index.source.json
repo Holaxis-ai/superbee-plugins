@@ -17,7 +17,7 @@
       "recipes": ["my-home", "my-home-maintenance", "my-home-costs"]
     },
     {
-      "id": "deep-research",
+      "id": "research",
       "title": "Research",
       "summary": "Experimental. Kinds and a method for located evidence, scoped claims and persistent questions. The deep-research recipe is still a prerelease and may change.",
       "designation": "supported",
