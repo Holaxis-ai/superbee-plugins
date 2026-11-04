@@ -35,12 +35,16 @@ Create a Task with a concrete result, scope and acceptance criteria. Explain wha
 finished: source merge may be enough, or actual consumer compatibility may still be required.
 Link relevant source/change identifiers in its body without copying a tracker into another queue.
 
-Before beginning, read the Task's current `head_version`, owner and state. Claim eligible work by
-updating `assignee` and `progress_status` together with that observed version and an explicit actor:
+Before beginning, read the Task's owner, state and `head_version` together from one native read.
+Proceed only for currently unowned work eligible under the project's rules, or an owner-agreed
+transfer/relinquishment. Otherwise stop and coordinate; a fresh version does not establish eligibility.
+If already assigned to you, resume within its recorded scope. After checking eligibility, update
+`assignee` and `progress_status` together using that same response's `head_version`:
 
 ```sh
-superbee doc read tasks/example --field head_version --dir /absolute/path/to/bundle
-superbee doc update tasks/example --assignee process:builder --progress_status in_progress --expected-version VERSION_FROM_READ --actor process:builder --dir /absolute/path/to/bundle
+superbee doc read tasks/example --json --dir /absolute/path/to/bundle
+# Inspect owner, state and eligibility above before using its head_version below.
+superbee doc update tasks/example --assignee process:builder --progress_status in_progress --expected-version VERSION_FROM_SAME_READ --actor process:builder --dir /absolute/path/to/bundle
 ```
 
 A stale compare-and-swap refuses; read current state and coordinate with its owner. Do not blindly
