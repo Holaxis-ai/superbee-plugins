@@ -4,3 +4,5 @@
 /scripts/build-recipe-index.mjs @mikec-ai @briand-ai
 /scripts/recipe-index.test.mjs @mikec-ai @briand-ai
 /.github/workflows/ @mikec-ai @briand-ai
+/.github/CODEOWNERS @mikec-ai @briand-ai
+/.gitattributes @mikec-ai @briand-ai
