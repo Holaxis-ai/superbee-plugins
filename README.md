@@ -28,6 +28,19 @@ exact source revision, resumes after a fix, and distinguishes technical recommen
 integration evidence and completed acceptance. Installation runs no code or checks and grants
 no merge, release or deployment authority.
 
+## Recipe index
+
+[`recipe-index.json`](recipe-index.json) is the curated `recipe-index/v1` index that the CLI and
+hosted install from. It lists one current version of each listed recipe, pinned by two digests, and
+two cookbooks: My Home (`my-home`, `my-home-maintenance`, `my-home-costs`, in dependency order) and
+Research (`deep-research`, an experimental prerelease). A cookbook is a named group; every recipe in it stays
+individually installable. Other folders under `recipes/` are unlisted and stay installable by path.
+
+The digests are the integrity guarantee. `designation` and `maintainer` are the publisher's
+statement for discovery: they are not a security property and imply no service level. An id plus
+version never changes once published, and consumers pin an index commit, so nothing upgrades
+silently. See [CONTRIBUTING.md](CONTRIBUTING.md#publish-a-recipe-version) to publish a version.
+
 ## My Home
 
 The data-only [`my-home`](recipes/my-home/recipe.md) core and its

@@ -1,0 +1,29 @@
+{
+  "source": "superbee-plugins",
+  "title": "Superbee plugin recipes",
+  "recipes": [
+    { "id": "my-home", "designation": "supported", "maintainer": "Holaxis-ai" },
+    { "id": "my-home-maintenance", "designation": "supported", "maintainer": "Holaxis-ai" },
+    { "id": "my-home-costs", "designation": "supported", "maintainer": "Holaxis-ai" },
+    { "id": "deep-research", "designation": "supported", "maintainer": "Holaxis-ai" }
+  ],
+  "cookbooks": [
+    {
+      "id": "my-home",
+      "title": "My Home",
+      "summary": "Kinds for homes, spaces, assets, service history, projects and money records. Installs definitions only, with no household records.",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "recipes": ["my-home", "my-home-maintenance", "my-home-costs"]
+    },
+    {
+      "id": "deep-research",
+      "title": "Research",
+      "summary": "Experimental. Kinds and a method for located evidence, scoped claims and persistent questions. The deep-research recipe is still a prerelease and may change.",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "recipes": ["deep-research"]
+    }
+  ],
+  "removed": []
+}

@@ -1,0 +1,96 @@
+{
+  "format": "recipe-index/v1",
+  "source": "superbee-plugins",
+  "title": "Superbee plugin recipes",
+  "recipes": [
+    {
+      "id": "deep-research",
+      "version": "0.1.0-pre.2",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:1b3ca8c0b758634e40465f0e19ddeb58296c66e1c9108c175b6c56d18b0093a9",
+      "files_digest": "sha256:9f8d344a232bb249cc0c1f4aa9edfed18a74277b52e617750f8388d662940480",
+      "root": "recipes/deep-research",
+      "files": [
+        "conventions/research-claim.md",
+        "conventions/research-observation.md",
+        "conventions/research-question.md",
+        "conventions/research-source.md",
+        "recipe.md",
+        "references/deep-research-contract.md",
+        "references/deep-research-extension.md",
+        "references/deep-research-workflow.md"
+      ]
+    },
+    {
+      "id": "my-home",
+      "version": "0.1.0",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:5187c4621dbf1ce2fc8a63813663cd25bb484cb49c1879d6b14d8a69d17561cf",
+      "files_digest": "sha256:c2454e89981b42978fdf29267a536b09a9fc391b226c057f6e2434eeca4a0a61",
+      "root": "recipes/my-home",
+      "files": [
+        "conventions/my-home-asset.md",
+        "conventions/my-home-home.md",
+        "conventions/my-home-space.md",
+        "recipe.md",
+        "references/my-home-core-v1.md"
+      ]
+    },
+    {
+      "id": "my-home-costs",
+      "version": "0.1.0",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:cad4b880d04c83445978381d162f820d397c5c89e4639f16e7bd68a9e6701442",
+      "files_digest": "sha256:4ba9b6452f1ea64ef29e57a27d829be6c8faf351e4d9de87a079b202f9944cb7",
+      "root": "recipes/my-home-costs",
+      "files": [
+        "conventions/my-home-money-record.md",
+        "conventions/my-home-project.md",
+        "recipe.md",
+        "references/my-home-money-v1.md"
+      ]
+    },
+    {
+      "id": "my-home-maintenance",
+      "version": "0.1.0",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:306eeee3a944ee4cf14c6eb4bd3f4bf043e30e4b3d40e9863f6e23cffd152c1a",
+      "files_digest": "sha256:776bc920d2ae3471690631c08be656bc79604b77390a0ae33cee4c97c886486d",
+      "root": "recipes/my-home-maintenance",
+      "files": [
+        "conventions/my-home-maintenance-plan.md",
+        "conventions/my-home-service-record.md",
+        "recipe.md",
+        "references/my-home-maintenance-v1.md"
+      ]
+    }
+  ],
+  "cookbooks": [
+    {
+      "id": "deep-research",
+      "title": "Research",
+      "summary": "Experimental. Kinds and a method for located evidence, scoped claims and persistent questions. The deep-research recipe is still a prerelease and may change.",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "recipes": [
+        "deep-research"
+      ]
+    },
+    {
+      "id": "my-home",
+      "title": "My Home",
+      "summary": "Kinds for homes, spaces, assets, service history, projects and money records. Installs definitions only, with no household records.",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "recipes": [
+        "my-home",
+        "my-home-maintenance",
+        "my-home-costs"
+      ]
+    }
+  ]
+}
