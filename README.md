@@ -11,6 +11,15 @@ contributing to this repository does not automatically enable code in a user's C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
+## Software delivery
+
+The inert [`software-delivery`](recipes/software-delivery) recipe adds one Change Review Kind
+and an operating reference, explicitly paired with the built-in Task and Context Note recipes.
+The [two-session fictional example](examples/software-delivery) preserves an assessment at its
+exact source revision, resumes after a fix, and distinguishes technical recommendations, actual
+integration evidence and completed acceptance. Installation runs no code or checks and grants
+no merge, release or deployment authority.
+
 ## My Home
 
 The data-only [`my-home`](recipes/my-home/recipe.md) core and its
