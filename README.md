@@ -11,6 +11,19 @@ contributing to this repository does not automatically enable code in a user's C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
+## Decision making
+
+The inert [`decision` recipe](recipes/decision/recipe.md) provides three Kinds:
+Decision Case, Decision Option and Decision. It models questions and criteria,
+alternatives, attributable commitments, rationale, supersession and review
+without duplicating the built-in Task Kind or the separately installed
+Deep Research Kinds. Its [operating model](recipes/decision/references/decision-model.md)
+documents optional composition; the
+[adoption guide](recipes/decision/references/adopting-existing-decisions.md)
+explains why an existing Decision convention is not automatically normalized.
+The [fictional walkthrough](examples/decision/README.md) is data-only.
+Installation creates no records, migrations, activities or authorizations.
+
 ## Software delivery
 
 The inert [`software-delivery`](recipes/software-delivery) recipe adds one Change Review Kind
