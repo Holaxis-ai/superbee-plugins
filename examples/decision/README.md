@@ -1,63 +1,64 @@
-# Decision recipe: synthetic composition example
+# Decision recipe: synthetic composed example
 
-This is a fictional planning case, not an approved policy or completed work.
-The recipe's definitions install no instances. The records below are suggested
-examples to create intentionally in a disposable bundle after installing the
-reviewed recipe and its optional companions.
+This example is entirely fictional. It contains one Decision Case, two
+Decision Options, one recorded Decision, and two built-in Tasks. A completed
+investigation and an open implementation task remain distinct. No actual
+provider service, authenticated approval or automated execution is claimed.
 
-## A choice and two alternatives
+The six standalone Markdown records in `records/` are example instances,
+**not** recipe payload. Installing `recipes/decision` creates none of them.
 
-**Case:** Should a fictional organization send routine event notifications
-through Provider A or Provider B?
+## Reproduce in a fresh local bundle
 
-**Criteria:** Appropriate privacy controls; reliable delivery; affordable
-usage; operability with the team's present skills. Compare actual terms,
-not assumed capabilities.
+From a reviewed checkout with a compatible installed Superbee CLI, choose
+an **absent** location outside all current bundles. This is explicitly
+invoked local example work, not something the recipe executes:
 
-**Options:** Provider A and Provider B are candidate `Decision Option`
-documents. Their benefits, risks and unknowns are recorded separately.
-Link both from `Decision Case` using `considers`.
+```sh
+REPO=/absolute/path/to/reviewed-superbee-plugins
+BUNDLE=/absolute/path/to/absent-example-bundle
 
-**Research:** A `Research Question` asks whether Provider A meets the
-specified residency requirement. An `investigated by` Task asks an agent
-to obtain the current vendor terms. The Question is not answered until
-those inputs are actually examined. These Kinds come from `deep-research`
-and built-in `work-tracking`, respectively.
+superbee init --create-only --recipe none --dir "$BUNDLE"
+superbee recipe add work-tracking --actor process:decision-example --dir "$BUNDLE"
+superbee recipe add "$REPO/recipes/decision" --actor process:decision-example --dir "$BUNDLE"
 
-**Proposed decision:** A `Decision` with `decision_status: proposed`
-can recommend Provider A, explicitly noting unresolved compliance.
-It must not assert that an authorized person selected A.
+for relative in \
+  decision-options/service-a.md \
+  decision-options/service-b.md \
+  tasks/test-service-a.md \
+  tasks/configure-service-a.md \
+  decision-cases/notifications.md \
+  decisions/select-service-a.md; do
+  superbee promote "$REPO/examples/decision/records/$relative" \
+    --doc-key "$relative" --actor process:decision-example --dir "$BUNDLE"
+done
 
-**Recorded decision:** Only after the authorized fictional decision-maker
-actually chooses can a separate or updated record state
-`decision_status: recorded` with `decider`, `decision_date`,
-`decision_scope`, `authority_basis`, evidence, and rationale. Link the
-record to its Case using `resolves case`, and to the chosen Option with
-`selects`. A Task to configure the chosen provider may be linked with
-`follow-up`; it remains open until separately completed.
+superbee kinds --json --dir "$BUNDLE"
+superbee status --json --dir "$BUNDLE"
+superbee link show decisions/select-service-a --text "follow-up" --json --dir "$BUNDLE"
+```
 
-**Revision:** If the provider changes terms, open a new Case if further
-deliberation is needed. Record a new Decision linking
-`superseded decision` to the earlier Decision. Do not rewrite the old
-choice or infer that existing configuration has been reversed.
+Do not target an existing business-plan bundle or occupied root. The
+example uses the OKF v0.2 `superbee_progress_status` spelling. If the
+selected CLI refuses a command, diagnose compatibility rather than
+bypassing the model by overwriting files.
 
-## Compose without inheritance
+## What this demonstrates
 
-The four built-in and extension layers remain distinct:
-`Decision Case`, `Decision Option`, `Decision` (this recipe);
-`Research Question`, `Research Claim`, `Research Observation`,
-`Research Source` (deep-research); `Task` (work-tracking). No
-`Activity` or `Evidence` Kind is implicitly added. This recipe
-is not a workflow engine or a cross-recipe dependency installer.
+- A Case links both alternatives, a fictional investigation Task, and
+  the Decision that resolves the stated scope.
+- The Decision links its selected Option and a separate `todo` Task
+  for implementation. The `done` investigation Task is only an
+  invented example, not real vendor verification.
+- The rejected option remains discoverable for future reconsideration.
+- The Decision's named decider and authority basis are claims in a
+  synthetic record, not proof of permission or consent.
+- The Recipe defines no Task or Research Kind and does not automatically
+  invoke another Recipe or execute work.
 
-Suggested checks on a disposable selected bundle:
-
-~~~sh
-superbee recipe validate ./recipes/decision --json
-superbee kinds --json --dir /absolute/path/to/bundle
-superbee status --json --dir /absolute/path/to/bundle
-~~~
-
-See the main recipe's adoption reference before trying the recipe against
-an existing bundle with a custom Decision Kind. This example contains no
-real company, provider, person, source assertion or authorization.
+The structural test `scripts/decision.test.mjs` checks the definitions
+and fictional link graph. With `DECISION_CLI` set to a reviewed installed
+Superbee executable it additionally runs native recipe parsing.
+This example does not demonstrate semantic validity, real decision-making
+outcomes or general Kind migration. For existing bundles, consult
+`recipes/decision/references/adopting-existing-decisions.md`.
