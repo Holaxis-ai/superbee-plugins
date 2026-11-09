@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {existsSync, readFileSync, readdirSync} from 'node:fs';
+import {readFileSync, readdirSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -74,8 +74,8 @@ test('Decision model preserves authority and follow-through distinctions', () =>
   assert.match(option, /challenged by: Research Claim/);
   assert.match(choice, /recorded is a claim of a decision/i);
   const adoption = read(path.join(recipe, 'references/adopting-existing-decisions.md'));
-  assert.match(adoption, /does not.*migrat/i);
-  assert.match(adoption, /do not.*bulk-retype/i);
+  assert.match(adoption, /does not rewrite historical Decision instances/i);
+  assert.match(adoption, /bulk-retype its records/i);
 });
 
 test('synthetic decision, options, case and tasks resolve to the expected types', () => {
