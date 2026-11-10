@@ -15,7 +15,6 @@ No real authorization or external provider action is claimed.
 
 [resolves question](../decision-questions/notifications.md)
 [selects](../options/service-a.md)
-[investigation task](../tasks/test-service-a.md)
 [follow-up](../tasks/configure-service-a.md)
 
 # Rationale
