@@ -14,9 +14,16 @@ rules, required fields, enums, link labels, readers and historical instances.
   structure without changing a bundle.
 - recipe add installs missing convention IDs with create-only writes. It does
   not overwrite a same-ID existing convention, and can report source_differs,
-  partially applied and recipe ownership differences. Distinct convention
-  IDs governing the same type can produce duplicate-governs warnings; the
-  registry's first-by-ID declaration wins, not a semantic merge.
+  partially applied and recipe ownership differences. **This is not a
+  semantic no-op:** if a different convention ID already governs a type, adding
+  this recipe may silently change which schema governs existing records.
+  Duplicate-governs is only a warning; the command can still report added and
+  exit successfully. The registry's first-by-ID declaration wins, not the
+  oldest, most specific or most recently installed. For example,
+  conventions/decision sorts before conventions/project-decision, so the
+  recipe's Decision definition would take precedence over the pre-existing
+  project Decision Kind. Existing instances may immediately acquire
+  conformance problems, although no document was overwritten.
 - recipe evolve is a separate inspected, state-bound, largely additive change
   to recipe definitions. It can report blockers for changed bodies, non-additive
   declarations, foreign ownership, incompatible instances or link types. Even
@@ -29,24 +36,41 @@ rules, required fields, enums, link labels, readers and historical instances.
   consumer and placement evidence; it does not acquire that evidence or apply
   migrations. A passing structural check is not proof of semantic equivalence.
 
-## Inspect before installing
+## Required pre-install check for existing bundles
 
-On the selected existing bundle, inspect its live registry, convention,
-instances, links, dependent recipes, queries and Views. With a reviewed
-Superbee CLI and an explicit selected bundle, useful read-only probes include:
+**Do not run `recipe add` in an existing bundle until you inspect the
+governing conventions and existing instances.** All three recipe type names
+are potential collision points: `Decision`, `Decision Question`, and
+`Option`. `Option` is deliberately reusable but has a broad name, so
+its collision risk deserves particular attention.
+
+With the selected bundle and a reviewed Superbee CLI, use read-only commands:
 
 ~~~sh
 superbee kinds --json --dir /absolute/path/to/bundle
-superbee doc read conventions/decision --json --dir /absolute/path/to/bundle
+superbee list --type Convention --prefix conventions/ --limit 0 --json --dir /absolute/path/to/bundle
 superbee list --type Decision --limit 0 --json --dir /absolute/path/to/bundle
+superbee list --type "Decision Question" --limit 0 --json --dir /absolute/path/to/bundle
+superbee list --type Option --limit 0 --json --dir /absolute/path/to/bundle
 superbee status --json --dir /absolute/path/to/bundle
 superbee recipe validate /absolute/path/to/reviewed-superbee-plugins/recipes/decision --json
 ~~~
 
-If the actual convention uses another ID, read that ID instead. Review
-existing source fields and observed values, not just the declared type name.
-Do not run recipe add merely as a conflict detector: it may correctly install
-the recipe's *other* missing Kinds before reporting Decision drift.
+Inspect the full `Convention` inventory, not just the effective Kind registry:
+the registry reports only the winner when two conventions govern the same
+type. Read every existing convention whose `governs` matches one of those
+names (for example `superbee doc read conventions/decision --json`) and
+review its instance fields, links, consumers, queries and Views.
+
+If **any** of these types already has a different convention, or if instances
+of an as-yet-undeclared type already exist, **stop**. Decide explicitly
+whether to keep the local Kind, adapt it, or map records through an
+approved migration; do not treat a successful `recipe add` as compatibility
+approval. Do not run `recipe add` merely as a conflict probe: it may install
+other Kinds first, and a different-ID collision can change active semantics.
+A clean check at one moment also does not lock out concurrent writers.
+The recipe has no automatic all-or-nothing collision guard; Core would need
+a preflight/installation refusal to enforce this invariant for all callers.
 
 ## Plan an explicit semantic mapping
 
@@ -71,7 +95,7 @@ with silently diverging statuses.
 ## Adoption choices
 
 **Keep a local Decision Kind.** Safest when a bundle's existing convention
-has meaningful semantics or many consumers. Adopt the new Question and Option
+has meaningful semantics or many consumers. Adopt the new Decision Question and Option
 concepts only after checking typed-link interoperability; maintain a
 documented mapping to the generic Decision semantics without pretending the
 recipe owns the local Decision definition.
