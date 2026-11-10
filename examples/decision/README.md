@@ -45,8 +45,9 @@ bypassing the model by overwriting files.
 
 ## What this demonstrates
 
-- A Question links both alternatives, a fictional investigation Task, and
-  the Decision that resolves the stated scope.
+- A Decision Question links both alternatives and its investigation Task.
+  The Decision links to the Question through `resolves question`; the
+  reverse relationship is found through backlinks, not another stored edge.
 - The Decision links its selected Option and a separate `todo` Task
   for implementation. The `done` investigation Task is only an
   invented example, not real vendor verification.
@@ -58,7 +59,8 @@ bypassing the model by overwriting files.
 
 The structural test `scripts/decision.test.mjs` checks the definitions
 and fictional link graph. With `DECISION_CLI` set to a reviewed installed
-Superbee executable it additionally runs native recipe parsing.
+Superbee executable it also validates the recipe, installs it in a disposable
+bundle, and checks that the example adds no unresolved links or Kind violations.
 This example does not demonstrate semantic validity, real decision-making
 outcomes or general Kind migration. For existing bundles, consult
 `recipes/decision/references/adopting-existing-decisions.md`.
