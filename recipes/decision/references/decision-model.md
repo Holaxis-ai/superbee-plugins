@@ -39,11 +39,11 @@ only introduce a reusable Criterion Kind in a separately justified extension.
 
 Link labels above are exact Kind declarations. They become typed relationships
 when a target Kind and document are present; merely declaring a target type does
-not install its recipe. Store links in ordinary Markdown, e.g. from a decision
-to an option as `[selects](../options/queue.md)` (literal example, not a
-link to an installed record). The target must be
-the intended actual document, not an invented placeholder. A graph shows
-relationships, but does not cause a task to run or an approval to occur.
+not install its recipe. In a Decision document, link to the selected Option
+using the exact link label `selects` and a relative path to that existing Option
+document. Do not link to hypothetical targets: the destination must be a real
+document in the selected bundle. A graph shows relationships, but does not
+cause a task to run or an approval to occur.
 
 ## Optional recipe composition
 
