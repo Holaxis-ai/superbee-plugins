@@ -57,7 +57,7 @@ narrower, broader, ambiguous, or has no counterpart. Example questions:
 | --- | --- | --- |
 | dated recorded choice | Decision, decision_status: recorded | Was a choice actually made, or merely documented? |
 | proposed or pending choice | Decision, decision_status: proposed | Never infer acceptance from a meeting summary |
-| question resolved | Decision Case + resolves case link | Is this a normative choice, a Research Question or a local Question Kind? |
+| question resolved | Decision Question + resolves question link | Is this a normative choice, a Research Question or a local Question Kind? |
 | legacy/source pointers | original provenance plus links | Preserve exact source identity and citation semantics |
 | implementation follow-ups | built-in Task with follow-up link | Are these intended tasks, or observed completed actions? |
 | earlier replaced decision | superseded decision link | Which portion of the prior commitment is superseded? |
@@ -71,7 +71,7 @@ with silently diverging statuses.
 ## Adoption choices
 
 **Keep a local Decision Kind.** Safest when a bundle's existing convention
-has meaningful semantics or many consumers. Adopt the new Case and Option
+has meaningful semantics or many consumers. Adopt the new Question and Option
 concepts only after checking typed-link interoperability; maintain a
 documented mapping to the generic Decision semantics without pretending the
 recipe owns the local Decision definition.
