@@ -12,7 +12,6 @@ Which of two fictional services should deliver internal notifications?
 [considers](../options/service-a.md)
 [considers](../options/service-b.md)
 [investigated by](../tasks/test-service-a.md)
-[resolved by](../decisions/select-service-a.md)
 
 # Criteria
 
