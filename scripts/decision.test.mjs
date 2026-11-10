@@ -78,9 +78,11 @@ test('Decision is a definitions-only recipe with three independent Kinds', () =>
   assert.match(guide, /does not rewrite historical Decision instances/i);
   assert.match(guide, /bulk-retype its records/i);
   const model = read(path.join(recipe, 'references', 'decision-model.md'));
-  const tick = String.fromCharCode(96);
-  assert.ok(model.includes(tick + '[selects](../options/queue.md)' + tick),
-    'example link must be literal code, not an installed unresolved link');
+  assert.match(model, /exact link label `selects`/);
+  assert.doesNotMatch(model, /\[selects\]\([^)]*\)/,
+    'installed references must not contain illustrative links to missing targets');
+  assert.doesNotMatch(model, /options\/queue\.md/,
+    'recipe reference must not introduce nonexistent option paths');
 });
 
 test('Decision relationships preserve one canonical edge direction', () => {
