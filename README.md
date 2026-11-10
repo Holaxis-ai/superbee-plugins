@@ -14,7 +14,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 ## Decision making
 
 The inert [`decision` recipe](recipes/decision/recipe.md) provides three Kinds:
-Decision Case, Decision Option and Decision. It models questions and criteria,
+Decision Question, Option and Decision. It models questions and criteria,
 alternatives, attributable commitments, rationale, supersession and review
 without duplicating the built-in Task Kind or the separately installed
 Deep Research Kinds. Its [operating model](recipes/decision/references/decision-model.md)
@@ -47,8 +47,8 @@ model bindings, vendor messages or financial transactions.
 
 ## Decision making (experimental)
 
-The inert [`decision`](recipes/decision/recipe.md) recipe defines `Decision Case`,
-`Decision Option` and `Decision` for deliberation, comparison, rationale,
+The inert [`decision`](recipes/decision/recipe.md) recipe defines `Decision Question`,
+`Option` and `Decision` for deliberation, comparison, rationale,
 authority, supersession and follow-through. It composes with the built-in
 `Task` Kind and optionally with [`deep-research`](recipes/deep-research)
 without redefining either. Installation creates no decisions or tasks and
