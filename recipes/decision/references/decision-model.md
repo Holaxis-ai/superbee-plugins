@@ -27,13 +27,12 @@ only introduce a reusable Criterion Kind in a separately justified extension.
 ## Relationships and intended directions
 
 - Decision Question --considers--> Option
-- Decision Question --resolved by--> Decision
 - Decision Question --needs research--> Research Question (optional deep-research)
 - Decision Question --investigated by--> Task (optional built-in work-tracking)
 - Decision --resolves question--> Decision Question
 - Decision --selects--> Option
 - Decision --supported by--> Research Claim (optional deep-research)
-- Decision --investigation task / follow-up / review task--> Task
+- Decision --follow-up / review task--> Task
 - Decision --superseded decision--> earlier Decision
 - Option --supported by / challenged by--> Research Claim
 - Option --tested by--> Task
@@ -41,7 +40,8 @@ only introduce a reusable Criterion Kind in a separately justified extension.
 Link labels above are exact Kind declarations. They become typed relationships
 when a target Kind and document are present; merely declaring a target type does
 not install its recipe. Store links in ordinary Markdown, e.g. from a decision
-to an option as [selects](../options/queue.md). The target must be
+to an option as `[selects](../options/queue.md)` (literal example, not a
+link to an installed record). The target must be
 the intended actual document, not an invented placeholder. A graph shows
 relationships, but does not cause a task to run or an approval to occur.
 
@@ -88,7 +88,7 @@ supported is not equivalent to a human having made or approved a decision.
    assumption or authority changes, create a new Decision linking
    superseded decision to the earlier one, and state the scope of replacement.
 
-This is a pattern, not a forced linear orchestration. A Question can produce
+This is a pattern, not a forced linear orchestration. A Question can link
 investigation Tasks that generate more evidence; implementing a Decision can
 surface a new Question. Recursion, scheduling, approval, task claiming and execution
 remain outside these definitions.
