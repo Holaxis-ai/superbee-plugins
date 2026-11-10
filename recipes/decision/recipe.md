@@ -21,6 +21,11 @@ actors, permissions, executions or automations. It does not own the built-in
 Task Kind or the separately installed deep-research Kinds. Their relationships
 are optional composition points; installing this recipe does not install them.
 
-Read the operating model and the existing-bundle adoption reference before
-treating recorded text as permission to act or adding this recipe where a
-Decision convention already exists.
+**Before installing into any existing bundle**, inspect all conventions and
+instances for `Decision`, `Decision Question`, and `Option` using the
+read-only steps in `adopting-existing-decisions.md`. Even when no document
+is overwritten, a duplicate `governs` declaration can switch the active
+schema because the first convention by ID wins. Do not proceed on a conflict
+without an approved adoption plan.
+
+Read the operating model for authority and workflow boundaries.
