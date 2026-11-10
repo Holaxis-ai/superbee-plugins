@@ -62,7 +62,7 @@ test('Decision is a definitions-only recipe with three independent Kinds', () =>
   const declared = conventions();
   assert.deepEqual([...declared.keys()].sort(), ['Decision', 'Decision Question', 'Option']);
   assert.deepEqual([...declared.values()].map(x => x.name).sort(),
-    ['decision.md', 'decision-question.md', 'option.md']);
+    ['decision.md', 'decision-question.md', 'option.md'].sort());
   assert.equal(declared.has('Task'), false);
   assert.equal(declared.has('Research Question'), false);
 
