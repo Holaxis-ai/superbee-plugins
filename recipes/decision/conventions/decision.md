@@ -23,15 +23,15 @@ fields:
     authority_basis: What authorizes this choice within the relevant organization or process, with verification limits.
     revisit_when: Evidence, result, time or condition that would require re-evaluation.
 links:
-  resolves case: Decision Case
-  selects: Decision Option
+  resolves question: Decision Question
+  selects: Option
   supported by: Research Claim
   follow-up: Task
   investigation task: Task
   review task: Task
   superseded decision: Decision
 link_descriptions:
-  resolves case: The bounded question answered by this record; the Case can also link back using resolved by.
+  resolves question: The bounded question answered by this record; the Question can also link back using resolved by.
   selects: The chosen alternative; a proposal may identify a preferred option without creating authorization.
   supported by: A scoped supporting Research Claim, not proof that the person named as decider approved the choice.
   follow-up: Implementation or other work resulting from this decision; completion is tracked on Task, not inferred here.
@@ -51,7 +51,7 @@ permit draft proposals. Attribution is not authenticated authorization.
 
 Explain options, criteria, evidence and assumptions that supported the choice,
 including significant objections and rejected alternatives. Link to reusable
-Decision Options, Cases and Research Claims where applicable.
+Options, Questions and Research Claims where applicable.
 
 Preserve the original record when superseded; create a newer Decision with a
 superseded decision link. A Decision can create follow-up Tasks, but its
