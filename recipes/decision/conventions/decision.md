@@ -27,15 +27,13 @@ links:
   selects: Option
   supported by: Research Claim
   follow-up: Task
-  investigation task: Task
   review task: Task
   superseded decision: Decision
 link_descriptions:
-  resolves question: The bounded question answered by this record; the Question can also link back using resolved by.
+  resolves question: The bounded choice answered by this record; use its derived backlink from the Question instead of a duplicate inverse link.
   selects: The chosen alternative; a proposal may identify a preferred option without creating authorization.
   supported by: A scoped supporting Research Claim, not proof that the person named as decider approved the choice.
   follow-up: Implementation or other work resulting from this decision; completion is tracked on Task, not inferred here.
-  investigation task: Work needed before a proposed decision can be recorded.
   review task: A later check of consequences, assumptions or continuing applicability.
   superseded decision: An earlier decision replaced in an explicitly stated scope; retain both records and their provenance.
 sections: [Decision, Rationale]
@@ -51,7 +49,9 @@ permit draft proposals. Attribution is not authenticated authorization.
 
 Explain options, criteria, evidence and assumptions that supported the choice,
 including significant objections and rejected alternatives. Link to reusable
-Options, Questions and Research Claims where applicable.
+Options, Questions and Research Claims where applicable. Link pre-decision
+investigation Tasks from the Decision Question with `investigated by`; avoid
+storing a second copy of the same relation on Decision.
 
 Preserve the original record when superseded; create a newer Decision with a
 superseded decision link. A Decision can create follow-up Tasks, but its
