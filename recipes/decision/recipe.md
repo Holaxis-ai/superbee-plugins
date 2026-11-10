@@ -11,9 +11,9 @@ references:
 ---
 # Decision Making
 
-Three small Kinds: Decision Case (the question and criteria), Decision Option
+Three small Kinds: Decision Question (the question and criteria), Option
 (the alternatives), and Decision (the attributable commitment). A small
-decision can stand alone. A substantial deliberation can use a Case and
+decision can stand alone. A substantial deliberation can use a Question and
 separately reusable Options.
 
 This is a definitions-only recipe. It installs no decisions, evidence, tasks,
