@@ -34,8 +34,8 @@ test('Decision is a definitions-only, independently installable recipe', () => {
   assert.equal(field(header, 'composes'), null, 'no unsupported composition manifest');
 
   const expected = {
-    'decision-case.md': 'Decision Case',
-    'decision-option.md': 'Decision Option',
+    'decision-question.md': 'Decision Question',
+    'option.md': 'Option',
     'decision.md': 'Decision',
   };
   const dir = path.join(recipe, 'conventions');
@@ -57,8 +57,8 @@ test('Decision is a definitions-only, independently installable recipe', () => {
 
 test('Decision model preserves authority and follow-through distinctions', () => {
   const choice = read(path.join(recipe, 'conventions/decision.md'));
-  const deliberation = read(path.join(recipe, 'conventions/decision-case.md'));
-  const option = read(path.join(recipe, 'conventions/decision-option.md'));
+  const deliberation = read(path.join(recipe, 'conventions/decision-question.md'));
+  const option = read(path.join(recipe, 'conventions/option.md'));
   for (const lifecycle of ['proposed', 'recorded', 'superseded', 'withdrawn']) {
     assert.match(choice, new RegExp('\\b' + lifecycle + '\\b'));
   }
@@ -66,8 +66,8 @@ test('Decision model preserves authority and follow-through distinctions', () =>
   assert.match(choice, /investigation task: Task/);
   assert.match(choice, /review task: Task/);
   assert.match(choice, /superseded decision: Decision/);
-  assert.match(choice, /selects: Decision Option/);
-  assert.match(choice, /resolves case: Decision Case/);
+  assert.match(choice, /selects: Option/);
+  assert.match(choice, /resolves question: Decision Question/);
   assert.match(deliberation, /needs research: Research Question/);
   assert.match(deliberation, /investigated by: Task/);
   assert.match(option, /supported by: Research Claim/);
@@ -80,9 +80,9 @@ test('Decision model preserves authority and follow-through distinctions', () =>
 
 test('synthetic decision, options, case and tasks resolve to the expected types', () => {
   const files = [
-    'decision-cases/notifications.md',
-    'decision-options/service-a.md',
-    'decision-options/service-b.md',
+    'decision-questions/notifications.md',
+    'options/service-a.md',
+    'options/service-b.md',
     'decisions/select-service-a.md',
     'tasks/test-service-a.md',
     'tasks/configure-service-a.md',
@@ -92,12 +92,12 @@ test('synthetic decision, options, case and tasks resolve to the expected types'
     return [relative, {source, type: field(frontmatter(source), 'type')}];
   }));
   const types = {
-    'considers': 'Decision Option',
+    'considers': 'Option',
     'investigated by': 'Task',
     'resolved by': 'Decision',
     'tested by': 'Task',
-    'resolves case': 'Decision Case',
-    'selects': 'Decision Option',
+    'resolves question': 'Decision Question',
+    'selects': 'Option',
     'investigation task': 'Task',
     'follow-up': 'Task',
     'depends on': 'Task',
