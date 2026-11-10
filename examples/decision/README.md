@@ -1,7 +1,7 @@
 # Decision recipe: synthetic composed example
 
-This example is entirely fictional. It contains one Decision Case, two
-Decision Options, one recorded Decision, and two built-in Tasks. A completed
+This example is entirely fictional. It contains one Decision Question, two
+Options, one recorded Decision, and two built-in Tasks. A completed
 investigation and an open implementation task remain distinct. No actual
 provider service, authenticated approval or automated execution is claimed.
 
@@ -23,11 +23,11 @@ superbee recipe add work-tracking --actor process:decision-example --dir "$BUNDL
 superbee recipe add "$REPO/recipes/decision" --actor process:decision-example --dir "$BUNDLE"
 
 for relative in \
-  decision-options/service-a.md \
-  decision-options/service-b.md \
+  options/service-a.md \
+  options/service-b.md \
   tasks/test-service-a.md \
   tasks/configure-service-a.md \
-  decision-cases/notifications.md \
+  decision-questions/notifications.md \
   decisions/select-service-a.md; do
   superbee promote "$REPO/examples/decision/records/$relative" \
     --doc-key "$relative" --actor process:decision-example --dir "$BUNDLE"
@@ -45,7 +45,7 @@ bypassing the model by overwriting files.
 
 ## What this demonstrates
 
-- A Case links both alternatives, a fictional investigation Task, and
+- A Question links both alternatives, a fictional investigation Task, and
   the Decision that resolves the stated scope.
 - The Decision links its selected Option and a separate `todo` Task
   for implementation. The `done` investigation Task is only an
