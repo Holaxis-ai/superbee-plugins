@@ -13,8 +13,8 @@ revisit_when: Reconsider after a material reliability or operating-cost change
 For the fictional system and the stated criteria, select Service A.
 No real authorization or external provider action is claimed.
 
-[resolves case](../decision-cases/notifications.md)
-[selects](../decision-options/service-a.md)
+[resolves question](../decision-questions/notifications.md)
+[selects](../options/service-a.md)
 [investigation task](../tasks/test-service-a.md)
 [follow-up](../tasks/configure-service-a.md)
 
