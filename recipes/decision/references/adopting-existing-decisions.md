@@ -71,6 +71,8 @@ other Kinds first, and a different-ID collision can change active semantics.
 A clean check at one moment also does not lock out concurrent writers.
 The recipe has no automatic all-or-nothing collision guard; Core would need
 a preflight/installation refusal to enforce this invariant for all callers.
+This underlying Core issue is tracked at
+https://github.com/Holaxis-ai/superbee/issues/700.
 
 ## Plan an explicit semantic mapping
 
