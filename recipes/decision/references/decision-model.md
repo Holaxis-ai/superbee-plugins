@@ -14,33 +14,33 @@ workflow. Keep commitments, investigation and execution distinct.
 | Kind | Represents | What it does not imply |
 | --- | --- | --- |
 | Decision Question | A normative question, alternatives, criteria and unresolved work | A choice has been authorized |
-| Option | One possible course of action and its trade-offs | That the option has been selected |
+| Decision Option | One possible course of action and its trade-offs | That the option has been selected |
 | Decision | A proposed or recorded choice, reason, scope and attributable authority | Work was completed, or that identity/authorization was independently verified |
 
 A simple decision can use a single Decision with its question, alternatives
 and criteria in the body. Add a Decision Question when deliberation lasts across
-sessions, people or alternatives. Add Options when they need separate
+sessions, people or alternatives. Add Decision Options when they need separate
 evaluation, relationships or reuse. Do not create a document for every sentence,
 argument or criterion. Criteria normally belong in the Question's Criteria section;
 only introduce a reusable Criterion Kind in a separately justified extension.
 
 ## Relationships and intended directions
 
-- Decision Question --considers--> Option
+- Decision Question --considers--> Decision Option
 - Decision Question --needs research--> Research Question (optional deep-research)
 - Decision Question --investigated by--> Task (optional built-in work-tracking)
 - Decision --resolves question--> Decision Question
-- Decision --selects--> Option
+- Decision --selects--> Decision Option
 - Decision --supported by--> Research Claim (optional deep-research)
 - Decision --follow-up / review task--> Task
 - Decision --superseded decision--> earlier Decision
-- Option --supported by / challenged by--> Research Claim
-- Option --tested by--> Task
+- Decision Option --supported by / challenged by--> Research Claim
+- Decision Option --tested by--> Task
 
 Link labels above are exact Kind declarations. They become typed relationships
 when a target Kind and document are present; merely declaring a target type does
-not install its recipe. In a Decision document, link to the selected Option
-using the exact link label `selects` and a relative path to that existing Option
+not install its recipe. In a Decision document, link to the selected Decision Option
+using the exact link label `selects` and a relative path to that existing Decision Option
 document. Do not link to hypothetical targets: the destination must be a real
 document in the selected bundle. A graph shows relationships, but does not
 cause a task to run or an approval to occur.
