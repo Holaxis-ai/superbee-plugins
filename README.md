@@ -11,6 +11,14 @@ contributing to this repository does not automatically enable code in a user's C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
+## Resource pointers
+
+The inert [`resource`](recipes/resource/recipe.md) recipe adds one Resource Kind for external
+links, optional descriptive metadata, and `related to` / `part of` relationships between
+Resources. Folders and collections use the same Kind. The [synthetic example](examples/resource)
+shows a document, containing folder and related website. Installation fetches no content and
+creates no instances or provider connections.
+
 ## Software delivery
 
 The inert [`software-delivery`](recipes/software-delivery) recipe adds one Change Review Kind
