@@ -14,7 +14,7 @@ For the fictional system and the stated criteria, select Service A.
 No real authorization or external provider action is claimed.
 
 [resolves question](../decision-questions/notifications.md)
-[selects](../options/service-a.md)
+[selects](../decision-options/service-a.md)
 [follow-up](../tasks/configure-service-a.md)
 
 # Rationale
