@@ -35,7 +35,7 @@ model bindings, vendor messages or financial transactions.
 ## Decision making (experimental)
 
 The inert [`decision`](recipes/decision/recipe.md) recipe defines `Decision Question`,
-`Option` and `Decision` for deliberation, comparison, rationale,
+`Decision Option` and `Decision` for deliberation, comparison, rationale,
 authority, supersession and follow-through. It composes with the built-in
 `Task` Kind and optionally with [`deep-research`](recipes/deep-research)
 without redefining either. Installation creates no decisions or tasks and
