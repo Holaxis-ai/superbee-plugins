@@ -24,7 +24,7 @@ sections: [Proposal]
 
 Keep the proposed action and its material trade-offs here. Compare it against
 the owning Question's criteria, documenting costs, consequences, assumptions,
-uncertainty and discarded alternatives. A Decision selects an Decision Option by an
+uncertainty and discarded alternatives. A Decision selects a Decision Option by an
 explicit link; do not store a second competing selected-state flag here.
 
 Evidence stays with its authoritative Research Source, Observation or Claim
