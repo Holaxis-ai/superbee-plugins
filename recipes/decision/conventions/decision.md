@@ -24,7 +24,7 @@ fields:
     revisit_when: Evidence, result, time or condition that would require re-evaluation.
 links:
   resolves question: Decision Question
-  selects: Option
+  selects: Decision Option
   supported by: Research Claim
   follow-up: Task
   review task: Task
@@ -49,7 +49,7 @@ permit draft proposals. Attribution is not authenticated authorization.
 
 Explain options, criteria, evidence and assumptions that supported the choice,
 including significant objections and rejected alternatives. Link to reusable
-Options, Questions and Research Claims where applicable. Link pre-decision
+Decision Options, Decision Questions and Research Claims where applicable. Link pre-decision
 investigation Tasks from the Decision Question with `investigated by`; avoid
 storing a second copy of the same relation on Decision.
 
