@@ -60,9 +60,9 @@ test('Decision is a definitions-only recipe with three independent Kinds', () =>
   assert.equal(field(header, 'composes'), null);
 
   const declared = conventions();
-  assert.deepEqual([...declared.keys()].sort(), ['Decision', 'Decision Question', 'Option']);
+  assert.deepEqual([...declared.keys()].sort(), ['Decision', 'Decision Option', 'Decision Question']);
   assert.deepEqual([...declared.values()].map(x => x.name).sort(),
-    ['decision.md', 'decision-question.md', 'option.md'].sort());
+    ['decision.md', 'decision-question.md', 'decision-option.md'].sort());
   assert.equal(declared.has('Task'), false);
   assert.equal(declared.has('Research Question'), false);
 
@@ -87,16 +87,16 @@ test('Decision relationships preserve one canonical edge direction', () => {
   const declared = conventions();
   const choice = declared.get('Decision');
   const question = declared.get('Decision Question');
-  const option = declared.get('Option');
+  const option = declared.get('Decision Option');
   for (const state of ['proposed', 'recorded', 'superseded', 'withdrawn']) {
     assert.match(choice.source, new RegExp('\\b' + state + '\\b'));
   }
   assert.equal(choice.links.get('resolves question'), 'Decision Question');
-  assert.equal(choice.links.get('selects'), 'Option');
+  assert.equal(choice.links.get('selects'), 'Decision Option');
   assert.equal(choice.links.get('follow-up'), 'Task');
   assert.equal(choice.links.get('review task'), 'Task');
   assert.equal(choice.links.get('superseded decision'), 'Decision');
-  assert.equal(question.links.get('considers'), 'Option');
+  assert.equal(question.links.get('considers'), 'Decision Option');
   assert.equal(question.links.get('needs research'), 'Research Question');
   assert.equal(question.links.get('investigated by'), 'Task');
   assert.equal(option.links.get('supported by'), 'Research Claim');
@@ -109,11 +109,11 @@ test('Decision relationships preserve one canonical edge direction', () => {
   assert.match(choice.source, /recorded is a claim of a decision/i);
 });
 
-test('synthetic Decision Question, Options and Tasks match convention links', () => {
+test('synthetic Decision Question, Decision Options and Tasks match convention links', () => {
   const files = [
     'decision-questions/notifications.md',
-    'options/service-a.md',
-    'options/service-b.md',
+    'decision-options/service-a.md',
+    'decision-options/service-b.md',
     'decisions/select-service-a.md',
     'tasks/test-service-a.md',
     'tasks/configure-service-a.md',
@@ -164,8 +164,8 @@ test('public CLI fresh-bundle install and example have zero structural debt', {
     sb(['recipe', 'add', 'work-tracking', '--actor', actor]);
     sb(['recipe', 'add', recipe, '--actor', actor]);
     for (const relative of [
-      'options/service-a.md',
-      'options/service-b.md',
+      'decision-options/service-a.md',
+      'decision-options/service-b.md',
       'tasks/test-service-a.md',
       'tasks/configure-service-a.md',
       'decision-questions/notifications.md',
