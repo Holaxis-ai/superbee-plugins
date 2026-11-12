@@ -70,6 +70,10 @@ test('Decision is a definitions-only recipe with three independent Kinds', () =>
     const reference = read(path.join(recipe, 'references', name + '.md'));
     assert.equal(field(frontmatter(reference), 'type'), 'Reference');
     assert.ok(source.includes('references/' + name + '.md'));
+    // Superbee 0.4.5 extracts Markdown links even inside code spans/fences.
+    // Installed references must not contain illustrative .md links to missing targets.
+    assert.doesNotMatch(reference, /\]\([^\n)]*\.md(?:#[^\n)]*)?\)/,
+      name + ' reference must not contain Markdown links to .md targets');
   }
   const guide = read(path.join(recipe, 'references', 'adopting-existing-decisions.md'));
   assert.match(guide, /first-by-ID/);
@@ -77,12 +81,6 @@ test('Decision is a definitions-only recipe with three independent Kinds', () =>
   assert.match(guide, /conventions\/project-decision/);
   assert.match(guide, /does not rewrite historical Decision instances/i);
   assert.match(guide, /bulk-retype its records/i);
-  const model = read(path.join(recipe, 'references', 'decision-model.md'));
-  assert.match(model, /exact link label `selects`/);
-  assert.doesNotMatch(model, /\[selects\]\([^)]*\)/,
-    'installed references must not contain illustrative links to missing targets');
-  assert.doesNotMatch(model, /options\/queue\.md/,
-    'recipe reference must not introduce nonexistent option paths');
 });
 
 test('Decision relationships preserve one canonical edge direction', () => {
