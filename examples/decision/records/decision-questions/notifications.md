@@ -9,8 +9,8 @@ decision_scope: Fictional internal system only
 
 Which of two fictional services should deliver internal notifications?
 
-[considers](../options/service-a.md)
-[considers](../options/service-b.md)
+[considers](../decision-options/service-a.md)
+[considers](../decision-options/service-b.md)
 [investigated by](../tasks/test-service-a.md)
 
 # Criteria
