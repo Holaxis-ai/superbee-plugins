@@ -41,8 +41,8 @@ rules, required fields, enums, link labels, readers and historical instances.
 **Do not run `recipe add` in an existing bundle until you inspect the
 governing conventions and existing instances.** All three recipe type names
 are potential collision points: `Decision`, `Decision Question`, and
-`Option`. `Option` is deliberately reusable but has a broad name, so
-its collision risk deserves particular attention.
+`Decision Option`. The scoped `Decision Option` name intentionally reduces
+(but cannot eliminate) collision risk before qualified Kind identities exist.
 
 With the selected bundle and a reviewed Superbee CLI, use read-only commands:
 
@@ -51,7 +51,7 @@ superbee kinds --json --dir /absolute/path/to/bundle
 superbee list --type Convention --prefix conventions/ --limit 0 --json --dir /absolute/path/to/bundle
 superbee list --type Decision --limit 0 --json --dir /absolute/path/to/bundle
 superbee list --type "Decision Question" --limit 0 --json --dir /absolute/path/to/bundle
-superbee list --type Option --limit 0 --json --dir /absolute/path/to/bundle
+superbee list --type "Decision Option" --limit 0 --json --dir /absolute/path/to/bundle
 superbee status --json --dir /absolute/path/to/bundle
 superbee recipe validate /absolute/path/to/reviewed-superbee-plugins/recipes/decision --json
 ~~~
@@ -97,7 +97,7 @@ with silently diverging statuses.
 ## Adoption choices
 
 **Keep a local Decision Kind.** Safest when a bundle's existing convention
-has meaningful semantics or many consumers. Adopt the new Decision Question and Option
+has meaningful semantics or many consumers. Adopt the new Decision Question and Decision Option
 concepts only after checking typed-link interoperability; maintain a
 documented mapping to the generic Decision semantics without pretending the
 recipe owns the local Decision definition.
