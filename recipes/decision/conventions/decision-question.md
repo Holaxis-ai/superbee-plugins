@@ -18,12 +18,12 @@ fields:
     decision_scope: Systems, people, timeframe or constraints within which the choice applies.
     revisit_when: Concrete trigger for revisiting a deferred or earlier question.
 links:
-  considers: Option
+  considers: Decision Option
   needs research: Research Question
   investigated by: Task
   depends on question: Decision Question
 link_descriptions:
-  considers: An alternative under evaluation; an Option can be linked from multiple Questions when genuinely reusable.
+  considers: An alternative under evaluation; a Decision Option can be linked from multiple Questions when genuinely reusable.
   needs research: An epistemic question whose answer matters to the choice; requires the separate deep-research recipe.
   investigated by: A pre-decision work item, using the separately installed built-in Task Kind.
   depends on question: Another choice that must be resolved first; not a task-execution dependency.
@@ -37,7 +37,7 @@ options will be assessed. In the Criteria section, distinguish required
 constraints from preferences, explain the threshold or priority of each
 criterion, and name what evidence would assess it. Prefer a small table or
 numbered list with stable criterion names; avoid invented scoring precision.
-Options may assess these same criteria in their Proposal bodies, and the
+Decision Options may assess these same criteria in their Proposal bodies, and the
 Decision's Rationale should explain the consequential trade-offs. The Decision's
 `resolves question` link supplies the backlink to this Question; do not add a
 second reciprocal edge. In OKF v0.2, set `superbee_progress_status` in record
