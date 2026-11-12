@@ -55,9 +55,10 @@ test('resource: portable inert recipe and native pointer relationships', {timeou
         assert.equal((await sb(['link', 'show', target, '--text', relation, '--dir', bundle])).outbound.length, 0);
       }
       const status = await state();
-      for (const key of ['malformed', 'kind_warnings', 'unresolved_links', 'link_type_violations', 'conformance_debt']) assert.equal(status[key], 0, key);
+      for (const key of ['malformed', 'kind_warnings', 'unresolved_links', 'orphans', 'link_type_violations', 'conformance_debt']) assert.equal(status[key], 0, key);
       await native(['new', 'Resource', 'custom', '--title', 'Custom scheme', '--url', 'example-resource://catalog/123', '--resource_type', 'custom-domain-type']);
       assert.equal((await read('resources/custom')).url, 'example-resource://catalog/123');
+      assert.equal((await state()).orphans, 1, 'a standalone pointer is a legitimate orphan');
     });
     await t.test('missing fields and invalid types are rejected without records', async () => {
       for (const args of [
@@ -78,6 +79,34 @@ test('resource: portable inert recipe and native pointer relationships', {timeou
       await native(['doc', 'write', 'notes/not-resource', '--type', 'Note', '--title', 'Not a Resource', '--body', 'Synthetic wrong target.']);
       await native(['link', 'add', 'resources/doc', 'notes/not-resource', '--text', 'part of']);
       assert.equal((await state()).link_type_violations, 1);
+    });
+    await t.test('duplicate Resource conventions warn and select the first document ID', async () => {
+      for (const name of ['asset', 'web-asset']) {
+        const target = path.join(scratch, `collision-${name}`);
+        const seed = path.join(scratch, `seed-${name}`);
+        await mkdir(path.join(seed, 'conventions'), {recursive: true});
+        await writeFile(path.join(seed, 'recipe.md'), `---\ntype: Recipe\nid: seed-${name}\ntitle: Synthetic existing Resource\nsummary: Existing Resource collision fixture.\nversion: "0.1.0"\ncontent_policy: definitions-only\n---\n# Synthetic fixture\n`);
+        await writeFile(path.join(seed, `conventions/${name}.md`), `---\ntype: Convention\ntitle: Existing Resource\ngoverns: Resource\npath: resources/\nfields:\n  required: [title]\n---\n# Synthetic existing convention\n`);
+        const local = (args, expected = 0) => sb([...args, '--dir', target, '--actor', 'process:resource-example'], expected);
+        await sb(['init', '--create-only', '--recipe', 'none', '--dir', target]);
+        await local(['recipe', 'add', seed]);
+        await local(['new', 'Resource', 'existing', '--title', 'Existing pointer without URL']);
+        const before = await readFile(path.join(target, 'resources/existing.md'));
+        const installed = await local(['recipe', 'add', recipe]);
+        assert.ok(installed.warnings.some(w => w.code === 'KIND_DUPLICATE_GOVERNS'));
+        assert.deepEqual(await readFile(path.join(target, 'resources/existing.md')), before, 'installation does not rewrite existing instances');
+        const status = await sb(['status', '--dir', target]);
+        if (name === 'asset') {
+          assert.equal(status.kind_warnings, 0);
+          assert.equal(status.conformance_debt, 0);
+          assert.match(await local(['new', 'Resource', 'new', '--title', 'New pointer', '--url', 'https://example.invalid/new'], 2), /unknown field/i);
+        } else {
+          assert.equal(status.kind_warnings, 1);
+          assert.equal(status.conformance_debt, 1);
+          await local(['new', 'Resource', 'new', '--title', 'New pointer', '--url', 'https://example.invalid/new']);
+          assert.equal((await sb(['doc', 'read', 'resources/new', '--dir', target])).url, 'https://example.invalid/new');
+        }
+      }
     });
     t.diagnostic(`Public CLI ${identity.package.version}; source ${identity.source.commit}; synthetic pointers only.`);
   } finally {

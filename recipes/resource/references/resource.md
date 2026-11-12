@@ -18,8 +18,9 @@ resource moves. Provider plus external_id is an optional identity hint, not an a
 
 Use a descriptive URL for opening the resource, not credentials or an expiring signed download.
 URL and MIME fields are descriptive text without explicit native field types; the recipe
-does not validate URL syntax or MIME registration. This permits non-HTTPS resource schemes without adding a custom validator. Opening
-or fetching a URL remains a separate action governed by the caller's tools and permissions.
+does not validate URL syntax or MIME registration. This permits non-HTTPS resource
+schemes without adding a custom validator. Opening or fetching a URL remains a separate
+action governed by the caller's tools and permissions.
 
 ## Relationships and collections
 
@@ -31,6 +32,11 @@ From a member record, add a link labeled `part of` to the container record. Use
 a link labeled `related to` for an association. These are ordinary directed bundle links.
 The recipe creates neither inverse edges nor transitive closure and does not enforce cardinality,
 cycle detection or remote folder membership. Avoid self-membership and containment cycles.
+
+A standalone Resource without incoming or outgoing bundle links appears under `orphans`
+in `superbee status`. That is expected for a standalone pointer, not an invalid Resource;
+its external URL does not connect it to the bundle graph. Add meaningful bundle links
+when useful rather than inventing relationships to clear the diagnostic.
 
 A future `derived from` relationship would describe provenance, such as a PDF exported from a
 Google Doc. A future `supersedes` relationship would describe replacement. Neither requires a
@@ -45,5 +51,8 @@ content modification dates. Stored metadata never grants provider access.
 
 Before installing into an existing bundle, inspect its Kinds for an existing Resource declaration.
 Resolve a conflicting declaration explicitly before adoption: a second convention for the same
-Kind can affect existing instances even without overwriting their files. This recipe performs
-no migration. Review any existing Resource records before adopting its required fields.
+Kind can affect existing instances even without overwriting their files. The first convention
+by document ID wins. Installation can succeed with a `KIND_DUPLICATE_GOVERNS` warning:
+an earlier existing convention leaves this recipe ignored; a later one lets this recipe
+take over, potentially making existing records nonconforming. This recipe performs no
+migration. Review any existing Resource records before adopting its required fields.
