@@ -32,6 +32,21 @@ qualifies explicit composition, native field validation and scoped read-time dom
 checks against public artifacts. Installation creates no household records, schedules,
 model bindings, vendor messages or financial transactions.
 
+## Decision making (experimental)
+
+The inert [`decision`](recipes/decision/recipe.md) recipe defines `Decision Question`,
+`Decision Option` and `Decision` for deliberation, comparison, rationale,
+authority, supersession and follow-through. It composes with the built-in
+`Task` Kind and optionally with [`deep-research`](recipes/deep-research)
+without redefining either. Installation creates no decisions or tasks and
+does not grant approval or execution authority.
+
+An existing bundle may already define `Decision` differently. The
+[adoption guide](recipes/decision/references/adopting-existing-decisions.md)
+documents the required pre-install Kind inventory: adding a convention can change
+which declaration wins for an existing type, even without overwriting files.
+Do not install over a conflicting local Kind without an explicit adoption plan.
+
 ## Deep, Deep Research (experimental)
 
 The data-only [`deep-research`](recipes/deep-research/recipe.md) recipe supplies four
