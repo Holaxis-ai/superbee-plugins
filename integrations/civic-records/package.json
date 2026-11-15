@@ -13,7 +13,7 @@
   "superbeeLocalOperations": {
     "contract": 1,
     "id": "civic-records",
-    "core": "0.2.0-pre.41",
+    "core": "0.2.0-pre.45",
     "helper": 1,
     "entry": "dist/operation.mjs",
     "assets": [],
@@ -138,7 +138,7 @@
     "./host": "./dist/host.mjs"
   },
   "peerDependencies": {
-    "@superbee/core": "0.2.0-pre.41"
+    "@superbee/core": "0.2.0-pre.45"
   },
   "peerDependenciesMeta": {
     "@superbee/core": {

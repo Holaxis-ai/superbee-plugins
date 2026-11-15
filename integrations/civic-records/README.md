@@ -15,8 +15,8 @@ out of this repository's adapter. Source discovery/conversion remain separate wo
 
 ## Compatibility and acquisition
 
-Public Core helper `0.2.0-pre.41`; executable CLI `0.4.4-pre.6`, source
-`688d62a2e1395a6ca7dde52f08e0caf97b643d60`; Node `26.8.2` for the repository toolchain.
+Public Core helper `0.2.0-pre.45`; executable CLI `0.4.6-pre.5`, source
+`0ff46d60d3788ca8510cebc4dd2f141fc4ace73e`; Node `26.8.2` for the repository toolchain.
 Acquire a reviewed full Git commit, perform the root README's ordinary dependency setup, then:
 
 ```sh

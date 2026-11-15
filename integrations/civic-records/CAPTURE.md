@@ -11,10 +11,9 @@ its pinned parse5 HTML parser, so standalone registration needs only `package.js
 new exact code digest through `superbee op register ... --local`. Existing accepted snapshots
 remain unchanged; explicitly register and bind the new version to use these capabilities.
 
-Core helper remains `0.2.0-pre.41`. PDF extraction is qualified with public CLI `0.4.4-pre.11`.
+This checkout requires Core helper `0.2.0-pre.45` and CLI `0.4.6-pre.5` for local operations.
 Its tool binder supports explicit `-v` plus `stderr` version selection; old CLI releases that lack
-that selection must refuse, rather than fall back to an unbound executable. The original
-`local.civic.prepare-text.v1` remains compatible with its earlier supported CLI.
+that selection must refuse. The supplied-text operation still uses the same input contract.
 
 ## Discover candidates from captured HTML
 
@@ -157,8 +156,7 @@ to a retained original becomes valid only after the caller's admitted native cus
 
 ## Stage undated evidence after native original custody
 
-Undated staging requires public CLI `0.4.4-pre.11` for actual stored-MIME readback; earlier
-clients must refuse. The full reviewed Git checkout supplies `examples/civic-records/stage-evidence.mjs`, reusing public
+Use CLI `0.4.6-pre.5` for undated staging, which needs stored-MIME readback. The full reviewed Git checkout supplies `examples/civic-records/stage-evidence.mjs`, reusing public
 Core Kind validation and native CLI only. Its admitted target is one explicit original bound hosted
 checkout. The caller first retains the original at the prepared `evidence/source-bytes/<sha256>.pdf` key
 with ordinary native `promote`, and records its actual acknowledgement. Hosted promotion requires
@@ -210,17 +208,17 @@ import {createCivicOperations, stageHostedEvidence, stageHosted}
 ```
 
 The built standalone package contains `dist/operation.mjs` and `dist/host.mjs`; no runtime
-example or sibling source checkout is needed. Public Core `0.2.0-pre.41` is an exact peer of
+example or sibling source checkout is needed. Public Core `0.2.0-pre.45` is an exact peer of
 this host entry and remains an installed external dependency, never a bundled storage engine.
 The peer is optional for operation-only installations, matching the repository convention; host
-callers must explicitly install Core41. A missing Core refuses the host import with no fallback.
+callers must explicitly install Core `0.2.0-pre.45`. A missing Core refuses the host import with no fallback.
 The package remains private with npm publication blocked. A reviewed Git checkout or explicitly
 packed local artifact is its delivery mechanism; adding this entry does not authorize a release.
 
 `createCivicOperations({cli, packageRoot, outDir})` explicitly initializes an absent `operations`
 subfolder in an existing caller-owned run directory, registers the trusted fixed package and returns
 `invoke(operationId, resources, tools = {})`. It invokes the five declared civic operations through
-public CLI `0.4.4-pre.11`, retaining native binding/input/operation receipts and exporting the
+public CLI `0.4.6-pre.5`, retaining native binding/input/operation receipts and exporting the
 operation's exact output role. It creates no research records. The caller must first acquire,
 review and freshly build its pinned package and provision its CLI/tools; this helper does not
 validate a publisher signature, grant credentials, approve a person's consent screen or sandbox

@@ -147,7 +147,7 @@ milliseconds, for `derived-at`. A matching existing text retains its first valid
 time and exact native version even if the caller supplies a later time. That time is never a
 new freshness clock. All semantic fields/body remain exact, and new-create readback remains
 exact for every field. It is caller metadata, not an assertion of converter execution or its missing timestamp. Tests qualify installed public CLI `0.4.4-pre.6`,
-Core41; the operation's exact compatibility pin remains unchanged. The importer invokes an explicit
+and Core pre.41 as a historical control for the importer. See the integration README for the current operation pin. The importer invokes an explicit
 trusted CLI executable with argv, no shell. No hosted credential lookup or sync is requested.
 
 Input is a bounded standalone export, not a native receipt or an authenticated extraction. It retains

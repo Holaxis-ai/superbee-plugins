@@ -10,7 +10,7 @@ export async function createCivicOperations({ cli, packageRoot, outDir }) {
   const command = args => JSON.parse(execFileSync(cli, [...args, '--json'], {
     encoding: 'utf8', timeout: 120_000, maxBuffer: 2 << 20,
   }));
-  need(command(['version']).identity?.package?.version === '0.4.4-pre.11', 'CIVIC_CAPTURE_CLI_VERSION');
+  need(command(['version']).identity?.package?.version === '0.4.6-pre.5', 'CIVIC_CAPTURE_CLI_VERSION');
   const bundle = path.join(outDir, 'operations');
   command(['init', '--create-only', '--recipe', 'none', '--dir', bundle]);
   const native = args => command([...args, '--dir', bundle]);

@@ -14,7 +14,7 @@ OCR completeness, official source authenticity, complete archive coverage or leg
 
 Select a reviewed full 40-character commit, inspect its code and verify the checkout. The repository
 [setup](../../README.md#install-the-github-integration-from-source) explains compatibility: this
-journey uses public Core `0.2.0-pre.41`, CLI `0.4.4-pre.6`, and Node `26.8.2`. Do not substitute
+journey uses public Core `0.2.0-pre.45`, CLI `0.4.6-pre.5`, and Node `26.8.2`. Do not substitute
 `latest`, a sibling Core checkout or an unreviewed moving branch. Operation registration is a
 separate decision to trust ambient local JavaScript; installing a recipe is inert.
 
@@ -26,7 +26,7 @@ git rev-parse HEAD
 git status --short
 node --version
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.41
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.45
 npm run build --workspace integrations/civic-records
 ```
 
@@ -42,17 +42,17 @@ civic() {
     XDG_STATE_HOME="$RUN/home" npm_config_cache="$RUN/home/npm-cache" "$@"
 }
 civic npm install --prefix "$RUN/tool" --ignore-scripts --no-audit --no-fund \
-  --package-lock=false superbee@0.4.4-pre.6
+  --package-lock=false superbee@0.4.6-pre.5
 CLI="$RUN/tool/node_modules/.bin/superbee"
 sb() { civic "$CLI" "$@"; }
 plan() { civic node examples/civic-records/plan-supplied.mjs --cli "$CLI" --bundle "$RUN/bundle" "$@"; }
 sb version --json
 ```
 
-Inspect actual version identity: `0.4.4-pre.6`, clean npm package, producer
-`688d62a2e1395a6ca7dde52f08e0caf97b643d60`. Source acquisition/build and recipe installation do
-not automatically approve executable operation bytes. The supplied-text operation does not need
-a converter or a CLI upgrade; newer tool-probe support would not prove conversion ran here.
+Inspect actual version identity: `0.4.6-pre.5`, clean npm package, producer
+`0ff46d60d3788ca8510cebc4dd2f141fc4ace73e`. Source acquisition/build and recipe installation do
+not automatically approve executable operation bytes. The supplied-text operation uses the
+text you provide.
 
 ## 2. Install the model and create a source
 
