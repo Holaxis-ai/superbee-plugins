@@ -2,8 +2,9 @@
 type: "Recipe"
 id: "my-home-maintenance"
 title: "My Home Maintenance"
-version: "0.1.0"
+version: "0.1.1"
 summary: "Separate maintenance intentions from reported service occurrences."
+offer: "Plan upkeep and log each repair or service visit, so you know what was done and what is due."
 content_policy: "definitions-only"
 references: ["references/my-home-maintenance-v1.md"]
 ---

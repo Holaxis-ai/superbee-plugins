@@ -13,6 +13,9 @@ need no Option/Decision hierarchy: separate quotes already preserve the offers.
 The first recipe release is `0.1.0`. Its pre-merge name was changed consistently to `my-home`,
 including namespaced Kind labels, document paths and consumer requirements. Home remains the
 same dwelling concept; no live installation or data migration is implied by this source rename.
+Release `0.1.1` rewrites each Kind description and adds an `offer` sentence in plain words for
+people choosing a recipe. Fields, links and the operating contracts are unchanged; the precise
+definitions stay in each recipe's reference.
 
 ## Run the executable example
 
