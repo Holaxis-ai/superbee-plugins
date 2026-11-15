@@ -2,8 +2,9 @@
 type: "Recipe"
 id: "my-home"
 title: "My Home"
-version: "0.1.0"
+version: "0.1.1"
 summary: "Stable Home, Space and Asset identities without an exhaustive inventory."
+offer: "Set up your home, its rooms and the things in them, so everything else has a place to attach."
 content_policy: "definitions-only"
 references: ["references/my-home-core-v1.md"]
 ---

@@ -2,8 +2,9 @@
 type: "Recipe"
 id: "my-home-costs"
 title: "My Home Costs"
-version: "0.1.0"
+version: "0.1.1"
 summary: "Quotes, budgets, authorized orders and recorded spending with distinct monetary facts."
+offer: "Track quotes, budgets and what you actually paid for home projects."
 content_policy: "definitions-only"
 references: ["references/my-home-money-v1.md"]
 ---
