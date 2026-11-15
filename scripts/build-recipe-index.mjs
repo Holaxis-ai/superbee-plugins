@@ -10,9 +10,18 @@ import {execFileSync} from 'node:child_process';
 import {lstat, readFile, readdir, realpath, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {parseMarkdown} from '@superbee/core';
 import {recipeSourceDigest} from '@superbee/core/recipe-lifecycle';
 import {parseRecipeFiles} from '@superbee/core/recipes';
-import {parseRecipeIndex, recipeFilesDigest, resolveCookbook, resolveIndexRecipe} from '@superbee/core/recipe-sources';
+import {
+  RECIPE_DISPLAY_LIMITS,
+  parseRecipeIndex,
+  readRecipeDiscovery,
+  recipeDisplayText,
+  recipeFilesDigest,
+  resolveCookbook,
+  resolveIndexRecipe,
+} from '@superbee/core/recipe-sources';
 
 export const SOURCE_FILE = 'recipe-index.source.json';
 export const INDEX_FILE = 'recipe-index.json';
@@ -23,8 +32,10 @@ const OKF_VERSION = '0.2';
 // Gitignored local noise. Any other unexpected file is left for Core to refuse.
 const IGNORED_FILES = new Set(['.DS_Store']);
 // Same bounds Core applies to the index; line and format controls could forge log lines or hide text.
-const LIMITS = {id: 128, version: 64, maintainer: 200, title: 200, summary: 1000, reason: 1000};
-const UNSAFE_TEXT = /[\p{Cc}\p{Cf}\u2028\u2029]/gu;
+const LIMITS = {id: 128, version: 64, maintainer: 200, title: 200, summary: 1000, reason: 1000, offer: RECIPE_DISPLAY_LIMITS.offer};
+// Core's display text rule: controls, format characters and line separators, except the zero-width
+// non-joiner and joiner that Persian, Indic scripts and emoji need.
+const UNSAFE_TEXT = /(?![\u200C\u200D])[\p{Cc}\p{Cf}\u2028\u2029]/gu;
 
 export class RecipeIndexRefusal extends Error {
   constructor(problems) {
@@ -38,10 +49,24 @@ const refuse = message => {
 };
 const isObject = value => typeof value === 'object' && value !== null && !Array.isArray(value);
 
-function exactKeys(value, keys, where) {
+function exactKeys(value, keys, where, optional = []) {
   if (!isObject(value)) refuse(`${where} must be an object`);
   for (const key of keys) if (!Object.hasOwn(value, key)) refuse(`${where} is missing '${key}'`);
-  for (const key of Object.keys(value)) if (!keys.includes(key)) refuse(`${where} has unknown key '${key}'`);
+  for (const key of Object.keys(value)) if (!keys.includes(key) && !optional.includes(key)) refuse(`${where} has unknown key '${key}'`);
+}
+
+/**
+ * Readers drop what they cannot use in `discovery`; the generator refuses it, through Core's own
+ * reader, so the published object is exactly what every current reader keeps.
+ */
+function strictDiscovery(entry, level, where) {
+  if (!Object.hasOwn(entry, 'discovery')) return;
+  const {discovery, problems} = readRecipeDiscovery(entry.discovery, level, `${where}.discovery`);
+  if (problems.length > 0) throw new RecipeIndexRefusal(problems);
+  if (discovery === null) refuse(`${where}.discovery is empty; leave it out instead`);
+  for (const [key, value] of Object.entries(discovery)) {
+    if (typeof value === 'string') freeText(value, `${where}.discovery.${key}`, LIMITS.offer);
+  }
 }
 
 function arrayOf(value, where) {
@@ -80,14 +105,16 @@ export function parseSource(text) {
   plainId(source.source, 'source');
   freeText(source.title, 'title', LIMITS.title);
   arrayOf(source.recipes, 'recipes').forEach((entry, i) => {
-    exactKeys(entry, ['id', 'designation', 'maintainer'], `recipes[${i}]`);
+    exactKeys(entry, ['id', 'designation', 'maintainer'], `recipes[${i}]`, ['discovery']);
     plainId(entry.id, `recipes[${i}].id`);
+    strictDiscovery(entry, 'recipe', `recipes[${i}]`);
     freeText(entry.designation, `recipes[${i}].designation`, LIMITS.maintainer);
     freeText(entry.maintainer, `recipes[${i}].maintainer`, LIMITS.maintainer);
   });
   arrayOf(source.cookbooks, 'cookbooks').forEach((entry, i) => {
-    exactKeys(entry, ['id', 'title', 'summary', 'designation', 'maintainer', 'recipes'], `cookbooks[${i}]`);
+    exactKeys(entry, ['id', 'title', 'summary', 'designation', 'maintainer', 'recipes'], `cookbooks[${i}]`, ['discovery']);
     plainId(entry.id, `cookbooks[${i}].id`);
+    strictDiscovery(entry, 'cookbook', `cookbooks[${i}]`);
     freeText(entry.title, `cookbooks[${i}].title`, LIMITS.title);
     freeText(entry.summary, `cookbooks[${i}].summary`, LIMITS.summary);
     freeText(entry.designation, `cookbooks[${i}].designation`, LIMITS.maintainer);
@@ -135,7 +162,7 @@ function compareCodeUnits(a, b) {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-async function buildEntry(root, {id, designation, maintainer}, sourceId) {
+async function buildEntry(root, {id, designation, maintainer, discovery}, sourceId) {
   const dir = `${RECIPES_DIR}/${id}`;
   let names;
   try {
@@ -166,6 +193,7 @@ async function buildEntry(root, {id, designation, maintainer}, sourceId) {
   if (recipe.id !== id) refuse(`folder ${dir} declares recipe id '${recipe.id}'`);
   if (recipe.warnings?.length) refuse(`recipe '${id}' parses with warnings: ${recipe.warnings.join('; ')}`);
   parseVersion(recipe.version, `recipe '${id}'`);
+  requireOffer(files, id);
   return {
     id,
     version: recipe.version,
@@ -175,7 +203,18 @@ async function buildEntry(root, {id, designation, maintainer}, sourceId) {
     files_digest: recipeFilesDigest(raw),
     root: dir,
     files: names,
+    ...(discovery === undefined ? {} : {discovery: readRecipeDiscovery(discovery, 'recipe').discovery}),
   };
+}
+
+/** Core falls back to the title when `offer` is absent, so the requirement reads the raw manifest. */
+function requireOffer(files, id) {
+  const manifest = files.find(file => file.path === 'recipe.md');
+  const {offer} = parseMarkdown(manifest?.bytes ?? '', `recipes/${id}/recipe.md`).frontmatter;
+  if (typeof offer !== 'string' || offer.length > LIMITS.offer || recipeDisplayText(offer, LIMITS.offer) === null) {
+    refuse(`recipe '${id}' must declare an 'offer' in recipe.md: one line of display text, at most ${LIMITS.offer} characters, saying what a person gets`);
+  }
+  freeText(offer, `recipe '${id}' offer`, LIMITS.offer);
 }
 
 /** Builds the index bytes from a checkout and proves Core accepts and verifies what was built. */
@@ -185,12 +224,28 @@ export async function buildRecipeIndex(root) {
   for (const entry of source.recipes) recipes.push(await buildEntry(root, entry, source.source));
   recipes.sort((a, b) => compareCodeUnits(a.id, b.id));
   const cookbooks = source.cookbooks
-    .map(({id, title, summary, designation, maintainer, recipes: members}) => ({id, title, summary, designation, maintainer, recipes: members}))
+    .map(({id, title, summary, designation, maintainer, recipes: members, discovery}) => ({
+      id,
+      title,
+      summary,
+      designation,
+      maintainer,
+      recipes: members,
+      ...(discovery === undefined ? {} : {discovery: readRecipeDiscovery(discovery, 'cookbook').discovery}),
+    }))
     .sort((a, b) => compareCodeUnits(a.id, b.id));
   const bytes = Buffer.from(`${JSON.stringify({format: FORMAT, source: source.source, title: source.title, recipes, cookbooks}, null, 2)}\n`);
 
   const parsed = parseRecipeIndex(bytes);
   if (!parsed.ok) refuse(`Core refuses the generated index: ${parsed.error.code}: ${parsed.error.message}`);
+  // Readers drop what they do not understand, so prove this Core keeps every discovery value emitted.
+  for (const [kind, emitted, read] of [['recipe', recipes, parsed.index.recipes], ['cookbook', cookbooks, parsed.index.cookbooks]]) {
+    emitted.forEach((entry, i) => {
+      if (JSON.stringify(entry.discovery ?? null) !== JSON.stringify(read[i].discovery ?? null)) {
+        refuse(`Core does not keep the discovery of ${kind} '${entry.id}' as generated; check it against this Core's rules`);
+      }
+    });
+  }
   const read = location => readFile(path.join(root, location));
   for (const {id} of parsed.index.recipes) {
     const result = await resolveIndexRecipe(parsed.index, id, read);
@@ -274,6 +329,7 @@ export function compareIndexes(previous, next) {
     for (const key of ['designation', 'maintainer']) {
       if (after[key] !== before[key]) notices.push(`recipe '${before.id}' ${key} changes from '${before[key]}' to '${after[key]}'`);
     }
+    discoveryNotice(notices, 'recipe', before.id, previous.source.recipes, next.source.recipes);
   }
   const previousIds = new Set(previous.index.recipes.map(entry => entry.id));
   for (const after of next.index.recipes) {
@@ -307,12 +363,27 @@ export function compareIndexes(previous, next) {
     if (JSON.stringify(after.recipes) !== JSON.stringify(before.recipes)) {
       notices.push(`cookbook '${before.id}' members change from [${before.recipes.join(', ')}] to [${after.recipes.join(', ')}]`);
     }
+    discoveryNotice(notices, 'cookbook', before.id, previous.source.cookbooks, next.source.cookbooks);
   }
   const previousCookbooks = new Set(previous.index.cookbooks.map(entry => entry.id));
   for (const after of next.index.cookbooks) {
     if (!previousCookbooks.has(after.id)) notices.push(`cookbook '${after.id}' is newly listed as ${after.designation}, maintained by '${after.maintainer}'`);
   }
   return {refusals, notices};
+}
+
+/**
+ * Categories and audience are maintainer decisions, so a change is a notice. It reads the source
+ * files, because a parsed index from an older Core may have dropped a value it does not know.
+ */
+function discoveryNotice(notices, kind, id, before, after) {
+  const of = entries => entries?.find(entry => entry.id === id)?.discovery ?? {};
+  const [was, now] = [of(before), of(after)];
+  for (const key of ['categories', 'audience']) {
+    if (JSON.stringify(was[key] ?? null) !== JSON.stringify(now[key] ?? null)) {
+      notices.push(`${kind} '${id}' discovery ${key} changes from ${JSON.stringify(was[key] ?? null)} to ${JSON.stringify(now[key] ?? null)}`);
+    }
+  }
 }
 
 function readAtRef(root, commit, file) {

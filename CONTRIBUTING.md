@@ -59,6 +59,16 @@ themselves. CI raises a `maintainer decision` annotation for every new listing a
 either field, so review the annotations before merging. Designation is the publisher's statement,
 not a security property, and implies no service level. Digests are the integrity guarantee.
 
+A listed recipe declares `offer` in its `recipe.md`: one line of at most 140 characters saying what
+a person gets. It is covered by `files_digest`, so rewording it after the recipe is listed needs a
+version bump, although installed content (`source_digest`) is unchanged. Each recipe and cookbook in
+the input may carry a `discovery` object: `keywords` (at most 12, lowercase), `categories` (one or two
+ids from Core's category table, the first is the primary) and `audience` (`personal`, `work` or
+`both`), plus `offer` on a cookbook. Readers silently drop a value they cannot use, so the generator
+refuses any such value instead. A contributor may propose categories and audience; Holaxis
+maintainers approve them, and CI raises a `maintainer decision` annotation when either changes.
+Everything in `discovery` and every cookbook field is the publisher's statement, not verified.
+
 A recipe is one installable set of Kinds. A cookbook is a named, ordered group of listed recipes
 with no content or version of its own, ordered so that dependencies come first. Its members must not
 install the same target, and a `supported` cookbook holds only `supported` recipes.

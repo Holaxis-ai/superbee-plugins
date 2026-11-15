@@ -37,8 +37,9 @@ current version of each listed recipe, pinned by two digests, and two cookbooks:
 `deep-research`, an experimental prerelease). A cookbook is a named group; every recipe in it stays
 individually installable. Other folders under `recipes/` are unlisted and stay installable by path.
 
-The digests are the integrity guarantee. `designation` and `maintainer` are the publisher's
-statement for discovery: they are not a security property and imply no service level. An id plus
+The digests are the integrity guarantee. `designation`, `maintainer`, every cookbook field and each
+entry's `discovery` (offer, keywords, categories, audience) are the publisher's statement for
+discovery: they are not a security property and imply no service level. An id plus
 version never changes once published. Consumers should pin a commit URL, such as
 `https://raw.githubusercontent.com/Holaxis-ai/superbee-plugins/<commit>/recipe-index.json`, so
 nothing upgrades silently. The CLI does not enforce this: a branch URL follows the branch. See

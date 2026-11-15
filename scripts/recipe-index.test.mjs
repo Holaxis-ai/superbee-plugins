@@ -11,8 +11,9 @@ import {buildRecipeIndex, compareVersions, escapeWorkflowData} from './build-rec
 const repo = fileURLToPath(new URL('../', import.meta.url));
 const script = fileURLToPath(new URL('./build-recipe-index.mjs', import.meta.url));
 
-function manifest({id = 'alpha', title = 'Alpha', version = '1.0.0'} = {}) {
-  return `---\ntype: Recipe\nid: ${id}\ntitle: ${title}\nversion: "${version}"\nsummary: Synthetic fixture.\ncontent_policy: definitions-only\n---\n# ${title}\n`;
+function manifest({id = 'alpha', title = 'Alpha', version = '1.0.0', offer = 'Synthetic offer.'} = {}) {
+  const offerLine = offer === null ? '' : `offer: ${JSON.stringify(offer)}\n`;
+  return `---\ntype: Recipe\nid: ${id}\ntitle: ${title}\nversion: "${version}"\nsummary: Synthetic fixture.\n${offerLine}content_policy: definitions-only\n---\n# ${title}\n`;
 }
 
 function convention(kind, folder) {
@@ -127,6 +128,67 @@ test('the generator refuses a folder declaring another id and an unorderable ver
   refused(generate(root), /declares recipe id 'other'/);
   await writeFile(path.join(root, 'recipes/alpha/recipe.md'), manifest({version: 'latest'}));
   refused(generate(root), /has version 'latest'/);
+});
+
+test('the generator refuses discovery mistakes that readers would silently drop', async t => {
+  const root = await fixture(t);
+  const cases = [
+    [{categories: ['health']}, /categories\[0\] must be one of home, money/],
+    [{categories: ['home', 'money', 'research']}, /lists more than 2 entries/],
+    [{audience: 'family'}, /audience must be one of personal, work, both/],
+    [{keywords: ['Repair']}, /keywords\[0\] must match/],
+    [{offer: 'Lives in recipe.md.'}, /unknown key 'offer' at recipe level/],
+    [{shelf: 'top'}, /unknown key 'shelf'/],
+    [{}, /discovery is empty/],
+  ];
+  for (const [discovery, pattern] of cases) {
+    const recipes = baseSource.recipes.map(entry => entry.id === 'alpha' ? {...entry, discovery} : entry);
+    await writeSource(root, {...baseSource, recipes});
+    refused(generate(root), pattern);
+  }
+  const cookbooks = [{...baseSource.cookbooks[0], discovery: {offer: 'x'.repeat(141)}}];
+  await writeSource(root, {...baseSource, cookbooks});
+  refused(generate(root), /offer must be display text of at most 140/);
+  await writeSource(root, {...baseSource, cookbooks: [{...baseSource.cookbooks[0], discovery: {offer: 'Fine\u202E.'}}]});
+  refused(generate(root), /offer must be display text/);
+  await writeSource(root, {...baseSource, cookbooks: [{...baseSource.cookbooks[0], discovery: {offer: 'Both, together.', categories: ['home'], audience: 'both'}}]});
+  run(root);
+  const index = JSON.parse(await readFile(path.join(root, 'recipe-index.json'), 'utf8'));
+  assert.deepEqual(index.cookbooks[0].discovery, {offer: 'Both, together.', categories: ['home'], audience: 'both'});
+  assert.equal(Object.hasOwn(index.recipes[0], 'discovery'), false);
+});
+
+test('the generator allows and refuses the same characters as Core', async t => {
+  const root = await fixture(t);
+  const persian = '\u0645\u06CC\u200C\u062E\u0648\u0627\u0647\u0645';
+  await writeSource(root, {...baseSource, cookbooks: [{...baseSource.cookbooks[0], title: persian, discovery: {offer: `\u0915\u094D\u200D\u0937 ${persian}`}}]});
+  run(root);
+  for (const hidden of ['\u200B', '\uFEFF', '\u{E0041}', '\u202E', '\u2028']) {
+    await writeSource(root, {...baseSource, cookbooks: [{...baseSource.cookbooks[0], title: `Both${hidden}`}]});
+    refused(generate(root), /contains a control or format character/);
+  }
+});
+
+test('a listed recipe must declare an offer in recipe.md', async t => {
+  const root = await fixture(t);
+  await writeFile(path.join(root, 'recipes/alpha/recipe.md'), manifest({offer: null}));
+  refused(generate(root), /recipe 'alpha' must declare an 'offer' in recipe\.md/);
+  await writeFile(path.join(root, 'recipes/alpha/recipe.md'), manifest({offer: 'o'.repeat(141)}));
+  refused(generate(root), /must declare an 'offer'/);
+});
+
+test('a category or audience change surfaces as a maintainer decision', async t => {
+  const root = await fixture(t);
+  const cookbooks = [{...baseSource.cookbooks[0], discovery: {categories: ['home']}}];
+  await writeSource(root, {...baseSource, cookbooks});
+  run(root);
+  git(root, 'init', '--quiet');
+  git(root, 'add', '.');
+  git(root, 'commit', '--quiet', '-m', 'publish');
+  await writeSource(root, {...baseSource, cookbooks: [{...cookbooks[0], discovery: {categories: ['money'], audience: 'work'}}]});
+  const result = run(root, '--compare', 'HEAD');
+  assert.match(result.stdout, /cookbook 'both' discovery categories changes from \["home"\] to \["money"\]/);
+  assert.match(result.stdout, /cookbook 'both' discovery audience changes from null to "work"/);
 });
 
 test('compareVersions follows semver precedence', () => {
@@ -328,8 +390,27 @@ test('the committed index is current and Core accepts it', async () => {
     ['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']],
     ['research', ['deep-research']],
   ]);
-  assert.match(parsed.index.cookbooks[1].summary, /experimental/i);
+  assert.match(parsed.index.cookbooks[1].summary, /prerelease/);
   assert.equal(parsed.index.recipes[0].version, '0.1.0-pre.2');
+  const myHome = parsed.index.cookbooks[0].discovery;
+  assert.equal(myHome.offer, 'Keep track of your home: rooms, appliances, repairs, warranties and what you spent.');
+  assert.deepEqual([myHome.categories, myHome.audience], [['home', 'money'], 'personal']);
+  for (const entry of [...parsed.index.recipes, ...parsed.index.cookbooks]) assert.ok(entry.discovery?.categories?.length, entry.id);
+});
+
+test('readers tolerate discovery values the generator refuses, and still resolve the cookbook', async () => {
+  const committed = JSON.parse(await readFile(path.join(repo, 'recipe-index.json'), 'utf8'));
+  const home = committed.cookbooks.find(entry => entry.id === 'my-home');
+  home.discovery = {...home.discovery, categories: ['civic', 'home'], audience: 'family', shelf: 'top'};
+  committed.recipes[0].discovery = {offer: 'not here', keywords: ['Bad Keyword', 'evidence']};
+  const parsed = parseRecipeIndex(JSON.stringify(committed));
+  assert.equal(parsed.ok, true, JSON.stringify(parsed.error));
+  const cookbook = parsed.index.cookbooks.find(entry => entry.id === 'my-home');
+  assert.deepEqual(cookbook.discovery.categories, ['home']);
+  assert.equal(Object.hasOwn(cookbook.discovery, 'audience'), false);
+  assert.deepEqual(parsed.index.recipes[0].discovery, {keywords: ['evidence']});
+  const result = await resolveCookbook(parsed.index, 'my-home', location => readFile(path.join(repo, location)));
+  assert.equal(result.ok, true, JSON.stringify(result.error));
 });
 
 test('both cookbooks resolve through a reader over this checkout, verifying every digest', async () => {
