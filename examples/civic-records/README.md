@@ -46,8 +46,9 @@ to repeat or discard and should leave official source bytes and editorial decisi
 
 `register-captured.mjs` supplies the missing step before text preparation: register immutable
 Civic Records for 1–10 explicitly supplied local PDFs against an **existing** Civic Source and
-installed Civic Record Kind. It uses installed public Core `0.2.0-pre.41` for body/Kind semantics
-and an explicit trusted native CLI (qualified with `0.4.4-pre.6`); follow the root dependency setup.
+installed Civic Record Kind. Use the root dependency setup for public Core `0.2.0-pre.45`
+and provide an explicit trusted native CLI. The registrar's compatibility test uses CLI
+`0.4.4-pre.6`. Use the current CLI `0.4.6-pre.5` for registered operations.
 It creates no Sources, performs no discovery/download/conversion, and installs no source plugin,
 recipe upgrade, schedule, finding or publication.
 
@@ -147,7 +148,7 @@ milliseconds, for `derived-at`. A matching existing text retains its first valid
 time and exact native version even if the caller supplies a later time. That time is never a
 new freshness clock. All semantic fields/body remain exact, and new-create readback remains
 exact for every field. It is caller metadata, not an assertion of converter execution or its missing timestamp. Tests qualify installed public CLI `0.4.4-pre.6`,
-Core41; the operation's exact compatibility pin remains unchanged. The importer invokes an explicit
+and Core pre.41 as a historical control for the importer. See the integration README for the current operation pin. The importer invokes an explicit
 trusted CLI executable with argv, no shell. No hosted credential lookup or sync is requested.
 
 Input is a bounded standalone export, not a native receipt or an authenticated extraction. It retains
@@ -245,7 +246,9 @@ remain distinct interfaces. No new editorial Kind or publication permission was 
 
 `stage-hosted.mjs` is a separate **stage-only** civic caller, not a switch that removes the existing local callers' guards. It consumes the same finite capture manifests/prepared exports, an already-bound hosted checkout and an explicit expected host/workspace/bundle/principal. It uses native complete reads, current Kind validation and strict create-only writes; it never calls sync, publishes, adopts a folder, creates a grant or stores credentials. Native reads can refresh the working copy through its existing authenticated authority.
 
-Use a reviewed full checkout and public Core41/CLI0.4.4-pre.10 with Node26.8.2 for this additional caller. A fresh full recipe skeleton can be built locally before approved native hosted publication. Existing bundles require explicit reviewed additive recipe evolution; this caller never upgrades their model. Recipe0.5.0-pre.1 preserves historical `local-private-research` values and adds `private-research` as intended audience only, not access control or a confidentiality guarantee.
+Use Node `26.8.2`, a reviewed full checkout, and public Core `0.2.0-pre.45`.
+The stage-only compatibility test uses CLI `0.4.4-pre.10`. Use CLI `0.4.6-pre.5` with
+the current packed host and for undated evidence staging. A fresh full recipe skeleton can be built locally before approved native hosted publication. Existing bundles require explicit reviewed additive recipe evolution; this caller never upgrades their model. Recipe0.5.0-pre.1 preserves historical `local-private-research` values and adds `private-research` as intended audience only, not access control or a confidentiality guarantee.
 
 ```sh
 node examples/civic-records/stage-hosted.mjs capture \

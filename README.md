@@ -98,8 +98,8 @@ policy. Core, CLI and development tools continue to use their existing npm chann
 The current GitHub profile is version 2; its canonical Connector and Work Items recipe are
 version 2 and add an explicit read policy using Core page-number paging. Legacy Link-mode
 declarations remain supported. Existing installations require reviewed registration, feed
-rebinding and approval of the exact bound policy digest. This checkout targets exact Core41
-and CLI `0.4.4-pre.6`, whose author command projects the literal fixture approval. Local archive
+rebinding and approval of the exact bound policy digest. This checkout targets exact Core pre.45
+and CLI `0.4.6-pre.5`. The author command projects the literal fixture approval. Local archive
 qualification and normal public-default/native CI qualification remain separate gates. No prior
 cohort's result substitutes for the current source and artifact proof.
 
@@ -121,11 +121,11 @@ reuse these observations and the existing Artifact command without registering e
 ## Install the GitHub integration from source
 
 Use a reviewed full 40-character commit SHA for `REVIEWED_FULL_COMMIT_SHA`. Verify that checkout
-before trusting and building it. This checkout requires embedded Core `0.2.0-pre.41` exactly
-and executable CLI `0.4.4-pre.6`. Use matching public artifacts after their native release/finalizer
+before trusting and building it. This checkout requires embedded Core `0.2.0-pre.45` exactly
+and executable CLI `0.4.6-pre.5`. Use matching public artifacts after their native release/finalizer
 verification, or explicitly selected retained archives for candidate qualification. Publication,
 installed consumer proof and managed admission remain separate. The selected producer source is
-[`688d62a2e1395a6ca7dde52f08e0caf97b643d60`](https://github.com/Holaxis-ai/superbee/tree/688d62a2e1395a6ca7dde52f08e0caf97b643d60);
+[`0ff46d60d3788ca8510cebc4dd2f141fc4ace73e`](https://github.com/Holaxis-ai/superbee/tree/0ff46d60d3788ca8510cebc4dd2f141fc4ace73e);
 that exact source identity is required for explicit candidate archives. Local retained-archive
 qualification covers the positive 16-scenario GitHub author journey and negative controls,
 comparison journeys, verification ingestion, and standalone Blender registration. Blender render
@@ -179,8 +179,8 @@ git checkout --detach REVIEWED_FULL_COMMIT_SHA
 git rev-parse HEAD
 git status --short
 npm ci
-npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.41
-npm install --global superbee@0.4.4-pre.6
+npm install --no-save --package-lock=false --ignore-scripts @superbee/core@0.2.0-pre.45
+npm install --global superbee@0.4.6-pre.5
 npm run build
 superbee source plugin register "$PWD/integrations/github"
 ```
@@ -212,23 +212,22 @@ npm run test:unit
 npm run test:packaged
 ```
 
-The exact Core 0.2.0-pre.41 artifact provides the public host helper exports. It remains an
+The exact Core 0.2.0-pre.45 artifact provides the public host helper exports. It remains an
 optional exact peer; build and typecheck require its explicit installation above. No Core source or sibling checkout
 is used. A maintainer testing a compatible Core candidate may install its tarball with
 `npm install --no-save --package-lock=false --ignore-scripts <tarball>` and set
 `SUPERBEE_CORE_TARBALL` to that exact archive for the packaged consumer proof. Local candidate
 paths never enter manifests or the lockfile. The packaged author journey defaults to the exact
-CLI `superbee@0.4.4-pre.6` after publication; `SUPERBEE_CLI_TARBALL` may explicitly select its
+CLI `superbee@0.4.6-pre.5` after publication; `SUPERBEE_CLI_TARBALL` may explicitly select its
 retained matching archive. The proof requires that exact version and unchanged archive bytes.
 The data-only comparison proof preserves stable CLI `0.4.3` / source `bb3589106691c27d15b156d8b45e4178836bd4be`
-as its normal historical control. An explicit CLI archive instead requires `0.4.4-pre.6` and its
-producer source `688d62a2e1395a6ca7dde52f08e0caf97b643d60`; both paths require a clean npm-package identity.
+as its normal historical control. An explicit CLI archive instead requires `0.4.6-pre.5` and its
+producer source `0ff46d60d3788ca8510cebc4dd2f141fc4ace73e`; both paths require a clean npm-package identity.
 These synthetic GitHub/comparison journeys do not establish native Blender rendering or video-host adoption.
 
 Local `npm pack` tests are artifact portability checks, not an integration publication or required
 user acquisition route. They install packed test bytes outside this checkout with a clean explicit
-environment and check public types, browser exports, recipes and the source harness. Ordinary source CI requires the matching published Core and CLI artifacts; the current
-public-default gate remains held until those artifacts are available. Qualify a proposed exact head with both local archive
+environment and check public types, browser exports, recipes and the source harness. Ordinary source CI exercises the matching published Core and CLI artifacts. Qualify a proposed exact head with both local archive
 overrides during candidate qualification; ordinary consumer CI uses the matching public CLI. This
 does not authorize a release. Integration metadata is private and `prepublishOnly` refuses
 publication; no integration registry bootstrap, publisher setup or release workflow is planned.
@@ -256,5 +255,5 @@ CI pin update. These are build-time test tools; they do not provide plugin execu
 operation for retained native TLC checker reports. It checks an explicit original-input/run plan
 and selected current files, then exports a caller-associated snapshot for Core's existing source
 admission and overlay. It runs no prover and cannot discharge an obligation. Native installed
-host/ingestion qualification is separate from synthetic unit evidence. It targets exact Core41
-and executable CLI0.4.4-pre.6; registration never activates a source binding automatically.
+host/ingestion qualification is separate from synthetic unit evidence. It targets exact Core pre.45
+and executable CLI `0.4.6-pre.5`; registration never activates a source binding automatically.

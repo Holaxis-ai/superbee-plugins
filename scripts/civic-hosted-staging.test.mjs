@@ -89,7 +89,7 @@ test('hosted-selection double: native local stages remain unconfirmed, repeat sa
   // A true native concurrent Source edit invalidates the pinned preflight version before staging.
   const freshManifest=path.join(scratch,'fresh-capture.json');await writeFile(freshManifest,JSON.stringify({...manifestValue,entries:[{...entries[0],documentId:'fresh'}]}));const racer=path.join(scratch,'source-race.mjs');await writeFile(racer,wrapperText('',`if(args[0]==='doc'&&args[1]==='read'&&args[2]===${JSON.stringify(source.id)}&&args.includes('--expected-version')){const d=JSON.parse(spawnSync(${JSON.stringify(cli)},['doc','read',args[2],'--offset','0','--dir',${JSON.stringify(bundle)},'--json'],{encoding:'utf8'}).stdout);spawnSync(${JSON.stringify(cli)},['doc','update',args[2],'--body','Concurrent synthetic Source edit','--expected-version',d.head_version,'--actor',${JSON.stringify(actor)},'--dir',${JSON.stringify(bundle)},'--json'],{encoding:'utf8'});const again=spawnSync(${JSON.stringify(cli)},args,{encoding:'utf8'});process.stdout.write(again.stdout);process.exit(again.status??1)}`),{mode:0o700});
   const race=await invoke('capture',['--manifest',freshManifest],{apply:true,executable:racer,expected:1});assert.equal(race.error,'CIVIC_NATIVE_READ_REFUSED');assert.equal(race.stagedLocal,0);
-  t.diagnostic('Installed public CLIpre10/Core41. Hosted-selection double delegates actual create/read to local native bundle; no live hosted authority, sync, journal, confidentiality, blob custody or publication proof. Root owns actual qualification.');
+  t.diagnostic('Installed public CLI pre.10 and Core pre.45. Hosted-selection double delegates actual create/read to local native bundle; no live hosted authority, sync, journal, confidentiality, blob custody or publication proof. Root owns actual qualification.');
  }finally{await workspace.close();}
 });
 
@@ -97,7 +97,7 @@ test('undated Evidence staging preserves existing lanes and first provenance, wi
  const workspace=await createWorkspace(),scratch=workspace.root,home=path.join(scratch,'home');await mkdir(home);
  const env=isolatedEnvironment({home,values:{PATH:path.dirname(process.execPath)}}),run=(cmd,args,expected=0)=>runProcess(cmd,args,{cwd:scratch,env,expected,timeout:120000,maxBuffer:2*1024*1024});
  try{
-  await writeFile(path.join(scratch,'package.json'),JSON.stringify({private:true,type:'module'}));await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.4-pre.11','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  await writeFile(path.join(scratch,'package.json'),JSON.stringify({private:true,type:'module'}));await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.6-pre.5','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
   const cli=path.join(scratch,'node_modules/.bin/superbee'),bundle=path.join(scratch,'bundle'),actor='process:civic-evidence-test';
   const native=async args=>JSON.parse((await run(cli,[...args,'--dir',bundle,'--json'])).stdout);
   await native(['init','--create-only','--recipe','none']);await native(['recipe','add',path.join(root,'recipes/civic-records')]);
@@ -113,7 +113,7 @@ test('undated Evidence staging preserves existing lanes and first provenance, wi
   // Consume only the actual package archive, not a sibling example/source import.
   const packed=JSON.parse((await run(process.execPath,[process.env.npm_execpath,'pack',path.join(root,'integrations/civic-records'),'--ignore-scripts','--pack-destination',scratch,'--json'])).stdout)[0];
   assert.ok(packed.files.some(f=>f.path==='dist/host.mjs'));assert.equal(packed.files.some(f=>f.path.startsWith('src/')||f.path.startsWith('examples/')),false);
-  await run(process.execPath,[process.env.npm_execpath,'install',path.join(scratch,packed.filename),'@superbee/core@0.2.0-pre.41','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  await run(process.execPath,[process.env.npm_execpath,'install',path.join(scratch,packed.filename),'@superbee/core@0.2.0-pre.45','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
   const stager=path.join(scratch,'stage-packaged-evidence.mjs');
   await writeFile(stager,`import {stageHostedEvidence} from '@superbee/integration-civic-records/host';
 const config={},names={'--cli':'cli','--bundle':'bundle','--expected-host':'expectedHost','--expected-workspace':'expectedWorkspace','--expected-bundle':'expectedBundle','--expected-principal':'expectedPrincipal','--actor':'actor','--prepared':'preparedFile','--observed-at':'observedAt','--expected-blob-version':'expectedBlobVersion'};
@@ -134,6 +134,6 @@ try{console.log(JSON.stringify(await stageHostedEvidence(config)));}catch(e){con
   const fourth=await prepare('four');await native(['new','Civic Evidence','manual-four','--title=Human retained source','--jurisdiction_key=synthetic-town','--source_url=https://example.org/records/four.pdf','--document_kind=other','--observed_at=2026-01-02T00:00:00.000Z','--capture_status=captured','--capture_format=provider-bytes','--capture_note=Synthetic prior representation','--original_content_sha256='+sha(pdf),'--actor',actor]);assert.equal((await invoke(fourth,{expected:1})).error,'CIVIC_EXISTING_EVIDENCE_REQUIRES_REUSE');
   const fifth=await prepare('five');assert.equal((await invoke(fifth)).stagedLocal,2);const counter=path.join(scratch,'preview-counter'),previewRace=path.join(scratch,'preview-race.mjs');
   await writeFile(previewRace,wrapperText(`if(args[0]==='doc'&&args[1]==='read'&&d.id===${JSON.stringify(fifth.p.representations[0].id)}){let n=0;try{n=Number(readFileSync(${JSON.stringify(counter)},'utf8'))}catch{}writeFileSync(${JSON.stringify(counter)},String(++n));if(n===2)d.title='Concurrent preview mismatch'}`),{mode:0o700});assert.equal((await invoke(fifth,{apply:false,executable:previewRace,expected:1})).error,'CIVIC_EXISTING_CONFLICT');
-  t.diagnostic('Actual publicCLIpre11/Core41 creates/reads with explicit hosted-selection/from-host metadata double. No live hosted authority, sync, original host MIME custody or production qualification claim. No blob retention by stager.');
+  t.diagnostic('Actual public CLI 0.4.6-pre.5 and Core pre.45 creates/reads with explicit hosted-selection/from-host metadata double. No live hosted authority, sync, original host MIME custody or production qualification claim. No blob retention by stager.');
  }finally{await workspace.close();}
 });
