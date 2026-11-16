@@ -224,10 +224,15 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
   function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
   function byTitle(a, b) { return a.title.localeCompare(b.title); }
 
-  // Typed links are the host's: Core's links, exact labels, sorted by target. The first with a label wins.
+  // Typed links are the host's: Core's links, exact labels. A label with two different targets is
+  // ambiguous and stays unresolved (no placement); the same target written twice is fine.
   function linked(links, label) {
-    for (var i = 0; i < links.length; i++) if (links[i].text === label) return links[i].to;
-    return null;
+    var to = null;
+    for (var i = 0; i < links.length; i++) if (links[i].text === label) {
+      if (to !== null && links[i].to !== to) return null;
+      to = links[i].to;
+    }
+    return to;
   }
 
   // ---- bridge reads -------------------------------------------------------------------------
@@ -379,7 +384,8 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
     plans.forEach(function (r) {
       var fm = r.frontmatter || {}, s = subject(links[r.id] || []);
       var row = { id: r.id, kind: "plan", title: str(fm.title) || "Untitled plan", about: s.about, asset: s.asset, space: s.space, notes: [] };
-      if (missing[r.id] === "large") row.notes.push("Some details couldn\u2019t load.");
+      // Links that could not be read (too large, refused or no reply): the row says so.
+      if (missing[r.id]) row.notes.push("Some details couldn\u2019t load.");
       var status = str(fm.plan_status), scheduleText = str(fm.schedule_text);
       if (status !== "enabled") {
         row.section = "later";
@@ -410,8 +416,10 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
           // The Plan's time zone, else its Home's, else the viewer's own date. A Home's zone is
           // known only once the plan's links are read, so plan counts wait for them (plansFinal).
           var zone = validZone(fm.schedule_timezone) || (s.home && names[s.home] ? validZone(names[s.home].fm.timezone) : null);
-          // A Home zone behind a record whose links could not be answered may still apply: say so.
-          if (!zone && missing[r.id] !== "large" && (missing[s.asset] === "large" || missing[s.space] === "large")) row.notes.push("Some details couldn\u2019t load.");
+          // Without a zone the viewer's date classifies the plan, as the reference says; when a Home
+          // zone may sit behind links that could not be read, the row says so, so the count's
+          // fallback is never hidden.
+          if (!zone && !missing[r.id] && (missing[s.asset] || missing[s.space])) row.notes.push("Some details couldn\u2019t load.");
           var days = dayNumber(due) - dayNumber(zone ? todayIn(zone) : today);
           if (days < 0) {
             row.section = "overdue";
@@ -435,7 +443,7 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
       var fm = r.frontmatter || {}, s = subject(links[r.id] || []), d = serviceDate(fm), result = str(fm.result);
       rows.push({
         id: r.id, kind: "service", section: "services", title: str(fm.title) || "Untitled service record",
-        about: s.about, asset: s.asset, space: s.space, notes: missing[r.id] === "large" ? ["Some details couldn\u2019t load."] : [], lines: [showDate(d)], sortDay: dayNumber(d),
+        about: s.about, asset: s.asset, space: s.space, notes: missing[r.id] ? ["Some details couldn\u2019t load."] : [], lines: [showDate(d)], sortDay: dayNumber(d),
         pill: RESULTS[result] ? { text: RESULTS[result], tone: result === "unknown" ? "quiet" : "result" } : null
       });
     });

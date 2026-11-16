@@ -158,7 +158,8 @@ test('What\'s due: a refused call or a host without edges draws records without 
   const refused = (await draw(refusing)).at(-1).next;
   assert.equal(refusing.calls.edges, 2);
   assert.deepEqual(refused.notes, ['Can’t show what some items are about right now.']);
-  assert.ok(refused.rows.every((r) => r.about === '' && r.notes.length === 0));
+  // Every row is marked too: its links could not be read.
+  assert.ok(refused.rows.every((r) => r.about === '' && r.notes.includes('Some details couldn\u2019t load.')));
 
   const older = fakeBridge(fixture(40, 5));
   const shown = await draw(older, {edges: false});
@@ -166,6 +167,63 @@ test('What\'s due: a refused call or a host without edges draws records without 
   assert.deepEqual(shown.at(-1).next.notes, ['Can’t show what some items are about right now.']);
   // Without placement the plan falls back to its own zone, else the viewer's: still classified.
   assert.ok(shown.at(-1).next.rows.some((r) => r.section === 'soon' || r.section === 'overdue'));
+});
+
+test('What\'s due: a refused edges call classifies by the viewer\'s date and marks the row', async () => {
+  const {todayIn} = rules();
+  const kiritimati = todayIn('Pacific/Kiritimati'), pagoPago = todayIn('Pacific/Pago_Pago');
+  assert.notEqual(kiritimati, pagoPago, 'the Home\'s "today" differs from the viewer\'s');
+  const empty = {rows: [], cut: false};
+  const q = {plan: empty, service: empty, home: empty, space: empty, asset: empty};
+  const names = {
+    'my-home/homes/h': {kind: 'home', title: 'Home', fm: {timezone: 'Pacific/Kiritimati'}},
+    'my-home/spaces/s': {kind: 'space', title: 'Porch', fm: {}},
+    'my-home/assets/a': {kind: 'asset', title: 'Fridge', fm: {}},
+  };
+  const plan = {id: 'my-home/maintenance/p', version: '1', frontmatter: {title: 'p', plan_status: 'enabled', schedule_mode: 'manual_date', next_due_on: pagoPago}};
+  const links = {
+    'my-home/maintenance/p': [{text: 'asset', to: 'my-home/assets/a'}],
+    'my-home/assets/a': [{text: 'located in', to: 'my-home/spaces/s'}],
+    'my-home/spaces/s': [{text: 'home', to: 'my-home/homes/h'}],
+  };
+  // All links known: in the Home's zone it was due yesterday.
+  const known = rules().model(q, names, links, [plan], [], pagoPago).rows[0];
+  assert.equal(known.section, 'overdue');
+  assert.deepEqual(known.notes, []);
+  // The plan's, its asset's or its space's links refused: the viewer's date decides, and the row says so.
+  for (const id of ['my-home/assets/a', 'my-home/spaces/s', 'my-home/maintenance/p']) {
+    const partial = {...links};
+    delete partial[id];
+    const row = rules({[id]: 'refused'}).model(q, names, partial, [plan], [], pagoPago).rows[0];
+    assert.equal(row.pill.text, 'Today', id);
+    assert.deepEqual(row.notes, ['Some details couldn’t load.'], id);
+  }
+
+  // RUNTIME on every edges call (a bundle the host never indexed): the page settles with final
+  // numbers, every row is marked once and the page line shows once.
+  const bridge = fakeBridge(fixture(40, 5), () => { throw Object.assign(new Error('Links are not indexed'), {code: 'RUNTIME'}); });
+  const last = (await draw(bridge)).at(-1);
+  assert.equal(last.done, true);
+  assert.equal(last.next.plansFinal, true);
+  assert.deepEqual(last.next.notes, ['Can’t show what some items are about right now.']);
+  assert.ok(last.next.rows.every((r) => r.notes.filter((n) => n === 'Some details couldn’t load.').length === 1));
+});
+
+test('What\'s due: two different targets for one label leave the subject unresolved', () => {
+  const empty = {rows: [], cut: false};
+  const q = {plan: empty, service: empty, home: empty, space: empty, asset: empty};
+  const names = {'my-home/assets/a': {kind: 'asset', title: 'Fridge', fm: {}}, 'my-home/assets/z': {kind: 'asset', title: 'Zed', fm: {}}};
+  const plan = {id: 'my-home/maintenance/p', version: '1', frontmatter: {title: 'p'}};
+  const row = (own) => rules().model(q, names, {'my-home/maintenance/p': own}, [plan], [], '2026-11-16').rows[0];
+  const two = row([{text: 'asset', to: 'my-home/assets/a'}, {text: 'asset', to: 'my-home/assets/z'}]);
+  assert.equal(two.asset, null);
+  assert.equal(two.about, '');
+  // A dangling first target does not decide it either.
+  assert.equal(row([{text: 'asset', to: 'my-home/assets/gone'}, {text: 'asset', to: 'my-home/assets/z'}]).asset, null);
+  // The same target written twice is one subject.
+  const same = row([{text: 'asset', to: 'my-home/assets/z'}, {text: 'asset', to: 'my-home/assets/z'}]);
+  assert.equal(same.asset, 'my-home/assets/z');
+  assert.equal(same.about, 'Zed');
 });
 
 test('What\'s due: labels are matched exactly and hostile text or targets place nothing', async () => {

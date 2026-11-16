@@ -98,8 +98,8 @@
       "version": "0.1.5",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:13e390e6b0f14eb32767cfb3c9d35f5a72d998f56b30ec7d19f5fd31b85c8f90",
-      "files_digest": "sha256:943aab47582ed5c353fe846a4de0269c8b701d55621718ba00c7ac9eecc33d75",
+      "source_digest": "sha256:e1655ee9daf089cd7aa126e5c3a2589ed1a65699d03f04f75477daf6cd8a5c45",
+      "files_digest": "sha256:d1b9f4f009558b37f1905dd0c38cdf73d5c0c12693f15228cb5e58e34b5090f5",
       "root": "recipes/my-home-maintenance",
       "files": [
         "conventions/my-home-maintenance-plan.md",
