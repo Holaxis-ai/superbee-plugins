@@ -408,6 +408,8 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
           // The Plan's time zone, else its Home's, else the viewer's own date. A Home's zone is
           // known only once the plan's links are read, so plan counts wait for them (plansFinal).
           var zone = validZone(fm.schedule_timezone) || (s.home && names[s.home] ? validZone(names[s.home].fm.timezone) : null);
+          // A Home zone behind a read that got no reply may still apply: say so on the row.
+          if (!zone && !unread[r.id] && (unread[s.asset] || unread[s.space])) row.notes.push("Some details couldn\u2019t load.");
           var days = dayNumber(due) - dayNumber(zone ? todayIn(zone) : today);
           if (days < 0) {
             row.section = "overdue";

@@ -17,7 +17,7 @@ function scanner() {
 }
 
 // The View's domain rules, lifted the same way: the date helpers, `linked` and `model`.
-function rules() {
+function rules(unread = {}) {
   const slice = (from, to) => {
     const start = html.indexOf(from), end = html.indexOf(to, start);
     assert.ok(start > 0 && end > start, `${from.trim()} is in the entry`);
@@ -29,7 +29,7 @@ function rules() {
     slice('  function linked(', '  // ---- bridge reads'),
     slice('  function model(', '  // ---- rendering'),
   ].join('\n');
-  return new Function('unread', `${source}\nreturn {model, todayIn};`)({});
+  return new Function('unread', `${source}\nreturn {model, todayIn};`)(unread);
 }
 
 test('What\'s due: a recorded time zone wins, else the viewer\'s own date classifies the plan', () => {
@@ -65,6 +65,20 @@ test('What\'s due: a recorded time zone wins, else the viewer\'s own date classi
   assert.equal(classify(viewer, {next_due_on: shift(viewer, -1), plan_status: 'paused'}).section, 'later');
   assert.equal(classify(viewer, {next_due_on: shift(viewer, -1), schedule_mode: 'calendar'}).section, 'later');
   assert.equal(html.includes('Needs a time zone'), false);
+});
+
+test('What\'s due: a fallback behind an unanswered read on the Home path says so on the row', () => {
+  const unread = {'my-home/assets/a01': true};
+  const {model} = rules(unread);
+  const empty = {rows: [], cut: false};
+  const q = {plan: empty, service: empty, home: empty, space: empty, asset: empty};
+  const names = {'my-home/assets/a01': {kind: 'asset', title: 'Furnace', fm: {}}};
+  const links = {'my-home/maintenance/p01': [{text: 'asset', to: 'my-home/assets/a01'}]};
+  const fm = {title: 'p01', plan_status: 'enabled', schedule_mode: 'manual_date', next_due_on: '2026-11-15'};
+  const row = (extra) => model(q, names, links, [{id: 'my-home/maintenance/p01', version: '1', frontmatter: {...fm, ...extra}}], [], '2026-11-16').rows[0];
+  assert.deepEqual(row({}).notes, ['Some details couldn\u2019t load.']);
+  // A recorded zone on the plan does not depend on that read.
+  assert.deepEqual(row({schedule_timezone: 'Europe/London'}).notes, []);
 });
 
 test('What\'s due: typed body links resolve the way the bundle writes them', () => {

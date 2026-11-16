@@ -98,6 +98,7 @@ only an enabled `manual_date` Plan gets a date (a complete override first); it i
 overdue, due in the next 30 days or later against today in its `schedule_timezone`, else its
 subject's Home `timezone`, else the viewer's own time zone. Paused plans are shown as paused and
 unknown or unset statuses as not active, never as due; retired Plans are left out. Plan counts show
-"–" until every plan's links are read, so a Home's time zone found late never changes a number
-already shown. Recent visits are dated Services from the past 12 months; a result other than
+"–" until every plan's links are read, so a Home's time zone that can be read never changes a
+number already shown. If a read on the way to the Home gets no reply, the row says "Some details
+couldn't load." and may move once that read answers. Recent visits are dated Services from the past 12 months; a result other than
 `completed` is shown. When the host may have returned fewer rows than exist, the View says so.
