@@ -92,5 +92,5 @@ from `recipes/` is unaffected. To remove a cookbook, delete it from `cookbooks` 
 `.github/CODEOWNERS` names the owners of the workflows, of `.github/CODEOWNERS` itself and of
 `.gitattributes`; with code owner review required on `main`, changing those needs an owner's
 approval. The index, its source, the generator and its test have no code owner, so a recipe change
-and its regenerated index merge on the usual review and the required `source` check.
+and its regenerated index need no approval to merge; the required `source` check must pass.
 `.gitattributes` keeps recipe and index bytes unconverted, so digests match on any checkout.
