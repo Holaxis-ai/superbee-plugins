@@ -37,7 +37,7 @@ function run(argv) {
 // Native init owns absent-target/enclosing-bundle checks. Never adopt an existing bundle.
 run(['init', '--create-only', '--recipe', 'none']);
 completed.push('initialized');
-run(['recipe', 'add', path.join(root, 'recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb'), '--actor', actor]);
+run(['recipe', 'add', path.join(root, 'recipes/holaxis-deep-research'), '--actor', actor]);
 completed.push('core installed');
 if (selected.extension) {
   run(['recipe', 'add', path.join(here, 'extensions/place-history'), '--actor', actor]);

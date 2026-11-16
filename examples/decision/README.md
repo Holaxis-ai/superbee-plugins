@@ -9,7 +9,7 @@ Stored Decision types use `github.com/holaxis-ai/superbee-plugins/decision/`
 followed by the friendly Kind title; Task remains the built-in exact type.
 
 The six standalone Markdown records in `records/` are example instances,
-**not** recipe payload. Installing `recipes/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3` creates none of them.
+**not** recipe payload. Installing `recipes/holaxis-decision` creates none of them.
 
 ## Reproduce in a fresh local bundle
 
@@ -23,7 +23,7 @@ BUNDLE=/absolute/path/to/absent-example-bundle
 
 superbee init --create-only --recipe none --dir "$BUNDLE"
 superbee recipe add work-tracking --actor process:decision-example --dir "$BUNDLE"
-superbee recipe add "$REPO/recipes/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3" --actor process:decision-example --dir "$BUNDLE"
+superbee recipe add "$REPO/recipes/holaxis-decision" --actor process:decision-example --dir "$BUNDLE"
 
 for relative in \
   decision-options/service-a.md \
@@ -67,4 +67,4 @@ it installs public `superbee@0.4.4-pre.9` into a temporary tool directory unless
 bundle, and checks that the example adds no unresolved links or Kind violations.
 This example does not demonstrate semantic validity, real decision-making
 outcomes or general Kind migration. For existing bundles, consult
-`recipes/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/references/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/adopting-existing-decisions.md`.
+`recipes/holaxis-decision/references/holaxis-decision/adopting-existing-decisions.md`.

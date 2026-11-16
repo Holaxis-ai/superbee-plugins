@@ -21,7 +21,7 @@ Run from the reviewed checkout:
 ```sh
 npm ci --ignore-scripts --no-audit --no-fund
 npm exec -- node --test scripts/deep-research.test.mjs
-superbee recipe validate ./recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb --json
+superbee recipe validate ./recipes/holaxis-deep-research --json
 superbee recipe validate ./examples/deep-research/extensions/place-history --json
 git diff --check
 ```

@@ -29,11 +29,11 @@ test('local recipe author adapter delegates to public Core on explicit snapshots
     assert.equal(p.status, 0, p.stderr);
     const cli = path.join(tool, 'node_modules/superbee/dist/superbee.mjs');
     const core = path.join(scratch, 'core'); const extension = path.join(scratch, 'place');
-    await cp(path.join(root, 'recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb'), core, {recursive: true});
+    await cp(path.join(root, 'recipes/holaxis-deep-research'), core, {recursive: true});
     await cp(path.join(root, 'examples/deep-research/extensions/place-history'), extension, {recursive: true});
     const plan = JSON.parse(await readFile(path.join(adapter, 'place-plan.json'), 'utf8'));
     const suppliedPlanRoot = path.join(root, 'examples/recipe-preflight');
-    assert.equal(path.resolve(suppliedPlanRoot, plan.recipes[0].path), path.join(root, 'recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb'));
+    assert.equal(path.resolve(suppliedPlanRoot, plan.recipes[0].path), path.join(root, 'recipes/holaxis-deep-research'));
     assert.equal(path.resolve(suppliedPlanRoot, plan.recipes[1].path), path.join(root, 'examples/deep-research/extensions/place-history'));
     plan.recipes[0].path = core; plan.recipes[1].path = extension;
     const planPath = path.join(scratch, 'plan.json');
@@ -46,13 +46,13 @@ test('local recipe author adapter delegates to public Core on explicit snapshots
     const good = blank('good'); add(good, core); add(good, extension);
     const evidence = path.join(scratch, 'evidence.json');
     await t.test('one command prepares complete evidence; public verdict valid; inputs stay unchanged', async () => {
-      const before = await readFile(path.join(good, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md'));
+      const before = await readFile(path.join(good, 'conventions/holaxis-deep-research/research-claim.md'));
       const r = check(good, ['--evidence', evidence]); assert.equal(r.status, 0, r.stderr || r.stdout);
       const report = JSON.parse(r.stdout); assert.equal(report.result.verdict, 'valid');
       const proof = JSON.parse(await readFile(evidence, 'utf8'));
       assert.equal(proof.input.selected.length, 2); assert.equal(proof.input.endpoints.length, 4);
       assert.equal(proof.input.placementInventories[0].files.length, 9);
-      assert.deepEqual(await readFile(path.join(good, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md')), before);
+      assert.deepEqual(await readFile(path.join(good, 'conventions/holaxis-deep-research/research-claim.md')), before);
       // No fixtures, hashes, observed stamps or snapshots are authored in the plan.
       assert.equal(plan.consumers[0].requirements.length, 4);
       assert.ok(!('observations' in plan)); assert.ok(!JSON.stringify(plan).includes('sha256:'));
@@ -70,7 +70,7 @@ test('local recipe author adapter delegates to public Core on explicit snapshots
     });
     await t.test('full convention inventory catches an unselected duplicate; does not hide it', async () => {
       const duplicate = path.join(good, 'conventions/duplicate-claim.md');
-      await cp(path.join(good, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md'), duplicate);
+      await cp(path.join(good, 'conventions/holaxis-deep-research/research-claim.md'), duplicate);
       const r = check(good); assert.equal(r.status, 2, r.stderr || r.stdout);
       assert.ok(JSON.parse(r.stdout).result.issues.some(i => i.code === 'KIND_DUPLICATE_GOVERNS'));
       await rm(duplicate);
@@ -85,21 +85,21 @@ test('local recipe author adapter delegates to public Core on explicit snapshots
       await save();
     });
     await t.test('local customization is not erased or reported as exact recipe conformance', async () => {
-      const f = path.join(good, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md'); const before = await readFile(f, 'utf8');
+      const f = path.join(good, 'conventions/holaxis-deep-research/research-claim.md'); const before = await readFile(f, 'utf8');
       await writeFile(f, before + '\nLocal customization.\n');
       const r = check(good); assert.equal(r.status, 2, r.stderr || r.stdout);
       assert.ok(JSON.parse(r.stdout).result.issues.some(i => ['LOCAL_ADAPTATION', 'DEFINITION_DIVERGENT'].includes(i.code)));
       assert.equal(await readFile(f, 'utf8'), before + '\nLocal customization.\n'); await writeFile(f, before);
     });
     await t.test('UTF-8 BOM is retained in supplied snapshot evidence', async () => {
-      const file = path.join(good, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md');
+      const file = path.join(good, 'conventions/holaxis-deep-research/research-claim.md');
       const before = await readFile(file);
       await writeFile(file, Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), before]));
       const bomEvidence = path.join(scratch, 'bom-evidence.json');
       const r = check(good, ['--evidence', bomEvidence]);
       assert.ok([0, 2, 3].includes(r.status), r.stderr || r.stdout);
       const after = JSON.parse(await readFile(bomEvidence, 'utf8'));
-      const snapshot = after.input.placementInventories[0].files.find(f => f.path === 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md');
+      const snapshot = after.input.placementInventories[0].files.find(f => f.path === 'conventions/holaxis-deep-research/research-claim.md');
       assert.deepEqual(Buffer.from(snapshot.bytes, 'utf8'), await readFile(file), 'snapshot preserves physical UTF-8 BOM bytes');
       const baseline = JSON.parse(await readFile(evidence, 'utf8'));
       assert.notDeepEqual(after.input, baseline.input, 'BOM-only change cannot disappear from evidence');
@@ -108,7 +108,7 @@ test('local recipe author adapter delegates to public Core on explicit snapshots
       t.diagnostic(`BOM-only physical change retained; Core verdict ${after.report.result.verdict} remains Core policy`);
     });
     await t.test('collection controls refuse symlinks, overlarge files, wrong scope and output overwrite', async () => {
-      const link = path.join(good, 'conventions/link.md'); await symlink(path.join(good, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md'), link);
+      const link = path.join(good, 'conventions/link.md'); await symlink(path.join(good, 'conventions/holaxis-deep-research/research-claim.md'), link);
       let r = check(good); assert.equal(r.status, 1); assert.match(r.stderr, /non-symlink/); await rm(link);
       const large = path.join(good, 'references/large.md'); await writeFile(large, 'a'.repeat(1024 * 1024 + 1));
       r = check(good); assert.equal(r.status, 1); assert.match(r.stderr, /1 MiB/); await rm(large);

@@ -9,7 +9,7 @@ import {parseMarkdown} from '@superbee/core';
 import {isolatedEnvironment} from './vendor/package-verification/src/harness.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const ownership = 'ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3';
+const ownership = 'holaxis-decision';
 const decisionType = name => 'github.com/holaxis-ai/superbee-plugins/decision/' + name;
 const researchType = name => 'github.com/holaxis-ai/superbee-plugins/deep-research/' + name;
 const recipe = path.join(root, 'recipes', ownership);

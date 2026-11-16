@@ -1,6 +1,6 @@
 ---
 type: Recipe
-id: ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3
+id: holaxis-decision
 title: Decision Making
 version: 0.1.1
 summary: >-
@@ -10,9 +10,9 @@ offer: 'Record a choice, compare alternatives and retain its rationale and follo
 content_policy: definitions-only
 references:
   - >-
-    references/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/decision-model.md
+    references/holaxis-decision/decision-model.md
   - >-
-    references/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/adopting-existing-decisions.md
+    references/holaxis-decision/adopting-existing-decisions.md
 ---
 # Decision Making
 

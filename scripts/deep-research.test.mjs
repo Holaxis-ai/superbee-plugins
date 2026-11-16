@@ -45,7 +45,7 @@ test('Deep Research public CLI consumer: inert core, evidence graph, corrections
     // Consume copied recipe artifacts outside the checkout, not sibling Core sources.
     const core = path.join(scratch, 'portable-core');
     const extension = path.join(scratch, 'portable-extension');
-    await cp(path.join(root, 'recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb'), core, {recursive: true});
+    await cp(path.join(root, 'recipes/holaxis-deep-research'), core, {recursive: true});
     await cp(path.join(root, 'examples/deep-research/extensions/place-history'), extension, {recursive: true});
     for (const recipe of [core, extension]) assert.equal(sb(['recipe', 'validate', recipe]).ok, true);
 
@@ -61,21 +61,21 @@ test('Deep Research public CLI consumer: inert core, evidence graph, corrections
     sb(['recipe', 'add', core, '--actor', actor, '--dir', blank]);
     await t.test('inert installation, idempotent add and disjoint extension preserve base bytes', async () => {
       assert.equal(clean(blank).docs, 7, 'only four conventions and three references');
-      assert.deepEqual((await readdir(path.join(blank, 'conventions', 'ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb'))).sort(), ['research-claim.md', 'research-observation.md', 'research-question.md', 'research-source.md']);
-      const original = await readFile(path.join(blank, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md'));
+      assert.deepEqual((await readdir(path.join(blank, 'conventions', 'holaxis-deep-research'))).sort(), ['research-claim.md', 'research-observation.md', 'research-question.md', 'research-source.md']);
+      const original = await readFile(path.join(blank, 'conventions/holaxis-deep-research/research-claim.md'));
       assert.equal(sb(['recipe', 'add', core, '--dir', blank]).changed, false);
       sb(['recipe', 'add', extension, '--dir', blank]);
-      assert.deepEqual(await readFile(path.join(blank, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md')), original);
+      assert.deepEqual(await readFile(path.join(blank, 'conventions/holaxis-deep-research/research-claim.md')), original);
       assert.equal(sb(['recipe', 'add', extension, '--dir', blank]).changed, false);
       assert.equal(clean(blank).kinds, 5);
       // Re-add must not overwrite a local author's guidance or claim full application.
-      const doc = read(blank, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim');
+      const doc = read(blank, 'conventions/holaxis-deep-research/research-claim');
       sb(['doc', 'update', doc.id, '--body', doc.body + '\nLocal consumer guidance.\n', '--expected-version', doc.head_version, '--actor', actor, '--dir', blank]);
-      const customized = await readFile(path.join(blank, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md'));
+      const customized = await readFile(path.join(blank, 'conventions/holaxis-deep-research/research-claim.md'));
       const receipt = sb(['recipe', 'add', core, '--dir', blank]);
       assert.equal(receipt.changed, false);
       assert.ok(receipt.docs.some(row => row.source_differs));
-      assert.deepEqual(await readFile(path.join(blank, 'conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md')), customized);
+      assert.deepEqual(await readFile(path.join(blank, 'conventions/holaxis-deep-research/research-claim.md')), customized);
     });
 
     const bundles = {};

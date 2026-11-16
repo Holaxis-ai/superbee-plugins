@@ -12,7 +12,7 @@ your normal package workflow if absent. Check its actual identity:
 
 ```sh
 superbee version --json
-superbee recipe validate ./recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb --json
+superbee recipe validate ./recipes/holaxis-deep-research --json
 node examples/deep-research/create-example.mjs \
   --case house-history --bundle /tmp/my-fictional-house-study
 ```
@@ -59,7 +59,7 @@ invented; there are no private bundle excerpts, real asset paths or customer fac
 
 ```sh
 superbee init --create-only --recipe none --dir /tmp/my-new-research/.superbee
-superbee recipe add ./recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb --actor openai/codex --dir /tmp/my-new-research/.superbee
+superbee recipe add ./recipes/holaxis-deep-research --actor openai/codex --dir /tmp/my-new-research/.superbee
 superbee new 'github.com/holaxis-ai/superbee-plugins/deep-research/Research Source' --help --dir /tmp/my-new-research/.superbee
 superbee new 'github.com/holaxis-ai/superbee-plugins/deep-research/Research Question' --help --dir /tmp/my-new-research/.superbee
 ```

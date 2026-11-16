@@ -9,7 +9,7 @@ import {parseMarkdown} from '@superbee/core';
 import {isolatedEnvironment} from './vendor/package-verification/src/harness.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const ids = {decision: 'ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3', 'deep-research': 'ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb'};
+const ids = {decision: 'holaxis-decision', 'deep-research': 'holaxis-deep-research'};
 const actor = 'process:qualified-recipe-consumer';
 const selector = (key, name) => `github.com/holaxis-ai/superbee-plugins/${key}/${name}`;
 const kinds = {decision: ['Decision Option', 'Decision Question', 'Decision'], 'deep-research': ['Research Claim', 'Research Observation', 'Research Question', 'Research Source']};

@@ -1,6 +1,6 @@
 ---
 type: Recipe
-id: ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb
+id: holaxis-deep-research
 title: 'Deep, Deep Research'
 version: 0.1.0-pre.3
 summary: >-
@@ -12,11 +12,11 @@ offer: >-
 content_policy: definitions-only
 references:
   - >-
-    references/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/deep-research-contract.md
+    references/holaxis-deep-research/deep-research-contract.md
   - >-
-    references/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/deep-research-workflow.md
+    references/holaxis-deep-research/deep-research-workflow.md
   - >-
-    references/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/deep-research-extension.md
+    references/holaxis-deep-research/deep-research-extension.md
 ---
 # Deep, Deep Research
 
