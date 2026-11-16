@@ -11,10 +11,10 @@ test('standalone civic discovery and real PDF extraction through public native r
  const run=(cmd,args,expected=0)=>runProcess(cmd,args,{cwd:scratch,env,expected,timeout:120000,maxBuffer:2*1024*1024});
  try{
   await writeFile(path.join(scratch,'package.json'),JSON.stringify({private:true,type:'module'}));
-  await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.6-pre.5','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.6-pre.7','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
   const cli=path.join(scratch,'node_modules/superbee/dist/superbee.mjs'),bundle=path.join(scratch,'bundle');
   const command=async(args,expected=0)=>JSON.parse((await run(process.execPath,[cli,...args,'--dir',bundle,'--json'],expected)).stdout);
-  const identity=JSON.parse((await run(process.execPath,[cli,'version','--json'])).stdout);assert.equal(identity.identity.package.version,'0.4.6-pre.5');assert.equal(identity.identity.source.dirty,false);
+  const identity=JSON.parse((await run(process.execPath,[cli,'version','--json'])).stdout);assert.equal(identity.identity.package.version,'0.4.6-pre.7');assert.equal(identity.identity.source.dirty,false);
   for(const file of ['package.json','dist/operation.mjs'])await copyFile(path.join(root,'integrations/civic-records',file),path.join(plugin,file));
   await command(['init','--create-only','--recipe','none']);const before=(await command(['list'])).count;
   const preview=await command(['op','register',plugin,'--local']);assert.equal(preview.accepted,false);await command(['op','register',plugin,'--local','--accept',preview.digest]);
@@ -43,6 +43,6 @@ test('standalone civic discovery and real PDF extraction through public native r
   const undated=JSON.parse(await readFile(path.join(output,'evidence.json')));assert.equal(undated.representations.length,2);assert.equal(undated.extractorExecution,'not_observed');assert.equal(undated.association,'caller_asserted');assert.equal('meetingDate' in undated,false);assert.match(undated.representations[0].id,/^civic-evidence\/original-v1-/);assert.match(undated.representations[1].body,/without approval/);assert.equal(undated.representations[1].bodySha256,sha(undated.representations[1].body));
   assert.equal((await command(['list'])).count,before,'processing creates no bundle documents');
   await writeFile(pdf.path,'changed bytes');const input=path.join(scratch,'changed.json');await writeFile(input,JSON.stringify({expectedInputs:binding.expectedInputs,settings:{}}));await run(process.execPath,[cli,'op','run','local.civic.extract-pdf.v1','--local','--binding',binding.binding,'--input-file',input,'--dir',bundle,'--json'],2);
-  t.diagnostic('Public CLI 0.4.6-pre.5; standalone bundled plugin; native -v/stderr tool identity; actual Poppler synthetic PDF conversion and exact repeats. No network, managed admission, research writes or publication.');
+  t.diagnostic('Public CLI 0.4.6-pre.7; standalone bundled plugin; native -v/stderr tool identity; actual Poppler synthetic PDF conversion and exact repeats. No network, managed admission, research writes or publication.');
  }finally{await workspace.close();}
 });

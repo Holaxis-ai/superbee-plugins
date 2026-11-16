@@ -12,7 +12,7 @@ test('private integration metadata retains optional compatibility and lockfile c
   assert.equal(pkg.private,true);
   assert.equal(pkg.publishConfig,undefined);
   assert.deepEqual(pkg.repository,{type:'git',url:'git+https://github.com/Holaxis-ai/superbee-plugins.git',directory:'integrations/github'});
-  assert.deepEqual(pkg.peerDependencies,{'@superbee/core':'0.2.0-pre.45'});
+  assert.deepEqual(pkg.peerDependencies,{'@superbee/core':'0.2.0-pre.46'});
   assert.deepEqual(pkg.peerDependenciesMeta,{'@superbee/core':{optional:true}});
   assert.equal(pkg.superbeeIntegration.core,pkg.peerDependencies['@superbee/core']);
   assert.deepEqual(pkg.superbeeIntegration.profiles,[{id:'github-issues',version:2,entry:'dist/profile.mjs'}]);
@@ -35,18 +35,18 @@ test('private integration metadata retains optional compatibility and lockfile c
 
 test('Blender local operation retains exact Core compatibility',async () => {
   const blender = await readJson('../integrations/blender/package.json');
-  assert.equal(blender.superbeeLocalOperations.core,'0.2.0-pre.45');
+  assert.equal(blender.superbeeLocalOperations.core,'0.2.0-pre.46');
 });
 
 test('verification local operation retains exact Core compatibility',async () => {
   const verification = await readJson('../integrations/verification/package.json');
-  assert.equal(verification.superbeeLocalOperations.core,'0.2.0-pre.45');
+  assert.equal(verification.superbeeLocalOperations.core,'0.2.0-pre.46');
 });
 
 test('civic-records local operation retains private publication and exact Core compatibility',async()=>{
   const civic=await readJson('../integrations/civic-records/package.json');
   assert.equal(civic.private,true);
-  assert.equal(civic.superbeeLocalOperations.core,'0.2.0-pre.45');
+  assert.equal(civic.superbeeLocalOperations.core,'0.2.0-pre.46');
   assert.deepEqual(civic.superbeeLocalOperations.assets,[]);
   assert.match(civic.scripts.prepublishOnly,/process\.exit\(1\)/);
   assert.equal(civic.dependencies,undefined);
