@@ -53,10 +53,13 @@ button.link { min-height: 44px; padding: 0 4px; border: 0; background: none; col
 .rows.warn { background: var(--warn-bg); border-color: var(--warn-rule); color: var(--warn-text); }
 .rows.warn > li + li { border-top-color: var(--warn-rule); }
 .rows.warn .muted { color: var(--warn-text); }
-.title { font-weight: 650; }
+.title { font-weight: 650; color: var(--text); }
+.rows.warn .title { color: var(--warn-text); }
 a.title { color: var(--blue); text-decoration: none; }
-a.title:hover { text-decoration: underline; }
-.rows.warn a.title { color: var(--warn-text); text-decoration: underline; }
+a.title:hover, a.title:focus-visible { text-decoration: underline; }
+.rows.warn a.title { color: var(--warn-text); }
+.notice { margin-top: 16px; padding: 12px 16px; border: 1px solid var(--rule); border-inline-start: 3px solid var(--blue); border-radius: 8px; background: var(--surface); color: var(--muted); font-size: .875rem; }
+.section-note { margin: -4px 0 8px; font-size: .875rem; }
 .about { font-size: .875rem; }
 .when { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right; font-size: .875rem; max-width: 22rem; }
 .pill { display: inline-block; padding: .13rem .55rem; border-radius: 999px; font-size: .75rem; line-height: 1.5; font-weight: 700; white-space: nowrap; }
@@ -251,8 +254,9 @@ a.title:hover { text-decoration: underline; }
     });
   }
   // A missing or unreadable document answers NOT_FOUND on some hosts and RUNTIME on others:
-  // either way the record simply has no known links.
-  function linksOf(rows) {
+  // either way the record simply has no known links. Reads are cached by id and version for the
+  // life of the View, so a refresh only reads what changed.
+  function readLinks(rows) {
     var todo = rows.filter(function (r) { return !readCache[r.id + "@" + r.version]; }), i = 0;
     function next() {
       if (i >= todo.length) return Promise.resolve();
@@ -266,49 +270,55 @@ a.title:hover { text-decoration: underline; }
     }
     var workers = [];
     for (var w = 0; w < Math.min(READS_IN_FLIGHT, todo.length); w++) workers.push(next());
-    return Promise.all(workers).then(function () {
-      var map = {};
-      rows.forEach(function (r) { map[r.id] = readCache[r.id + "@" + r.version] || []; });
-      return map;
-    });
+    return Promise.all(workers);
   }
 
-  function load() {
-    var q = {};
-    var kinds = Object.keys(KINDS);
+  // Queries first, then the lists are drawn at once; what each record is about fills in as its
+  // typed links are read (a query row carries no links, so that costs one read per record).
+  function load(isCurrent, show) {
+    var q = {}, kinds = Object.keys(KINDS);
     return Promise.all(kinds.map(function (k) { return queryKind(KINDS[k]); })).then(function (results) {
       kinds.forEach(function (k, i) { q[k] = results[i]; });
-      if (q.plan.rows.length === 0 && q.service.rows.length === 0) return { empty: true };
-      return build(q);
-    });
-  }
-
-  function build(q) {
-    var names = {};
-    ["home", "space", "asset"].forEach(function (k) {
-      q[k].rows.forEach(function (r) { names[r.id] = { kind: k, title: str(r.frontmatter && r.frontmatter.title) || "Untitled", fm: r.frontmatter || {} }; });
-    });
-    var today = localToday(), yearAgo = dayNumber(today) - 365;
-    var plans = q.plan.rows.filter(function (r) { return str(r.frontmatter && r.frontmatter.plan_status) !== "retired"; });
-    var services = q.service.rows.filter(function (r) {
-      var d = serviceDate(r.frontmatter || {});
-      return d && dayNumber(d) <= dayNumber(today) && dayNumber(d) > yearAgo;
-    });
-    return linksOf(plans.concat(services)).then(function (subjectLinks) {
-      var assetIds = {};
-      plans.concat(services).forEach(function (r) { var a = linked(subjectLinks[r.id], "asset"); if (a && names[a]) assetIds[a] = true; });
-      var assets = q.asset.rows.filter(function (r) { return assetIds[r.id]; });
-      return linksOf(assets).then(function (assetLinks) {
-        var spaceIds = {};
+      if (q.plan.rows.length === 0 && q.service.rows.length === 0) { show({ empty: true }); return; }
+      var names = {};
+      ["home", "space", "asset"].forEach(function (k) {
+        q[k].rows.forEach(function (r) { names[r.id] = { kind: k, title: str(r.frontmatter && r.frontmatter.title) || "Untitled", fm: r.frontmatter || {} }; });
+      });
+      var today = localToday(), yearAgo = dayNumber(today) - 365;
+      var plans = q.plan.rows.filter(function (r) { return str(r.frontmatter && r.frontmatter.plan_status) !== "retired"; });
+      var services = q.service.rows.filter(function (r) {
+        var d = serviceDate(r.frontmatter || {});
+        return d && dayNumber(d) <= dayNumber(today) && dayNumber(d) > yearAgo;
+      });
+      var all = plans.concat(services, q.asset.rows, q.space.rows);
+      function links() {
+        var m = {};
+        all.forEach(function (r) { var c = readCache[r.id + "@" + r.version]; if (c) m[r.id] = c; });
+        return m;
+      }
+      function draw(plansLinked) { if (isCurrent()) show(model(q, names, links(), plans, services, today, plansLinked)); }
+      // The Assets and Spaces these records point at, for names and for the Home's time zone.
+      function placements(records) {
+        var L = links(), assetIds = {}, spaceIds = {};
         function wantSpace(id) { if (id && names[id] && names[id].kind === "space") spaceIds[id] = true; }
-        plans.concat(services).forEach(function (r) { wantSpace(linked(subjectLinks[r.id], "space")); wantSpace(linked(subjectLinks[r.id], "performed in space")); });
-        assets.forEach(function (r) { wantSpace(linked(assetLinks[r.id], "located in")); });
-        var spaces = q.space.rows.filter(function (r) { return spaceIds[r.id]; });
-        return linksOf(spaces).then(function (spaceLinks) {
-          var links = {};
-          [subjectLinks, assetLinks, spaceLinks].forEach(function (m) { for (var id in m) links[id] = m[id]; });
-          return model(q, names, links, plans, services, today);
+        records.forEach(function (r) {
+          var a = linked(L[r.id] || [], "asset");
+          if (a && names[a] && names[a].kind === "asset") assetIds[a] = true;
+          wantSpace(linked(L[r.id] || [], "space"));
+          wantSpace(linked(L[r.id] || [], "performed in space"));
         });
+        var assets = q.asset.rows.filter(function (r) { return assetIds[r.id]; });
+        return readLinks(assets).then(function () {
+          var L2 = links();
+          assets.forEach(function (r) { wantSpace(linked(L2[r.id] || [], "located in")); });
+          return readLinks(q.space.rows.filter(function (r) { return spaceIds[r.id]; }));
+        });
+      }
+      draw(false);
+      return readLinks(plans).then(function () { return placements(plans); }).then(function () {
+        draw(true);
+        if (!isCurrent()) return;
+        return readLinks(services).then(function () { return placements(services); }).then(function () { draw(true); });
       });
     });
   }
@@ -321,7 +331,7 @@ a.title:hover { text-decoration: underline; }
   }
 
   // ---- the domain rules (references/my-home-maintenance-v1.md) ------------------------------
-  function model(q, names, links, plans, services, today) {
+  function model(q, names, links, plans, services, today, plansLinked) {
     function title(id, kind) { return id && names[id] && names[id].kind === kind ? names[id].title : null; }
     function homeOf(id) {
       if (!id || !names[id]) return null;
@@ -353,7 +363,8 @@ a.title:hover { text-decoration: underline; }
       var status = str(fm.plan_status), scheduleText = str(fm.schedule_text);
       if (status !== "enabled") {
         row.section = "later";
-        row.pill = { text: status === "paused" ? "Paused" : status === "unknown" ? "Status unknown" : "Status not set", tone: "quiet" };
+        row.pill = { text: status === "paused" ? "Paused" : "Not switched on", tone: "quiet" };
+        row.notOn = status !== "paused";
         if (scheduleText) row.lines = [scheduleText];
       } else if (str(fm.schedule_mode) !== "manual_date") {
         row.section = "later";
@@ -377,8 +388,11 @@ a.title:hover { text-decoration: underline; }
           row.due = due;
           var zone = validZone(fm.schedule_timezone) || (s.home && names[s.home] ? validZone(names[s.home].fm.timezone) : null);
           if (!zone) {
+            // Not classified. While the plan's links are still being read its Home may yet supply a
+            // time zone, so the "Needs time zone" pill waits for the links.
             row.section = "later";
-            row.lines = [showDate(due), "No time zone set"];
+            row.lines = [showDate(due)];
+            if (plansLinked) { row.pill = { text: "Needs time zone", tone: "quiet" }; row.needsZone = true; }
           } else {
             var days = dayNumber(due) - dayNumber(todayIn(zone));
             if (days < 0) {
@@ -464,7 +478,7 @@ a.title:hover { text-decoration: underline; }
     if (state.empty) {
       app.appendChild(h("div", { "class": "card" }, [
         h("h2", { text: "Nothing to keep up with yet" }),
-        h("p", { text: "Add a maintenance plan, for example “Replace furnace filter every 3 months”, and it will show up here." })
+        h("p", { text: "Add a maintenance plan with a due date, for example \u201cReplace furnace filter, due March 1\u201d, and it will show up here." })
       ]));
       return;
     }
@@ -483,6 +497,9 @@ a.title:hover { text-decoration: underline; }
         : h("div", { "class": "tile" }, inner)]));
     });
     app.appendChild(tiles);
+    if (rows.some(function (r) { return r.needsZone; })) {
+      app.appendChild(h("p", { "class": "notice", role: "status", text: "Some dates can\u2019t be marked overdue or due soon yet. Set a time zone on your home and they will be." }));
+    }
 
     if (state.spaces.length > 1 || state.assets.length > 1 || filter.space || filter.asset) {
       var bar = h("div", { "class": "filters" });
@@ -502,7 +519,12 @@ a.title:hover { text-decoration: underline; }
       var shown = s.key === "services" && !showAllServices ? list.slice(0, SERVICE_LIMIT) : list;
       var ul = h("ul", { "class": "rows" + (s.key === "overdue" ? " warn" : ""), "aria-labelledby": "h-" + s.key });
       shown.forEach(function (r) { ul.appendChild(rowItem(r)); });
-      app.appendChild(h("section", null, [h("h2", { id: "h-" + s.key, tabindex: "-1", text: s.heading }), ul]));
+      var section = h("section", null, [h("h2", { id: "h-" + s.key, tabindex: "-1", text: s.heading })]);
+      if (s.key === "later" && list.some(function (r) { return r.notOn; })) {
+        section.appendChild(h("p", { "class": "section-note muted", text: "Plans count toward what\u2019s due once they are switched on." }));
+      }
+      section.appendChild(ul);
+      app.appendChild(section);
       if (s.key === "services" && list.length > SERVICE_LIMIT) {
         app.appendChild(h("p", { "class": "more" }, [h("button", { "class": "link", type: "button", "aria-expanded": showAllServices ? "true" : "false",
           text: showAllServices ? "Show fewer" : "Show all " + list.length, onclick: function () { showAllServices = !showAllServices; render(); focusFirst(".more button"); } })]));
@@ -548,14 +570,22 @@ a.title:hover { text-decoration: underline; }
   }
 
   // ---- lifecycle ----------------------------------------------------------------------------
+  var generation = 0;
   function refresh() {
     watching = true;
-    return load().then(function (next) {
+    var mine = ++generation;
+    function isCurrent() { return mine === generation; }
+    return load(isCurrent, function (next) {
+      if (!isCurrent()) return;
       state = next;
       if (filter.space && !state.empty && !state.spaces.some(function (c) { return c.id === filter.space; })) filter.space = "";
       if (filter.asset && !state.empty && !state.assets.some(function (c) { return c.id === filter.asset; })) filter.asset = "";
+      // Names fill in while the person may be using a filter: keep their focus.
+      var focused = document.activeElement && document.activeElement.id;
       render();
-    }, function (err) {
+      if (focused && document.getElementById(focused)) document.getElementById(focused).focus();
+    }).catch(function (err) {
+      if (!isCurrent()) return;
       console.error("What's due could not load", err && err.code);
       renderError();
     });
