@@ -7,4 +7,5 @@ access: bundle-read
 ---
 A read-only View over My Home Maintenance Plans and Service Records. It follows the
 My Home maintenance operating contract: only enabled, manual-date Plans get
-a due date, and only Plans with a known time zone are counted as overdue or coming up.
+a due date. A date is counted as overdue or coming up in the Plan's time zone, else its
+Home's, else the viewer's own.
