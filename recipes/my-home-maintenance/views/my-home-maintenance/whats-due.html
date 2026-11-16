@@ -306,7 +306,15 @@ section > .notice { margin: 0 0 8px; }
         all.forEach(function (r) { var c = readCache[r.id + "@" + r.version]; if (c) m[r.id] = c; });
         return m;
       }
-      function draw(plansLinked, done) { if (isCurrent()) show(model(q, names, links(), plans, services, today, plansLinked), done); }
+      function draw(plansLinked, done) {
+        if (!isCurrent()) return;
+        var next = model(q, names, links(), plans, services, today, plansLinked);
+        // A plan count is final only once each plan's links (and so its Home's time zone) are read;
+        // a filtered visit count only once every visit's links are read.
+        next.plansFinal = plansLinked;
+        next.allFinal = !!done;
+        show(next, done);
+      }
       // The Assets and Spaces these records point at, for names and for the Home's time zone.
       function placements(records) {
         var L = links(), assetIds = {}, spaceIds = {};
@@ -324,7 +332,8 @@ section > .notice { margin: 0 0 8px; }
           return readLinks(q.space.rows.filter(function (r) { return spaceIds[r.id]; }));
         });
       }
-      draw(false);
+      // On a refresh the page already holds final numbers: wait for new final ones instead.
+      if (!state || state.empty || !state.plansFinal) draw(false);
       return readLinks(plans).then(function () { return placements(plans); }).then(function () {
         draw(true);
         if (!isCurrent()) return;
@@ -499,20 +508,24 @@ section > .notice { margin: 0 0 8px; }
     var rows = state.rows.filter(function (r) {
       return (!filter.space || r.space === filter.space) && (!filter.asset || r.asset === filter.asset);
     });
-    var by = sections(rows);
+    var by = sections(rows), filtered = !!(filter.space || filter.asset);
 
     var tiles = h("ul", { "class": "tiles", "aria-label": "Counts" });
     SECTIONS.forEach(function (s) {
       if (!s.tile) return;
-      var n = by[s.key].length, tone = s.key === "overdue" && n > 0 ? " warn" : "";
-      var inner = [h("strong", { text: String(n) }), h("span", { text: s.tile })];
-      tiles.appendChild(h("li", null, [n > 0
+      var n = by[s.key].length, final = s.key === "services" ? state.allFinal || !filtered : state.plansFinal;
+      var tone = final && s.key === "overdue" && n > 0 ? " warn" : "";
+      // Never show a number before it is final: a placeholder, not "0 Overdue".
+      var inner = final ? [h("strong", { text: String(n) }), h("span", { text: s.tile })]
+        : [h("strong", { "aria-hidden": "true", text: "\u2013" }), h("span", { text: s.tile }), h("span", { "class": "visually-hidden", text: "(still counting)" })];
+      tiles.appendChild(h("li", null, [final && n > 0
         ? h("a", { "class": "tile" + tone, href: "#" + s.key, "data-key": "tile:" + s.key, onclick: function (e) { e.preventDefault(); jump(s.key); } }, inner)
         : h("div", { "class": "tile" }, inner)]));
     });
     app.appendChild(tiles);
 
-    if (state.spaces.length > 1 || state.assets.length > 1 || filter.space || filter.asset) {
+    if (!state.plansFinal) app.appendChild(h("p", { "class": "muted none", text: "Loading\u2026" }));
+    if (state.plansFinal && (state.spaces.length > 1 || state.assets.length > 1 || filter.space || filter.asset)) {
       var bar = h("div", { "class": "filters" });
       if (state.spaces.length > 1) bar.appendChild(selectFor("space", "Space", "All spaces", state.spaces));
       if (state.assets.length > 1) bar.appendChild(selectFor("asset", "Asset", "All assets", state.assets));
@@ -525,7 +538,7 @@ section > .notice { margin: 0 0 8px; }
     var any = false;
     SECTIONS.forEach(function (s) {
       var list = by[s.key];
-      if (!list.length) return;
+      if (!list.length || (s.key !== "services" && !state.plansFinal)) return;
       any = true;
       var shown = s.key === "services" && !showAllServices ? list.slice(0, SERVICE_LIMIT) : list;
       var ul = h("ul", { "class": "rows" + (s.key === "overdue" ? " warn" : ""), "aria-labelledby": "h-" + s.key });
@@ -542,7 +555,7 @@ section > .notice { margin: 0 0 8px; }
           text: showAllServices ? "Show fewer" : "Show all " + list.length, onclick: function () { showAllServices = !showAllServices; render(); focusFirst(".more button"); } })]));
       }
     });
-    if (!any) app.appendChild(h("p", { "class": "muted none", text: "No plans or service visits match these filters." }));
+    if (!any && state.allFinal) app.appendChild(h("p", { "class": "muted none", text: "No plans or service visits match these filters." }));
   }
 
   function selectFor(key, label, all, list) {
@@ -626,8 +639,9 @@ section > .notice { margin: 0 0 8px; }
         host.caps = Array.isArray(d.capabilities) ? d.capabilities : [];
         host.limit = d.limits && typeof d.limits.query === "number" && d.limits.query > 0 ? d.limits.query : null;
         host.frame = !!d.frame && host.caps.indexOf("frame.resize") >= 0;
-        // The host prints the View's name in its own chrome: keep the h1 for heading order only.
-        if (d.frame && d.frame.title === "host") document.getElementById("title").className = "visually-hidden";
+        // The host prints the View's name and owns the page's h1: drop ours entirely, so a screen
+        // reader does not hear the title again; the sections' h2s follow the host's h1.
+        if (d.frame && d.frame.title === "host") document.getElementById("title").hidden = true;
       }
       if (host.frame && window.ResizeObserver) new ResizeObserver(reportHeight).observe(document.body);
       return window.Bridge.watch(refresh);
