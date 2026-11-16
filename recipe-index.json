@@ -95,17 +95,19 @@
     },
     {
       "id": "my-home-maintenance",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:da230df1fadcd0b3b26a4fbf0dd6550e2f46458b3660ae2f1446476a17034a6f",
-      "files_digest": "sha256:b816fefffd2fd2c7053b221a90c5f57677d0e0a7dcd6b506404a4a6c9b90b001",
+      "source_digest": "sha256:b12136e161c5ed95011941cab529ff31e8f78a43e1f87519be4c2c0465a83172",
+      "files_digest": "sha256:a2e287a7f70491572bd5200c5159f5a503c698089c4edd56b2ad9157eb352cda",
       "root": "recipes/my-home-maintenance",
       "files": [
         "conventions/my-home-maintenance-plan.md",
         "conventions/my-home-service-record.md",
         "recipe.md",
-        "references/my-home-maintenance-v1.md"
+        "references/my-home-maintenance-v1.md",
+        "views-registry/my-home-whats-due.md",
+        "views/my-home-maintenance/whats-due.html"
       ],
       "discovery": {
         "keywords": [

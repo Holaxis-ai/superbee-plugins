@@ -84,3 +84,13 @@ The reference reader requires nonempty `correction_reason` before a corrected Se
 an occurrence in a derived answer. A conflict between known `source_event_key` values remains
 unresolved: a real later service is a separate occurrence, not a correction. Unknown-key identity
 still depends on the stated reason/evidence; this field does not authenticate physical truth.
+
+## What's due View
+
+The recipe carries one read-only View, `views-registry/my-home-whats-due`. It reads Plans and
+Services, plus Home, Space and Asset for names, and writes nothing. It applies the rules above:
+only an enabled `manual_date` Plan gets a date (a complete override first); it is counted as
+overdue or due in the next 30 days only when its `schedule_timezone`, or its subject's Home
+`timezone`, is known. Paused, unknown and unset statuses are listed by name, never as due; retired
+Plans are left out. Recent visits are dated Services from the past 12 months; a result other than
+`completed` is shown. When the host may have returned fewer rows than exist, the View says so.
