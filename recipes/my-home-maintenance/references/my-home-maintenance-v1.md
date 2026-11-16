@@ -59,13 +59,14 @@ The first slice displays manual_date only. For plan_status: enabled:
 3. Only when both override fields are absent, display valid next_due_on if supplied.
 
 Missing/unknown/paused/retired status is not enabled. No date advances from Service completion,
-no is_due field is persisted, and no clock-time is implied. An IANA timezone is needed before
-classifying today/past/future; without it just display the date. Missing basis stays unspecified,
-not invented manufacturer advice.
+no is_due field is persisted, and no clock-time is implied. Classify today/past/future in the
+Plan's schedule_timezone, else its Home's timezone; without either, a view uses the viewer's own
+time zone. Missing basis stays unspecified, not invented manufacturer advice.
 
 When a person gives a due date, write plan_status: enabled, schedule_mode: manual_date and
-next_due_on. If neither the Plan (schedule_timezone) nor its Home (timezone) has a time zone, ask
-for the home's IANA time zone name, because without one a date cannot be marked overdue or due soon.
+next_due_on. If neither the Plan (schedule_timezone) nor its Home (timezone) has a time zone, it is
+worth asking for the home's IANA time zone name so every viewer sees the same day; it is not
+required, because views then use the viewer's own.
 
 Calendar, after_service, usage, condition and compound criteria remain source wording until a
 capable consumer supports them. “Annually or N hours, whichever comes first” is not simple
@@ -94,8 +95,9 @@ still depends on the stated reason/evidence; this field does not authenticate ph
 The recipe carries one read-only View, `views-registry/my-home-whats-due`. It reads Plans and
 Services, plus Home, Space and Asset for names, and writes nothing. It applies the rules above:
 only an enabled `manual_date` Plan gets a date (a complete override first); it is counted as
-overdue or due in the next 30 days only when its `schedule_timezone`, or its subject's Home
-`timezone`, is known. Paused plans are shown as paused and unknown or unset statuses as not active,
-never as due; retired Plans are left out. A dated Plan with no known time zone is listed under
-"Needs a time zone". Recent visits are dated Services from the past 12 months; a result other than
+overdue, due in the next 30 days or later against today in its `schedule_timezone`, else its
+subject's Home `timezone`, else the viewer's own time zone. Paused plans are shown as paused and
+unknown or unset statuses as not active, never as due; retired Plans are left out. Plan counts show
+"–" until every plan's links are read, so a Home's time zone found late never changes a number
+already shown. Recent visits are dated Services from the past 12 months; a result other than
 `completed` is shown. When the host may have returned fewer rows than exist, the View says so.

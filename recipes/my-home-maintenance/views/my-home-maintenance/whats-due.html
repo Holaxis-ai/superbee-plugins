@@ -60,9 +60,7 @@ button.link { min-height: 44px; padding: 0 4px; border: 0; background: none; col
 a.title { color: var(--blue); text-decoration: none; }
 a.title:hover, a.title:focus-visible { text-decoration: underline; }
 .rows.warn a.title { color: var(--warn-text); }
-.notice { margin-top: 16px; padding: 12px 16px; border: 1px solid var(--rule); border-inline-start: 3px solid var(--blue); border-radius: 8px; background: var(--surface); color: var(--muted); font-size: .875rem; }
 .section-note { margin: -4px 0 8px; font-size: .875rem; }
-section > .notice { margin: 0 0 8px; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .about { font-size: .875rem; }
 .when { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right; font-size: .875rem; max-width: 22rem; }
@@ -308,7 +306,7 @@ section > .notice { margin: 0 0 8px; }
       }
       function draw(plansLinked, done) {
         if (!isCurrent()) return;
-        var next = model(q, names, links(), plans, services, today, plansLinked);
+        var next = model(q, names, links(), plans, services, today);
         // A plan count is final only once each plan's links (and so its Home's time zone) are read;
         // a filtered visit count only once every visit's links are read.
         next.plansFinal = plansLinked;
@@ -350,7 +348,7 @@ section > .notice { margin: 0 0 8px; }
   }
 
   // ---- the domain rules (references/my-home-maintenance-v1.md) ------------------------------
-  function model(q, names, links, plans, services, today, plansLinked) {
+  function model(q, names, links, plans, services, today) {
     function title(id, kind) { return id && names[id] && names[id].kind === kind ? names[id].title : null; }
     function homeOf(id) {
       if (!id || !names[id]) return null;
@@ -407,31 +405,26 @@ section > .notice { margin: 0 0 8px; }
         }
         if (due) {
           row.due = due;
+          // The Plan's time zone, else its Home's, else the viewer's own date. A Home's zone is
+          // known only once the plan's links are read, so plan counts wait for them (plansFinal).
           var zone = validZone(fm.schedule_timezone) || (s.home && names[s.home] ? validZone(names[s.home].fm.timezone) : null);
-          if (!zone) {
-            // Not classified, so neither overdue nor later: its own section. While the plan's links
-            // are still being read its Home may yet supply a time zone, so the row waits for them.
-            row.section = plansLinked ? "zone" : null;
+          var days = dayNumber(due) - dayNumber(zone ? todayIn(zone) : today);
+          if (days < 0) {
+            row.section = "overdue";
+            row.pill = { text: plural(-days, "day", "days") + " overdue", tone: "overdue" };
+            row.lines = ["Was due " + showDate(due)];
+          } else if (days <= 30) {
+            row.section = "soon";
+            row.pill = { text: days === 0 ? "Today" : days === 1 ? "Tomorrow" : "In " + days + " days", tone: "soon" };
             row.lines = [showDate(due)];
           } else {
-            var days = dayNumber(due) - dayNumber(todayIn(zone));
-            if (days < 0) {
-              row.section = "overdue";
-              row.pill = { text: plural(-days, "day", "days") + " overdue", tone: "overdue" };
-              row.lines = ["Was due " + showDate(due)];
-            } else if (days <= 30) {
-              row.section = "soon";
-              row.pill = { text: days === 0 ? "Today" : days === 1 ? "Tomorrow" : "In " + days + " days", tone: "soon" };
-              row.lines = [showDate(due)];
-            } else {
-              row.section = "later";
-              row.lines = [showDate(due)];
-            }
+            row.section = "later";
+            row.lines = [showDate(due)];
           }
           row.sortDay = dayNumber(due);
         }
       }
-      if (row.section) rows.push(row);
+      rows.push(row);
     });
     var RESULTS = { failed: "Failed", partial: "Partial", not_performed: "Not performed", unknown: "Result unknown" };
     services.forEach(function (r) {
@@ -459,9 +452,8 @@ section > .notice { margin: 0 0 8px; }
 
   // ---- rendering ----------------------------------------------------------------------------
   function sections(rows) {
-    var by = { zone: [], overdue: [], soon: [], later: [], services: [] };
+    var by = { overdue: [], soon: [], later: [], services: [] };
     rows.forEach(function (r) { by[r.section].push(r); });
-    by.zone.sort(function (a, b) { return a.sortDay - b.sortDay || byTitle(a, b); });
     by.overdue.sort(function (a, b) { return a.sortDay - b.sortDay || byTitle(a, b); });
     by.soon.sort(function (a, b) { return a.sortDay - b.sortDay || byTitle(a, b); });
     by.later.sort(function (a, b) {
@@ -473,7 +465,6 @@ section > .notice { margin: 0 0 8px; }
     return by;
   }
   var SECTIONS = [
-    { key: "zone", heading: "Needs a time zone", lead: "Some dates can\u2019t be marked overdue or due soon yet. Set a time zone on your home and they will be." },
     { key: "overdue", heading: "Overdue", tile: "Overdue" },
     { key: "soon", heading: "Due in the next 30 days", tile: "Due in the next 30 days" },
     { key: "later", heading: "Later or no date", tile: "Later or no date" },
@@ -512,7 +503,6 @@ section > .notice { margin: 0 0 8px; }
 
     var tiles = h("ul", { "class": "tiles", "aria-label": "Counts" });
     SECTIONS.forEach(function (s) {
-      if (!s.tile) return;
       var n = by[s.key].length, final = s.key === "services" ? state.allFinal || !filtered : state.plansFinal;
       var tone = final && s.key === "overdue" && n > 0 ? " warn" : "";
       // Never show a number before it is final: a placeholder, not "0 Overdue".
@@ -544,7 +534,6 @@ section > .notice { margin: 0 0 8px; }
       var ul = h("ul", { "class": "rows" + (s.key === "overdue" ? " warn" : ""), "aria-labelledby": "h-" + s.key });
       shown.forEach(function (r) { ul.appendChild(rowItem(r)); });
       var section = h("section", null, [h("h2", { id: "h-" + s.key, tabindex: "-1", text: s.heading })]);
-      if (s.lead) section.appendChild(h("p", { "class": "notice", text: s.lead }));
       if (s.key === "later" && list.some(function (r) { return r.notOn; })) {
         section.appendChild(h("p", { "class": "section-note muted", text: "Plans count toward what\u2019s due once they are marked active and have a due date." }));
       }
