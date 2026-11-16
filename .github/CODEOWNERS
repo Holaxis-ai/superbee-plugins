@@ -1,8 +1,4 @@
 # Takes effect only when a branch rule requires code owner review, a separate repository setting.
-/recipe-index.json @mikec-ai @briand-ai
-/recipe-index.source.json @mikec-ai @briand-ai
-/scripts/build-recipe-index.mjs @mikec-ai @briand-ai
-/scripts/recipe-index.test.mjs @mikec-ai @briand-ai
 /.github/workflows/ @mikec-ai @briand-ai
 /.github/CODEOWNERS @mikec-ai @briand-ai
 /.gitattributes @mikec-ai @briand-ai

@@ -89,6 +89,8 @@ returning with different bytes, since the index only remembers current versions.
 from `recipes/` is unaffected. To remove a cookbook, delete it from `cookbooks` and add
 `{"id", "reason"}` to `removed_cookbooks`, under the same permanent rule.
 
-`.github/CODEOWNERS` names the owners of the index files, the generator and the workflows. It has no
-effect until a branch rule requires code owner review, which is a separate repository setting.
+`.github/CODEOWNERS` names the owners of the workflows, of `.github/CODEOWNERS` itself and of
+`.gitattributes`; with code owner review required on `main`, changing those needs an owner's
+approval. The index, its source, the generator and its test have no code owner, so a recipe change
+and its regenerated index need no approval to merge; the required `source` check must pass.
 `.gitattributes` keeps recipe and index bytes unconverted, so digests match on any checkout.
