@@ -97,8 +97,11 @@ Services, plus Home, Space and Asset for names, and writes nothing. It applies t
 only an enabled `manual_date` Plan gets a date (a complete override first); it is counted as
 overdue, due in the next 30 days or later against today in its `schedule_timezone`, else its
 subject's Home `timezone`, else the viewer's own time zone. Paused plans are shown as paused and
-unknown or unset statuses as not active, never as due; retired Plans are left out. Plan counts show
-"–" until every plan's links are read, so a Home's time zone that can be read never changes a
-number already shown. If a read on the way to the Home gets no reply, the row says "Some details
-couldn't load." and may move once that read answers. Recent visits are dated Services from the past 12 months; a result other than
-`completed` is shown. When the host may have returned fewer rows than exist, the View says so.
+unknown or unset statuses as not active, never as due; retired Plans are left out. What a record
+is about comes from the host's typed links (`edges`), exactly as the host's link index states them
+(labels match exactly; the View parses no bodies). Plan counts show "–" until those links are
+known, so a Home's time zone that can be known never changes a number already shown. A record with
+too many links to answer says "Some details couldn't load."; when the host cannot answer links, or
+has none, records are shown without what they are about and the page says so once. Recent visits
+are dated Services from the past 12 months; a result other than `completed` is shown. When the host
+may have returned fewer rows than exist, the View says so.
