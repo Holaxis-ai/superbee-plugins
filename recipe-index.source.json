@@ -58,7 +58,7 @@
       }
     },
     {
-      "id": "deep-research",
+      "id": "holaxis-deep-research",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
       "discovery": {
@@ -113,7 +113,7 @@
       "designation": "supported",
       "maintainer": "Holaxis-ai",
       "recipes": [
-        "deep-research"
+        "holaxis-deep-research"
       ],
       "discovery": {
         "offer": "Build up research over time: evidence with its source, claims with their scope, and the questions still open.",
@@ -132,6 +132,12 @@
       }
     }
   ],
-  "removed": [],
+  "removed": [
+    {
+      "id": "deep-research",
+      "last_version": "0.1.0-pre.2",
+      "reason": "Replaced by qualified Deep Research identities; existing installations are not migrated."
+    }
+  ],
   "removed_cookbooks": []
 }

@@ -4,6 +4,12 @@ title: Extending Deep Research without inheriting its Kinds
 ---
 # Extending Deep Research without inheriting its Kinds
 
+Distributed research Kinds use exact selectors under
+`github.com/holaxis-ai/superbee-plugins/deep-research`. Extensions declare those
+exact targets rather than matching display titles. The Place Comparison example
+uses qualified Research Claim and Research Observation. Existing bare records
+are not migrated or rebound. Install this qualified recipe before its extension.
+
 Install the selected core, then explicitly install a domain recipe that owns new
 Kinds. Current recipes do not apply `requires`, `composes` or schema inheritance.
 Validation success is not proof a dependency was installed. A disjoint extension

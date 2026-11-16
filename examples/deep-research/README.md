@@ -12,7 +12,7 @@ your normal package workflow if absent. Check its actual identity:
 
 ```sh
 superbee version --json
-superbee recipe validate ./recipes/deep-research --json
+superbee recipe validate ./recipes/holaxis-deep-research --json
 node examples/deep-research/create-example.mjs \
   --case house-history --bundle /tmp/my-fictional-house-study
 ```
@@ -36,7 +36,7 @@ with different absent bundle directories.
 ## Inspect connections and answer a later question
 
 ```sh
-superbee query --type 'Research Question' --dir /tmp/my-fictional-house-study --json
+superbee query --type 'github.com/holaxis-ai/superbee-plugins/deep-research/Research Question' --dir /tmp/my-fictional-house-study --json
 superbee doc read research-questions/lantern-move --dir /tmp/my-fictional-house-study --json
 superbee link show research-claims/lantern-current --dir /tmp/my-fictional-house-study --json
 superbee link show research-observations/lantern-pointer --text 'drawn from' \
@@ -59,9 +59,9 @@ invented; there are no private bundle excerpts, real asset paths or customer fac
 
 ```sh
 superbee init --create-only --recipe none --dir /tmp/my-new-research/.superbee
-superbee recipe add ./recipes/deep-research --actor openai/codex --dir /tmp/my-new-research/.superbee
-superbee new 'Research Source' --help --dir /tmp/my-new-research/.superbee
-superbee new 'Research Question' --help --dir /tmp/my-new-research/.superbee
+superbee recipe add ./recipes/holaxis-deep-research --actor openai/codex --dir /tmp/my-new-research/.superbee
+superbee new 'github.com/holaxis-ai/superbee-plugins/deep-research/Research Source' --help --dir /tmp/my-new-research/.superbee
+superbee new 'github.com/holaxis-ai/superbee-plugins/deep-research/Research Question' --help --dir /tmp/my-new-research/.superbee
 ```
 
 Keep the study folder separate from the bundle root:
@@ -84,10 +84,12 @@ Re-add is idempotent; upgrades use native `recipe evolve` preview and exact-toke
 apply after reviewing existing content. This contribution does not supply a
 migration command or claim ownership protection against arbitrary other writers.
 
-**Existing bundles:** inspect their conventions and consumers first. In particular,
-the existing House and Place History recipe also defines Research Question; do not
-install this core over it and mistake drift for a migration. No working research
-bundle was migrated by this contribution.
+**Existing bundles:** this distribution uses exact types beginning with
+`github.com/holaxis-ai/superbee-plugins/deep-research/`. Friendly titles are not
+aliases. Existing bare Research records retain their types and definitions;
+installation does not migrate them. Inspect consumers and record paths before
+adoption: qualified identities do not prevent two records from requesting the
+same document ID. No working research bundle was migrated by this contribution.
 
 ## Extend without inheritance
 

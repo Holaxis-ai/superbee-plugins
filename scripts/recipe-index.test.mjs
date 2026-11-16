@@ -385,13 +385,13 @@ test('the committed index is current and Core accepts it', async () => {
   const parsed = parseRecipeIndex(bytes);
   assert.equal(parsed.ok, true, JSON.stringify(parsed.error));
   assert.deepEqual((await buildRecipeIndex(repo)).bytes, bytes);
-  assert.deepEqual(parsed.index.recipes.map(entry => entry.id), ['deep-research', 'my-home', 'my-home-costs', 'my-home-maintenance']);
+  assert.deepEqual(parsed.index.recipes.map(entry => entry.id), ['holaxis-deep-research', 'my-home', 'my-home-costs', 'my-home-maintenance']);
   assert.deepEqual(parsed.index.cookbooks.map(entry => [entry.id, entry.recipes]), [
     ['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']],
-    ['research', ['deep-research']],
+    ['research', ['holaxis-deep-research']],
   ]);
   assert.match(parsed.index.cookbooks[1].summary, /prerelease/);
-  assert.equal(parsed.index.recipes[0].version, '0.1.0-pre.2');
+  assert.equal(parsed.index.recipes.find(entry => entry.id === 'holaxis-deep-research').version, '0.1.0-pre.3');
   const myHome = parsed.index.cookbooks[0].discovery;
   assert.equal(myHome.offer, 'Keep track of your home: rooms, appliances, repairs, warranties and what you spent.');
   assert.deepEqual([myHome.categories, myHome.audience], [['home', 'money'], 'personal']);
@@ -420,7 +420,7 @@ test('both cookbooks resolve through a reader over this checkout, verifying ever
     seen.push(location);
     return readFile(path.join(repo, location));
   };
-  for (const [id, members] of [['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']], ['research', ['deep-research']]]) {
+  for (const [id, members] of [['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']], ['research', ['holaxis-deep-research']]]) {
     const result = await resolveCookbook(index, id, read);
     assert.equal(result.ok, true, JSON.stringify(result.error));
     assert.deepEqual(result.recipes.map(entry => entry.recipe.id), members);

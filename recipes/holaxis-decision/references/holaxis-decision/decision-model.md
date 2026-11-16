@@ -51,8 +51,8 @@ Install the companions independently when needed:
 
 ~~~sh
 superbee recipe add work-tracking --dir /absolute/path/to/selected-bundle
-superbee recipe add /absolute/path/to/reviewed-superbee-plugins/recipes/deep-research --dir /absolute/path/to/selected-bundle
-superbee recipe add /absolute/path/to/reviewed-superbee-plugins/recipes/decision --dir /absolute/path/to/selected-bundle
+superbee recipe add /absolute/path/to/reviewed-superbee-plugins/recipes/holaxis-deep-research --dir /absolute/path/to/selected-bundle
+superbee recipe add /absolute/path/to/reviewed-superbee-plugins/recipes/holaxis-decision --dir /absolute/path/to/selected-bundle
 ~~~
 
 These are examples, not a dependency resolution mechanism. The recipe parser

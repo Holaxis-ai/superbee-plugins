@@ -1,3 +1,11 @@
+# Qualified distribution consumer checks
+
+The current executable checks consume the authored qualified distribution and
+exact qualified fixture types. Run `npm exec -- node --test scripts/deep-research.test.mjs`
+against the current checkout; the results belong to that checkout, not the historical
+bare-type qualification described below. Place Comparison binds explicitly to the
+qualified Research Claim and Research Observation types. No existing bundle is migrated.
+
 # Initial qualification — October 31, 2026
 
 Status: experimental candidate, not a published release or evidence of real-use
@@ -13,7 +21,7 @@ Run from the reviewed checkout:
 ```sh
 npm ci --ignore-scripts --no-audit --no-fund
 npm exec -- node --test scripts/deep-research.test.mjs
-superbee recipe validate ./recipes/deep-research --json
+superbee recipe validate ./recipes/holaxis-deep-research --json
 superbee recipe validate ./examples/deep-research/extensions/place-history --json
 git diff --check
 ```

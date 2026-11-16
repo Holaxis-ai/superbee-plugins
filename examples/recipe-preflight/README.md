@@ -26,7 +26,9 @@ node examples/recipe-preflight/check.mjs \
   --bundle /absolute/path/to/a/selected/bundle
 ```
 
-The supplied plan describes the core plus the Place Comparison example. Run it
+The supplied plan selects the authored qualified research recipe plus the Place
+Comparison example. Its requirements use exact qualified selectors; friendly
+Research titles are not lookup aliases. Run it
 against a bundle where you deliberately installed those definitions. Running
 against a different bundle should report missing or divergent evidence; the
 adapter does not repair it. It requires explicit paths and performs no ambient

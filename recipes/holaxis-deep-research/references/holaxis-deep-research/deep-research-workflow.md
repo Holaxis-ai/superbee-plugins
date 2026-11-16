@@ -1,6 +1,6 @@
 ---
 type: Reference
-title: Bounded research, reduction and continuation
+title: 'Bounded research, reduction and continuation'
 ---
 # Bounded research, reduction and continuation
 

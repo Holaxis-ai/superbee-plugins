@@ -45,7 +45,7 @@ test('Deep Research public CLI consumer: inert core, evidence graph, corrections
     // Consume copied recipe artifacts outside the checkout, not sibling Core sources.
     const core = path.join(scratch, 'portable-core');
     const extension = path.join(scratch, 'portable-extension');
-    await cp(path.join(root, 'recipes/deep-research'), core, {recursive: true});
+    await cp(path.join(root, 'recipes/holaxis-deep-research'), core, {recursive: true});
     await cp(path.join(root, 'examples/deep-research/extensions/place-history'), extension, {recursive: true});
     for (const recipe of [core, extension]) assert.equal(sb(['recipe', 'validate', recipe]).ok, true);
 
@@ -61,21 +61,21 @@ test('Deep Research public CLI consumer: inert core, evidence graph, corrections
     sb(['recipe', 'add', core, '--actor', actor, '--dir', blank]);
     await t.test('inert installation, idempotent add and disjoint extension preserve base bytes', async () => {
       assert.equal(clean(blank).docs, 7, 'only four conventions and three references');
-      assert.deepEqual((await readdir(path.join(blank, 'conventions'))).sort(), ['research-claim.md', 'research-observation.md', 'research-question.md', 'research-source.md']);
-      const original = await readFile(path.join(blank, 'conventions/research-claim.md'));
+      assert.deepEqual((await readdir(path.join(blank, 'conventions', 'holaxis-deep-research'))).sort(), ['research-claim.md', 'research-observation.md', 'research-question.md', 'research-source.md']);
+      const original = await readFile(path.join(blank, 'conventions/holaxis-deep-research/research-claim.md'));
       assert.equal(sb(['recipe', 'add', core, '--dir', blank]).changed, false);
       sb(['recipe', 'add', extension, '--dir', blank]);
-      assert.deepEqual(await readFile(path.join(blank, 'conventions/research-claim.md')), original);
+      assert.deepEqual(await readFile(path.join(blank, 'conventions/holaxis-deep-research/research-claim.md')), original);
       assert.equal(sb(['recipe', 'add', extension, '--dir', blank]).changed, false);
       assert.equal(clean(blank).kinds, 5);
       // Re-add must not overwrite a local author's guidance or claim full application.
-      const doc = read(blank, 'conventions/research-claim');
+      const doc = read(blank, 'conventions/holaxis-deep-research/research-claim');
       sb(['doc', 'update', doc.id, '--body', doc.body + '\nLocal consumer guidance.\n', '--expected-version', doc.head_version, '--actor', actor, '--dir', blank]);
-      const customized = await readFile(path.join(blank, 'conventions/research-claim.md'));
+      const customized = await readFile(path.join(blank, 'conventions/holaxis-deep-research/research-claim.md'));
       const receipt = sb(['recipe', 'add', core, '--dir', blank]);
       assert.equal(receipt.changed, false);
       assert.ok(receipt.docs.some(row => row.source_differs));
-      assert.deepEqual(await readFile(path.join(blank, 'conventions/research-claim.md')), customized);
+      assert.deepEqual(await readFile(path.join(blank, 'conventions/holaxis-deep-research/research-claim.md')), customized);
     });
 
     const bundles = {};
@@ -148,15 +148,15 @@ test('Deep Research public CLI consumer: inert core, evidence graph, corrections
       assert.notEqual(occupiedResult.status, 0);
       assert.equal(await readFile(path.join(occupied, 'keep.txt'), 'utf8'), 'Existing user content');
       assert.deepEqual(await readdir(occupied), ['keep.txt']);
-      const invalid = invoke(['new', 'Research Source', 'bad', '--title', 'Invalid', '--citation', 'Fictional', '--inspection_state', 'proven-true', '--dir', b]);
+      const invalid = invoke(['new', 'github.com/holaxis-ai/superbee-plugins/deep-research/Research Source', 'bad', '--title', 'Invalid', '--citation', 'Fictional', '--inspection_state', 'proven-true', '--dir', b]);
       assert.notEqual(invalid.status, 0, 'inspection is not truth');
       assert.match(invalid.stderr + invalid.stdout, /inspection_state|proven-true/);
-      const wrongTarget = invoke(['new', 'Research Observation', 'wrong-target', '--title', 'Wrong target', '--observation', 'Fictional', '--locator', 'Section 1', '--inspection_mode', 'source_text', '--body', '# Observation\nFictional\n# Evidence and method\n[drawn from](../research-claims/interview-preference.md)\n# Limits\nNegative control', '--dir', b]);
+      const wrongTarget = invoke(['new', 'github.com/holaxis-ai/superbee-plugins/deep-research/Research Observation', 'wrong-target', '--title', 'Wrong target', '--observation', 'Fictional', '--locator', 'Section 1', '--inspection_mode', 'source_text', '--body', '# Observation\nFictional\n# Evidence and method\n[drawn from](../research-claims/interview-preference.md)\n# Limits\nNegative control', '--dir', b]);
       if (wrongTarget.status === 0) assert.ok(sb(['status', '--dir', b]).link_type_violations > 0, 'native lint detects a Claim used as a Source');
       else assert.match(wrongTarget.stderr + wrongTarget.stdout, /link|Research Source|target/i, 'refusal must concern the typed target');
       // A syntactically valid supported claim without evidence can still be written.
       // Do not falsely advertise schema validity as an epistemic proof.
-      sb(['new', 'Research Claim', 'unsupported-shape', '--title', 'Shape-only negative control', '--statement', 'Unsupported fictional proposition', '--scope', 'No inspected evidence', '--assertion_mode', 'hypothesis', '--evidence_state', 'supported', '--review_state', 'unreviewed', '--actor', actor, '--dir', b]);
+      sb(['new', 'github.com/holaxis-ai/superbee-plugins/deep-research/Research Claim', 'unsupported-shape', '--title', 'Shape-only negative control', '--statement', 'Unsupported fictional proposition', '--scope', 'No inspected evidence', '--assertion_mode', 'hypothesis', '--evidence_state', 'supported', '--review_state', 'unreviewed', '--actor', actor, '--dir', b]);
       assert.equal(links(b, 'research-claims/unsupported-shape', 'supported by').outbound_count, 0);
     });
   } finally {

@@ -33,8 +33,8 @@ no merge, release or deployment authority.
 [`recipe-index.json`](recipe-index.json) is the curated `recipe-index/v1` index. A CLI at a version
 that has `recipe add --index` can install from it; Hosted does not install from it yet. It lists one
 current version of each listed recipe, pinned by two digests, and two cookbooks: `my-home` (recipes
-`my-home`, `my-home-maintenance`, `my-home-costs`, in dependency order) and `research` (recipe
-`deep-research`, an experimental prerelease). A cookbook is a named group; every recipe in it stays
+`my-home`, `my-home-maintenance`, `my-home-costs`, in dependency order) and `research`
+(qualified Deep Research, an experimental prerelease). A cookbook is a named group; every recipe in it stays
 individually installable. Other folders under `recipes/` are unlisted and stay installable by path.
 
 The digests are the integrity guarantee. `designation`, `maintainer`, every cookbook field and each
@@ -59,22 +59,40 @@ model bindings, vendor messages or financial transactions.
 
 ## Decision making (experimental)
 
-The inert [`decision`](recipes/decision/recipe.md) recipe defines `Decision Question`,
+The inert [`decision`](recipes/holaxis-decision/recipe.md) recipe defines `Decision Question`,
 `Decision Option` and `Decision` for deliberation, comparison, rationale,
 authority, supersession and follow-through. It composes with the built-in
-`Task` Kind and optionally with [`deep-research`](recipes/deep-research)
+`Task` Kind and optionally with [`deep-research`](recipes/holaxis-deep-research)
 without redefining either. Installation creates no decisions or tasks and
 does not grant approval or execution authority.
 
-An existing bundle may already define `Decision` differently. The
-[adoption guide](recipes/decision/references/adopting-existing-decisions.md)
-documents the required pre-install Kind inventory: adding a convention can change
-which declaration wins for an existing type, even without overwriting files.
-Do not install over a conflicting local Kind without an explicit adoption plan.
+These recipe folders are the single authored definitions and the installable
+product. Their readable folder names match stable recipe IDs; edit the
+fully qualified declarations directly. There is no separate source tree or
+regeneration step. Friendly Kind titles are labels, not aliases. Decision uses
+`github.com/holaxis-ai/superbee-plugins/decision/<Kind>` and Deep Research uses
+`github.com/holaxis-ai/superbee-plugins/deep-research/<Kind>`; Task remains bare.
+These are claimed identities, not authenticated ownership or download URLs.
+
+Existing bare Decision and research records keep their types and bytes. The
+[adoption guide](recipes/holaxis-decision/references/holaxis-decision/adopting-existing-decisions.md)
+explains the inventory needed before any separately authorized migration.
+The `research` cookbook now selects the qualified recipe; the old `deep-research`
+index ID is retired at its last main-branch version, `0.1.0-pre.2`. Decision stays
+path-installable and is not newly listed as supported.
+
+The mandatory `scripts/decision-research-qualified.test.mjs` proof installs the
+actual research cookbook and a portable copy of the authored Decision recipe
+with published `superbee@0.4.6-pre.7`. It checks exact identities, retained legacy
+bytes, a synthetic evidence-to-decision graph, ordinary relationship lint,
+create-only refusal and compatible/incompatible evolution. It runs in the normal
+packaged test suite with no skip or unpublished compiler dependency. For an offline
+run, set `QUALIFIED_RECIPE_CONSUMER_CLI` to that installed published executable;
+otherwise run through npm so the test installs its exact public dependency.
 
 ## Deep, Deep Research (experimental)
 
-The data-only [`deep-research`](recipes/deep-research/recipe.md) recipe supplies four
+The data-only [`deep-research`](recipes/holaxis-deep-research/recipe.md) recipe supplies four
 Kinds—Source, Observation, Claim and Question—with defined evidence, challenge,
 dependency and correction relationships. Its references explain bounded research,
 scope, inspection limits and extension ownership. It does not run research or install
