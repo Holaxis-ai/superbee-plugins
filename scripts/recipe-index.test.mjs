@@ -313,7 +313,7 @@ test('every free-text field refuses control characters and excess length', async
   for (const [where, change] of fields) {
     await writeSource(root, change(baseSource));
     const result = generate(root);
-    refused(result, new RegExp(`${where.replace(/[[\]]/g, '\\$&')} contains a control or format character`));
+    refused(result, new RegExp(`${where.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} contains a control or format character`));
     noCommandLine(result);
   }
   await writeSource(root, {...baseSource, removed: [{id: 'gone', last_version: '1', reason: 'r'.repeat(1001)}]});
