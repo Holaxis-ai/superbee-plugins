@@ -63,6 +63,10 @@ no is_due field is persisted, and no clock-time is implied. An IANA timezone is 
 classifying today/past/future; without it just display the date. Missing basis stays unspecified,
 not invented manufacturer advice.
 
+When a person gives a due date, write plan_status: enabled, schedule_mode: manual_date and
+next_due_on. If neither the Plan (schedule_timezone) nor its Home (timezone) has a time zone, ask
+for the home's IANA time zone name, because without one a date cannot be marked overdue or due soon.
+
 Calendar, after_service, usage, condition and compound criteria remain source wording until a
 capable consumer supports them. “Annually or N hours, whichever comes first” is not simple
 calendar recurrence. A manual override does not replace that recommendation. Do not invent
@@ -84,3 +88,14 @@ The reference reader requires nonempty `correction_reason` before a corrected Se
 an occurrence in a derived answer. A conflict between known `source_event_key` values remains
 unresolved: a real later service is a separate occurrence, not a correction. Unknown-key identity
 still depends on the stated reason/evidence; this field does not authenticate physical truth.
+
+## What's due View
+
+The recipe carries one read-only View, `views-registry/my-home-whats-due`. It reads Plans and
+Services, plus Home, Space and Asset for names, and writes nothing. It applies the rules above:
+only an enabled `manual_date` Plan gets a date (a complete override first); it is counted as
+overdue or due in the next 30 days only when its `schedule_timezone`, or its subject's Home
+`timezone`, is known. Paused plans are shown as paused and unknown or unset statuses as not active,
+never as due; retired Plans are left out. A dated Plan with no known time zone is listed under
+"Needs a time zone". Recent visits are dated Services from the past 12 months; a result other than
+`completed` is shown. When the host may have returned fewer rows than exist, the View says so.

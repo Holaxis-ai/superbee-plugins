@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What's due</title>
+<style>
+/* Colors, radius and spacing copy Workspace Next's tokens. Fonts cannot load in the View sandbox,
+   so the system font stack stands in for Next's DM Sans and Space Grotesk. */
+:root {
+  color-scheme: light dark;
+  --ground: #f3f7fa; --surface: #ffffff; --text: #0f1a24; --muted: #4a5d6e; --rule: #dadee2;
+  --blue: #00618f; --blue-soft: #e3f1fa; --focus: #956300;
+  --warn-bg: #fff0d1; --warn-text: #754b13; --warn-rule: #e2c48c; --warn-strong: #754b13; --warn-on-strong: #ffffff;
+  --control-rule: #868f99;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #10243a; --surface: #162e47; --text: #e8eff5; --muted: #a7b6c4; --rule: #2b4660;
+    --blue: #7cc6fa; --blue-soft: #12324a; --focus: #e0a93a;
+    --warn-bg: #493921; --warn-text: #ffcf85; --warn-rule: #6b5530; --warn-strong: #ffcf85; --warn-on-strong: #2b1d05;
+    --control-rule: #5f7a94;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--ground); }
+body { margin: 0; padding: 16px; background: var(--ground); color: var(--text);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+h1, h2, p, ul { margin: 0; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+h1 { font-size: 1.75rem; line-height: 1.25; font-weight: 600; letter-spacing: -.02em; margin-bottom: 16px; }
+h2 { margin: 24px 0 8px; color: var(--muted); font-size: .95rem; line-height: 1.5; font-weight: 600; }
+h2:focus { outline: none; }
+.muted { color: var(--muted); }
+.note { margin-bottom: 12px; font-size: .875rem; }
+.card { padding: clamp(1rem, 3vw, 1.5rem); background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; overflow-wrap: anywhere; }
+.card h2 { margin: 0 0 .4rem; color: var(--text); font-size: 1.35rem; line-height: 1.3; }
+.card p { color: var(--muted); }
+.card button { margin-top: 1rem; }
+button.action { min-height: 44px; padding: 8px 16px; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); color: var(--blue); font: inherit; font-weight: 600; cursor: pointer; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; list-style: none; padding: 0; }
+.tile { display: flex; flex-direction: column; height: 100%; padding: .75rem 1rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; color: var(--text); text-decoration: none; }
+a.tile:hover { border-color: var(--blue); }
+.tile strong { font-size: 1.5rem; line-height: 1.3; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tile span { color: var(--muted); font-size: .875rem; line-height: 1.4; }
+.tile.warn { background: var(--warn-bg); border-color: var(--warn-rule); color: var(--warn-text); }
+.tile.warn span { color: var(--warn-text); }
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; margin-top: 16px; }
+.filters label { display: flex; flex-direction: column; gap: 6px; flex: 1 1 200px; min-width: 0; font-size: .875rem; font-weight: 600; }
+select { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--control-rule); border-radius: 6px; background: var(--surface); color: var(--text); font: inherit; font-weight: 400; }
+button.link { min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--blue); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.rows { list-style: none; padding: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+.rows > li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: .9rem 1rem; overflow-wrap: anywhere; }
+.rows > li + li { border-top: 1px solid var(--rule); }
+.rows.warn { background: var(--warn-bg); border-color: var(--warn-rule); color: var(--warn-text); }
+.rows.warn > li + li { border-top-color: var(--warn-rule); }
+.rows.warn .muted { color: var(--warn-text); }
+.title { font-weight: 650; color: var(--text); }
+.rows.warn .title { color: var(--warn-text); }
+a.title { color: var(--blue); text-decoration: none; }
+a.title:hover, a.title:focus-visible { text-decoration: underline; }
+.rows.warn a.title { color: var(--warn-text); }
+.notice { margin-top: 16px; padding: 12px 16px; border: 1px solid var(--rule); border-inline-start: 3px solid var(--blue); border-radius: 8px; background: var(--surface); color: var(--muted); font-size: .875rem; }
+.section-note { margin: -4px 0 8px; font-size: .875rem; }
+section > .notice { margin: 0 0 8px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.about { font-size: .875rem; }
+.when { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right; font-size: .875rem; max-width: 22rem; }
+.pill { display: inline-block; padding: .13rem .55rem; border-radius: 999px; font-size: .75rem; line-height: 1.5; font-weight: 700; white-space: nowrap; }
+.pill.overdue { background: var(--warn-strong); color: var(--warn-on-strong); }
+.pill.soon { background: var(--blue-soft); color: var(--blue); }
+.pill.result { background: var(--warn-bg); color: var(--warn-text); }
+.pill.quiet { border: 1px solid var(--rule); color: var(--muted); }
+.more { margin-top: 8px; }
+.none { margin-top: 24px; }
+@media (max-width: 639px) {
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rows > li { grid-template-columns: minmax(0, 1fr); }
+  .when { align-items: flex-start; text-align: left; max-width: none; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1 id="title">What's due</h1>
+<p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+<div id="app"><p class="muted">Loading…</p></div>
+</main>
+<script>
+(function () {
+  var PROTO = "v0", ACTION_PROTO = "v1", seq = 0, pending = {}, subs = [];
+  function send(type, extra, proto) {
+    return new Promise(function (resolve, reject) {
+      var id = String(++seq);
+      pending[id] = { resolve: resolve, reject: reject };
+      var msg = { bridge: proto || PROTO, id: id, type: type };
+      if (extra) for (var k in extra) msg[k] = extra[k];
+      parent.postMessage(msg, "*"); // parent origin is opaque to us; the shell validates by source
+    });
+  }
+  // A shell action, deliberately separate from send(): the source frame may unload immediately,
+  // so openPage is void/fire-and-forget and must not be awaited.
+  function openPage(pageId) {
+    parent.postMessage({ bridge: PROTO, type: "open-page", pageId: pageId }, "*");
+  }
+  function watch(refresh) {
+    if (typeof refresh !== "function") return Promise.reject(new TypeError("Bridge.watch requires a refresh function"));
+    var active = true, ready = false, running = false, queued = [];
+    function schedule(initial) {
+      running = true;
+      var batch = queued.splice(0);
+      return Promise.resolve().then(function () { return refresh(batch); }).then(function (value) {
+        running = false;
+        if (queued.length) void schedule(false);
+        return value;
+      }, function (err) {
+        running = false;
+        if (queued.length) void schedule(false);
+        if (initial) throw err;
+        console.error("Bridge.watch refresh failed", err);
+      });
+    }
+    function onChange(event) {
+      if (!active) return;
+      queued.push(event);
+      if (ready && !running) void schedule(false);
+    }
+    return window.Bridge.subscribe(onChange).then(function () {
+      ready = true;
+      return schedule(true);
+    }, function (err) {
+      active = false;
+      throw err;
+    });
+  }
+  window.addEventListener("message", function (e) {
+    if (e.source !== window.parent) return; // only trust the shell
+    var m = e.data;
+    if (!m || (m.bridge !== PROTO && m.bridge !== ACTION_PROTO)) return;
+    if (m.type === "change") { subs.forEach(function (cb) { cb(m.event); }); return; }
+    var p = pending[m.id];
+    if (!p) return;
+    delete pending[m.id];
+    if (m.type === "error") {
+      var err = new Error((m.error && m.error.message) || "bridge error");
+      err.code = m.error && m.error.code; // one of USAGE, FORBIDDEN, REVOKED, TOO_LARGE, RUNTIME, NOT_FOUND
+      p.reject(err);
+    } else p.resolve(m.result);
+  });
+  window.Bridge = {
+    hello: function () { return send("hello"); },
+    query: function (params) { return send("query", { params: params }); },
+    read: function (docId) { return send("read", { docId: docId }); },
+    readVersioned: function (docId) { return send("read-versioned", { docId: docId }, ACTION_PROTO); },
+    renderDocument: function (docId) { return send("render-document", { docId: docId }); },
+    edges: function (params) { return send("edges", { params: params }); },
+    graph: function (includeBodies) { return send("graph", includeBodies === undefined ? undefined : { includeBodies: includeBodies === true }); },
+    host: function (capability, input) {
+      return send("host", input === undefined ? { capability: capability } : { capability: capability, input: input });
+    },
+    openPage: openPage,
+    subscribe: function (cb) { subs.push(cb); return send("subscribe"); },
+    watch: watch
+  };
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var KINDS = {
+    plan: "My Home Maintenance Plan", service: "My Home Service Record",
+    home: "My Home Home", space: "My Home Space", asset: "My Home Asset"
+  };
+  var REQUEST_TIMEOUT_MS = 20000, READS_IN_FLIGHT = 4, SERVICE_LIMIT = 10, MAX_SCAN = 1048576;
+  var app = document.getElementById("app"), statusLine = document.getElementById("status");
+  var host = { limit: null, caps: [], frame: false };
+  var readCache = {};          // "id@version" -> links [{ text, to }]
+  var unread = {};             // ids whose read got no reply in this load
+  var state = null;            // the last computed model
+  var filter = { space: "", asset: "" };
+  var showAllServices = false;
+  var watching = false;
+
+  // ---- small helpers ------------------------------------------------------------------------
+  function h(tag, attrs, children) {
+    var el = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (attrs[k] === null || attrs[k] === undefined || attrs[k] === false) continue;
+      if (k === "text") el.textContent = attrs[k];
+      else if (k === "onclick" || k === "onchange") el[k] = attrs[k];
+      else el.setAttribute(k, attrs[k] === true ? "" : attrs[k]);
+    }
+    (children || []).forEach(function (c) { if (c) el.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return el;
+  }
+  function str(v) { return typeof v === "string" ? v.trim() : ""; }
+  function timed(promise) {
+    return new Promise(function (resolve, reject) {
+      var t = setTimeout(function () { var e = new Error("no reply"); e.code = "TIMEOUT"; reject(e); }, REQUEST_TIMEOUT_MS);
+      promise.then(function (v) { clearTimeout(t); resolve(v); }, function (e) { clearTimeout(t); reject(e); });
+    });
+  }
+  function validDate(v) {
+    if (typeof v !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
+    var y = +v.slice(0, 4), m = +v.slice(5, 7), d = +v.slice(8, 10);
+    var t = Date.UTC(y, m - 1, d), back = new Date(t);
+    return back.getUTCFullYear() === y && back.getUTCMonth() === m - 1 && back.getUTCDate() === d ? v : null;
+  }
+  function dayNumber(iso) { return Math.round(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 86400000); }
+  function showDate(iso) {
+    return new Date(dayNumber(iso) * 86400000).toLocaleDateString("en-US", { timeZone: "UTC", month: "short", day: "numeric", year: "numeric" });
+  }
+  function validZone(z) {
+    z = str(z);
+    if (!z) return null;
+    try { new Intl.DateTimeFormat("en-US", { timeZone: z }); return z; } catch (e) { return null; }
+  }
+  function todayIn(zone) {
+    var parts = {};
+    new Intl.DateTimeFormat("en-US", { timeZone: zone, year: "numeric", month: "2-digit", day: "2-digit" })
+      .formatToParts(new Date()).forEach(function (p) { parts[p.type] = p.value; });
+    return parts.year + "-" + parts.month + "-" + parts.day;
+  }
+  function localToday() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
+  function byTitle(a, b) { return a.title.localeCompare(b.title); }
+
+  // Labeled body links, as the bundle stores typed links: [label](relative-or-/absolute.md).
+  // Images, code, external and in-page targets are not links.
+  function bodyLinks(docId, body) {
+    if (typeof body !== "string") return [];
+    // Bodies above 1 MiB are refused by every host; never scan more than that.
+    if (body.length > MAX_SCAN) body = body.slice(0, MAX_SCAN);
+    var text = body.replace(/```[\s\S]*?```/g, "").replace(/`[^`\n]*`/g, "");
+    var dir = docId.indexOf("/") >= 0 ? docId.slice(0, docId.lastIndexOf("/")) : "";
+    var out = [], re = /(!?)\[([^[\]\n]*)\]\(([^()\s]+)\)/g, m;
+    while ((m = re.exec(text))) {
+      var href = m[3].split("#")[0];
+      if (m[1] || !href || /^[a-z][a-z0-9+.-]*:/i.test(href) || !/\.md$/.test(href)) continue;
+      var segs = (href.charAt(0) === "/" ? href.slice(1) : (dir ? dir + "/" : "") + href).split("/"), stack = [];
+      segs.forEach(function (s) { if (s === "" || s === ".") return; if (s === "..") stack.pop(); else stack.push(s); });
+      out.push({ text: m[2].trim().toLowerCase(), to: stack.join("/").replace(/\.md$/, "") });
+    }
+    return out;
+  }
+  function linked(links, label) {
+    for (var i = 0; i < links.length; i++) if (links[i].text === label) return links[i].to;
+    return null;
+  }
+
+  // ---- bridge reads -------------------------------------------------------------------------
+  function queryKind(type) {
+    return timed(window.Bridge.query({ type: type, limit: 0 })).then(function (r) {
+      var rows = (r && Array.isArray(r.rows)) ? r.rows : [];
+      var cut = r && r.more === true ||
+        (host.limit !== null && rows.length >= host.limit) ||
+        (host.caps.indexOf("query.count") >= 0 && typeof r.count === "number" && r.count > rows.length);
+      return { rows: rows, cut: !!cut };
+    });
+  }
+  // A missing or unreadable document answers NOT_FOUND on some hosts and RUNTIME on others:
+  // either way the record simply has no known links. A read with no reply is not cached, so the
+  // next refresh tries again; meanwhile its row is drawn without what it is about. Reads are
+  // cached by id and version for the life of the View, so a refresh only reads what changed.
+  function readLinks(rows) {
+    var todo = rows.filter(function (r) { return !readCache[r.id + "@" + r.version]; }), i = 0;
+    function next() {
+      if (i >= todo.length) return Promise.resolve();
+      var row = todo[i++];
+      return timed(window.Bridge.read(row.id)).then(function (doc) {
+        readCache[row.id + "@" + row.version] = bodyLinks(row.id, doc && doc.body);
+      }, function (err) {
+        if (err && err.code === "TIMEOUT") unread[row.id] = true;
+        else readCache[row.id + "@" + row.version] = [];
+      }).then(next);
+    }
+    var workers = [];
+    for (var w = 0; w < Math.min(READS_IN_FLIGHT, todo.length); w++) workers.push(next());
+    return Promise.all(workers);
+  }
+
+  // Queries first, then the lists are drawn at once; what each record is about fills in as its
+  // typed links are read (a query row carries no links, so that costs one read per record).
+  function load(isCurrent, show) {
+    var q = {}, kinds = Object.keys(KINDS);
+    unread = {};
+    return Promise.all(kinds.map(function (k) { return queryKind(KINDS[k]); })).then(function (results) {
+      kinds.forEach(function (k, i) { q[k] = results[i]; });
+      if (q.plan.rows.length === 0 && q.service.rows.length === 0) { show({ empty: true }, true); return; }
+      var names = {};
+      ["home", "space", "asset"].forEach(function (k) {
+        q[k].rows.forEach(function (r) { names[r.id] = { kind: k, title: str(r.frontmatter && r.frontmatter.title) || "Untitled", fm: r.frontmatter || {} }; });
+      });
+      var today = localToday(), yearAgo = dayNumber(today) - 365;
+      var plans = q.plan.rows.filter(function (r) { return str(r.frontmatter && r.frontmatter.plan_status) !== "retired"; });
+      var services = q.service.rows.filter(function (r) {
+        var d = serviceDate(r.frontmatter || {});
+        return d && dayNumber(d) <= dayNumber(today) && dayNumber(d) > yearAgo;
+      });
+      var all = plans.concat(services, q.asset.rows, q.space.rows);
+      function links() {
+        var m = {};
+        all.forEach(function (r) { var c = readCache[r.id + "@" + r.version]; if (c) m[r.id] = c; });
+        return m;
+      }
+      function draw(plansLinked, done) {
+        if (!isCurrent()) return;
+        var next = model(q, names, links(), plans, services, today, plansLinked);
+        // A plan count is final only once each plan's links (and so its Home's time zone) are read;
+        // a filtered visit count only once every visit's links are read.
+        next.plansFinal = plansLinked;
+        next.allFinal = !!done;
+        show(next, done);
+      }
+      // The Assets and Spaces these records point at, for names and for the Home's time zone.
+      function placements(records) {
+        var L = links(), assetIds = {}, spaceIds = {};
+        function wantSpace(id) { if (id && names[id] && names[id].kind === "space") spaceIds[id] = true; }
+        records.forEach(function (r) {
+          var a = linked(L[r.id] || [], "asset");
+          if (a && names[a] && names[a].kind === "asset") assetIds[a] = true;
+          wantSpace(linked(L[r.id] || [], "space"));
+          wantSpace(linked(L[r.id] || [], "performed in space"));
+        });
+        var assets = q.asset.rows.filter(function (r) { return assetIds[r.id]; });
+        return readLinks(assets).then(function () {
+          var L2 = links();
+          assets.forEach(function (r) { wantSpace(linked(L2[r.id] || [], "located in")); });
+          return readLinks(q.space.rows.filter(function (r) { return spaceIds[r.id]; }));
+        });
+      }
+      // On a refresh the page already holds final numbers: wait for new final ones instead.
+      if (!state || state.empty || !state.plansFinal) draw(false);
+      return readLinks(plans).then(function () { return placements(plans); }).then(function () {
+        draw(true);
+        if (!isCurrent()) return;
+        return readLinks(services).then(function () { return placements(services); }).then(function () { draw(true, true); });
+      });
+    });
+  }
+
+  function serviceDate(fm) {
+    var d = validDate(fm.occurred_on);
+    if (d) return d;
+    var at = typeof fm.occurred_at === "string" ? fm.occurred_at : "";
+    return /^\d{4}-\d{2}-\d{2}T[^Z+-]*([Zz]|[+-]\d{2}:\d{2})$/.test(at) && !isNaN(Date.parse(at)) ? validDate(at.slice(0, 10)) : null;
+  }
+
+  // ---- the domain rules (references/my-home-maintenance-v1.md) ------------------------------
+  function model(q, names, links, plans, services, today, plansLinked) {
+    function title(id, kind) { return id && names[id] && names[id].kind === kind ? names[id].title : null; }
+    function homeOf(id) {
+      if (!id || !names[id]) return null;
+      var n = names[id];
+      if (n.kind === "home") return id;
+      if (n.kind === "space") return title(linked(links[id] || [], "home"), "home") ? linked(links[id], "home") : null;
+      if (n.kind === "asset") {
+        var direct = linked(links[id] || [], "at home");
+        if (title(direct, "home")) return direct;
+        return homeOf(linked(links[id] || [], "located in"));
+      }
+      return null;
+    }
+    function subject(own) {
+      var asset = linked(own, "asset"), space = linked(own, "space") || linked(own, "performed in space"), home = linked(own, "home");
+      var assetTitle = title(asset, "asset");
+      if (!assetTitle) asset = null;
+      if (!title(space, "space")) space = null;
+      if (!space && asset) { var placed = linked(links[asset] || [], "located in"); if (title(placed, "space")) space = placed; }
+      var parts = [assetTitle, title(space, "space")].filter(Boolean);
+      if (!parts.length && title(home, "home")) parts.push(title(home, "home"));
+      return { asset: asset, space: space, about: parts.join(" · "), home: homeOf(asset) || homeOf(space) || (title(home, "home") ? home : null) };
+    }
+
+    var rows = [];
+    plans.forEach(function (r) {
+      var fm = r.frontmatter || {}, s = subject(links[r.id] || []);
+      var row = { id: r.id, kind: "plan", title: str(fm.title) || "Untitled plan", about: s.about, asset: s.asset, space: s.space, notes: [] };
+      if (unread[r.id]) row.notes.push("Some details couldn\u2019t load.");
+      var status = str(fm.plan_status), scheduleText = str(fm.schedule_text);
+      if (status !== "enabled") {
+        row.section = "later";
+        row.pill = { text: status === "paused" ? "Paused" : "Not active", tone: "quiet" };
+        row.notOn = status !== "paused";
+        if (scheduleText) row.lines = [scheduleText];
+      } else if (str(fm.schedule_mode) !== "manual_date") {
+        row.section = "later";
+        row.lines = [scheduleText || "No date"];
+      } else {
+        var due = null, hasOverride = fm.override_due_on !== undefined && fm.override_due_on !== null && fm.override_due_on !== "" ||
+          str(fm.override_basis) !== "";
+        if (hasOverride) {
+          if (validDate(fm.override_due_on) && str(fm.override_basis)) {
+            due = fm.override_due_on;
+            var original = validDate(fm.next_due_on);
+            row.notes.push("Rescheduled: " + str(fm.override_basis) + (original ? " \u00b7 Originally " + showDate(original) : ""));
+          } else {
+            row.section = "later";
+            row.lines = ["Rescheduled date incomplete"];
+          }
+        } else {
+          due = validDate(fm.next_due_on);
+          if (!due) { row.section = "later"; row.lines = [scheduleText || "No date"]; }
+        }
+        if (due) {
+          row.due = due;
+          var zone = validZone(fm.schedule_timezone) || (s.home && names[s.home] ? validZone(names[s.home].fm.timezone) : null);
+          if (!zone) {
+            // Not classified, so neither overdue nor later: its own section. While the plan's links
+            // are still being read its Home may yet supply a time zone, so the row waits for them.
+            row.section = plansLinked ? "zone" : null;
+            row.lines = [showDate(due)];
+          } else {
+            var days = dayNumber(due) - dayNumber(todayIn(zone));
+            if (days < 0) {
+              row.section = "overdue";
+              row.pill = { text: plural(-days, "day", "days") + " overdue", tone: "overdue" };
+              row.lines = ["Was due " + showDate(due)];
+            } else if (days <= 30) {
+              row.section = "soon";
+              row.pill = { text: days === 0 ? "Today" : days === 1 ? "Tomorrow" : "In " + days + " days", tone: "soon" };
+              row.lines = [showDate(due)];
+            } else {
+              row.section = "later";
+              row.lines = [showDate(due)];
+            }
+          }
+          row.sortDay = dayNumber(due);
+        }
+      }
+      if (row.section) rows.push(row);
+    });
+    var RESULTS = { failed: "Failed", partial: "Partial", not_performed: "Not performed", unknown: "Result unknown" };
+    services.forEach(function (r) {
+      var fm = r.frontmatter || {}, s = subject(links[r.id] || []), d = serviceDate(fm), result = str(fm.result);
+      rows.push({
+        id: r.id, kind: "service", section: "services", title: str(fm.title) || "Untitled service record",
+        about: s.about, asset: s.asset, space: s.space, notes: unread[r.id] ? ["Some details couldn\u2019t load."] : [], lines: [showDate(d)], sortDay: dayNumber(d),
+        pill: RESULTS[result] ? { text: RESULTS[result], tone: result === "unknown" ? "quiet" : "result" } : null
+      });
+    });
+
+    // One note when any read may have been cut short.
+    var cut = [], notes = [];
+    if (q.plan.cut) cut.push(plural(q.plan.rows.length, "plan", "plans"));
+    if (q.service.cut) cut.push(plural(q.service.rows.length, "service record", "service records"));
+    if (cut.length) notes.push("Showing the first " + cut.join(" and ") + ". Some may be missing.");
+    else if (q.home.cut || q.space.cut || q.asset.cut) notes.push("Some home, space or asset names may be missing.");
+    function choices(key, kind) {
+      var seen = {}, list = [];
+      rows.forEach(function (r) { if (r[key] && !seen[r[key]]) { seen[r[key]] = true; list.push({ id: r[key], title: title(r[key], kind) }); } });
+      return list.sort(byTitle);
+    }
+    return { rows: rows, notes: notes, spaces: choices("space", "space"), assets: choices("asset", "asset") };
+  }
+
+  // ---- rendering ----------------------------------------------------------------------------
+  function sections(rows) {
+    var by = { zone: [], overdue: [], soon: [], later: [], services: [] };
+    rows.forEach(function (r) { by[r.section].push(r); });
+    by.zone.sort(function (a, b) { return a.sortDay - b.sortDay || byTitle(a, b); });
+    by.overdue.sort(function (a, b) { return a.sortDay - b.sortDay || byTitle(a, b); });
+    by.soon.sort(function (a, b) { return a.sortDay - b.sortDay || byTitle(a, b); });
+    by.later.sort(function (a, b) {
+      var ad = a.sortDay !== undefined, bd = b.sortDay !== undefined;
+      if (ad !== bd) return ad ? -1 : 1;
+      return (ad ? a.sortDay - b.sortDay : 0) || byTitle(a, b);
+    });
+    by.services.sort(function (a, b) { return b.sortDay - a.sortDay || byTitle(a, b); });
+    return by;
+  }
+  var SECTIONS = [
+    { key: "zone", heading: "Needs a time zone", lead: "Some dates can\u2019t be marked overdue or due soon yet. Set a time zone on your home and they will be." },
+    { key: "overdue", heading: "Overdue", tile: "Overdue" },
+    { key: "soon", heading: "Due in the next 30 days", tile: "Due in the next 30 days" },
+    { key: "later", heading: "Later or no date", tile: "Later or no date" },
+    { key: "services", heading: "Recent service visits", tile: "Service visits (past 12 months)" }
+  ];
+
+  function rowItem(r) {
+    var canOpen = host.caps.indexOf("record.open") >= 0;
+    var name = canOpen
+      ? h("a", { "class": "title", href: "#", "data-key": "open:" + r.id, text: r.title, onclick: function (e) { e.preventDefault(); openRecord(r.id); } })
+      : h("span", { "class": "title", text: r.title });
+    var left = h("div", null, [name]);
+    if (r.about) left.appendChild(h("p", { "class": "about muted", text: r.about }));
+    r.notes.forEach(function (n) { left.appendChild(h("p", { "class": "about muted", text: n })); });
+    var when = h("div", { "class": "when" });
+    if (r.pill) when.appendChild(h("span", { "class": "pill " + r.pill.tone, text: r.pill.text }));
+    (r.lines || []).forEach(function (l, i) { when.appendChild(h("span", { "class": i ? "muted" : null, text: l })); });
+    return h("li", null, [left, when]);
+  }
+
+  function render() {
+    app.textContent = "";
+    if (!state) return;
+    if (state.empty) {
+      app.appendChild(h("div", { "class": "card" }, [
+        h("h2", { text: "Nothing to keep up with yet" }),
+        h("p", { text: "Add a maintenance plan with a due date, for example \u201cReplace furnace filter, due March 1\u201d, and it will show up here." })
+      ]));
+      return;
+    }
+    state.notes.forEach(function (n) { app.appendChild(h("p", { "class": "note muted", text: n })); });
+    var rows = state.rows.filter(function (r) {
+      return (!filter.space || r.space === filter.space) && (!filter.asset || r.asset === filter.asset);
+    });
+    var by = sections(rows), filtered = !!(filter.space || filter.asset);
+
+    var tiles = h("ul", { "class": "tiles", "aria-label": "Counts" });
+    SECTIONS.forEach(function (s) {
+      if (!s.tile) return;
+      var n = by[s.key].length, final = s.key === "services" ? state.allFinal || !filtered : state.plansFinal;
+      var tone = final && s.key === "overdue" && n > 0 ? " warn" : "";
+      // Never show a number before it is final: a placeholder, not "0 Overdue".
+      var inner = final ? [h("strong", { text: String(n) }), h("span", { text: s.tile })]
+        : [h("strong", { "aria-hidden": "true", text: "\u2013" }), h("span", { text: s.tile }), h("span", { "class": "visually-hidden", text: "(still counting)" })];
+      tiles.appendChild(h("li", null, [final && n > 0
+        ? h("a", { "class": "tile" + tone, href: "#" + s.key, "data-key": "tile:" + s.key, onclick: function (e) { e.preventDefault(); jump(s.key); } }, inner)
+        : h("div", { "class": "tile" }, inner)]));
+    });
+    app.appendChild(tiles);
+
+    if (!state.plansFinal) app.appendChild(h("p", { "class": "muted none", text: "Loading\u2026" }));
+    if (state.plansFinal && (state.spaces.length > 1 || state.assets.length > 1 || filter.space || filter.asset)) {
+      var bar = h("div", { "class": "filters" });
+      if (state.spaces.length > 1) bar.appendChild(selectFor("space", "Space", "All spaces", state.spaces));
+      if (state.assets.length > 1) bar.appendChild(selectFor("asset", "Asset", "All assets", state.assets));
+      if (filter.space || filter.asset) bar.appendChild(h("button", { "class": "link", type: "button", "data-key": "clear", text: "Clear", onclick: function () {
+        filter.space = ""; filter.asset = ""; render(); focusFirst("select");
+      } }));
+      app.appendChild(bar);
+    }
+
+    var any = false;
+    SECTIONS.forEach(function (s) {
+      var list = by[s.key];
+      if (!list.length || (s.key !== "services" && !state.plansFinal)) return;
+      any = true;
+      var shown = s.key === "services" && !showAllServices ? list.slice(0, SERVICE_LIMIT) : list;
+      var ul = h("ul", { "class": "rows" + (s.key === "overdue" ? " warn" : ""), "aria-labelledby": "h-" + s.key });
+      shown.forEach(function (r) { ul.appendChild(rowItem(r)); });
+      var section = h("section", null, [h("h2", { id: "h-" + s.key, tabindex: "-1", text: s.heading })]);
+      if (s.lead) section.appendChild(h("p", { "class": "notice", text: s.lead }));
+      if (s.key === "later" && list.some(function (r) { return r.notOn; })) {
+        section.appendChild(h("p", { "class": "section-note muted", text: "Plans count toward what\u2019s due once they are marked active and have a due date." }));
+      }
+      section.appendChild(ul);
+      app.appendChild(section);
+      if (s.key === "services" && list.length > SERVICE_LIMIT) {
+        app.appendChild(h("p", { "class": "more" }, [h("button", { "class": "link", type: "button", "data-key": "more", "aria-expanded": showAllServices ? "true" : "false",
+          text: showAllServices ? "Show fewer" : "Show all " + list.length, onclick: function () { showAllServices = !showAllServices; render(); focusFirst(".more button"); } })]));
+      }
+    });
+    if (!any && state.allFinal) app.appendChild(h("p", { "class": "muted none", text: "No plans or service visits match these filters." }));
+  }
+
+  function selectFor(key, label, all, list) {
+    var sel = h("select", { id: "filter-" + key, onchange: function () { filter[key] = sel.value; render(); focusFirst("#filter-" + key); } });
+    sel.appendChild(h("option", { value: "", text: all }));
+    list.forEach(function (c) { sel.appendChild(h("option", { value: c.id, selected: filter[key] === c.id, text: c.title })); });
+    return h("label", { "for": "filter-" + key }, [label, sel]);
+  }
+  function focusFirst(selector) { var el = app.querySelector(selector); if (el) el.focus(); }
+  function jump(key) {
+    var heading = document.getElementById("h-" + key);
+    if (!heading) return;
+    heading.scrollIntoView({ block: "start" });
+    heading.focus({ preventScroll: true });
+  }
+  function openRecord(id) {
+    timed(window.Bridge.host("record.open", { documentId: id })).catch(function (err) { console.error("record.open failed", err && err.code); });
+  }
+
+  function renderError() {
+    say("This view couldn\u2019t load.");
+    app.textContent = "";
+    app.appendChild(h("div", { "class": "card", role: "alert" }, [
+      h("p", { text: "This view couldn’t load. Try again." }),
+      h("button", { "class": "action", type: "button", text: "Retry", onclick: retry })
+    ]));
+  }
+
+  // ---- frame height, for hosts that size the frame to the View ------------------------------
+  var reported = -1;
+  function reportHeight() {
+    if (!host.frame) return;
+    // The body's own height, not the document's: that follows the frame and would never shrink.
+    var height = Math.ceil(document.body.getBoundingClientRect().height);
+    if (height === reported) return;
+    reported = height;
+    timed(window.Bridge.host("frame.resize", { height: height })).catch(function () {});
+  }
+
+  // ---- lifecycle ----------------------------------------------------------------------------
+  // The one live region: short news only, so a screen reader never re-reads the page.
+  function say(text) { if (statusLine.textContent !== text) statusLine.textContent = text; }
+  function focusKey() {
+    var el = document.activeElement;
+    return el && el !== document.body ? (el.getAttribute("data-key") || (el.id ? "#" + el.id : null)) : null;
+  }
+  function restoreFocus(key) {
+    if (!key) return;
+    var found = null;
+    if (key.charAt(0) === "#") found = document.getElementById(key.slice(1));
+    else [].forEach.call(app.querySelectorAll("[data-key]"), function (el) { if (!found && el.getAttribute("data-key") === key) found = el; });
+    if (found) found.focus({ preventScroll: true });
+  }
+  var generation = 0, loadedOnce = false;
+  function refresh() {
+    watching = true;
+    var mine = ++generation, drawn = false;
+    function isCurrent() { return mine === generation; }
+    return load(isCurrent, function (next, done) {
+      if (!isCurrent()) return;
+      state = next;
+      drawn = true;
+      if (filter.space && !state.empty && !state.spaces.some(function (c) { return c.id === filter.space; })) filter.space = "";
+      if (filter.asset && !state.empty && !state.assets.some(function (c) { return c.id === filter.asset; })) filter.asset = "";
+      // Names fill in while the person may be on a link, a button or a filter: keep their focus.
+      var key = focusKey();
+      render();
+      restoreFocus(key);
+      if (done) { say(loadedOnce ? "What\u2019s due updated." : "What\u2019s due loaded."); loadedOnce = true; }
+    }).catch(function (err) {
+      if (!isCurrent()) return;
+      console.error("What's due could not load", err && err.code);
+      // Only failing to load the lists replaces the page; a drawn page stays.
+      if (!drawn) renderError();
+    });
+  }
+  function start() {
+    timed(window.Bridge.hello()).then(function (hello) {
+      var d = hello && hello.host;
+      if (d) {
+        host.caps = Array.isArray(d.capabilities) ? d.capabilities : [];
+        host.limit = d.limits && typeof d.limits.query === "number" && d.limits.query > 0 ? d.limits.query : null;
+        host.frame = !!d.frame && host.caps.indexOf("frame.resize") >= 0;
+        // The host prints the View's name and owns the page's h1: drop ours entirely, so a screen
+        // reader does not hear the title again; the sections' h2s follow the host's h1.
+        if (d.frame && d.frame.title === "host") document.getElementById("title").hidden = true;
+      }
+      if (host.frame && window.ResizeObserver) new ResizeObserver(reportHeight).observe(document.body);
+      return window.Bridge.watch(refresh);
+    }).catch(function (err) {
+      console.error("What's due could not start", err && err.code);
+      renderError();
+    });
+  }
+  function retry() {
+    say("Loading.");
+    app.textContent = "";
+    app.appendChild(h("p", { "class": "muted", text: "Loading…" }));
+    if (watching) refresh(); else start();
+  }
+  start();
+})();
+</script>
+</body>
+</html>

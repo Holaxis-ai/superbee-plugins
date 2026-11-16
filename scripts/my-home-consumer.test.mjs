@@ -76,12 +76,16 @@ test('My Home: installed public artifacts, inert composition and scoped fictiona
       descriptor.descriptorDigest = digest(descriptor);
       descriptors.push(descriptor);
     }
+    // The one View pair the maintenance recipe carries: a registry document and its HTML entry.
+    const viewRegistry = 'views-registry/my-home-whats-due', viewEntry = 'views/my-home-maintenance/whats-due.html';
     function proposed(selection = selected) {
+      const pageFiles = [];
       const observations = selection.map(s => {
         const prepared = prepareRecipeInstall(parsed.get(s.key), {okfVersion: '0.2', now: '2026-01-01T00:00:00.000Z'});
+        for (const page of prepared.pages) pageFiles.push({path: `${page.registry.id}.md`, bytes: stringifyDoc(page.registry.frontmatter, page.registry.body)}, {path: page.entry, bytes: page.html});
         return {id: `${s.key}-proposal`, provider: s.key, scope: 'local', availability: 'available', complete: true, observedVersion: 'synthetic-proposal-not-live-observation', definitions: [...prepared.docs, ...prepared.references.map(r => r.doc)].map(d => ({id: d.id, bytes: stringifyDoc(d.frontmatter, d.body)}))};
       });
-      return {schema: 'recipe-set-preflight/v1', selected: selection, consumers: descriptors, endpoints: descriptors.flatMap(c => c.requirements.map(r => ({id: `${c.id}:${r.id}`, consumer: c.id, requirement: r.id, placement: 'local'}))), observations, placementInventories: [{id: 'synthetic-proposed-placement', scope: 'local', availability: 'available', complete: true, observedVersion: 'synthetic-proposal-not-live-observation', files: observations.flatMap(o => o.definitions.map(d => ({path: `${d.id}.md`, bytes: d.bytes})))}]};
+      return {schema: 'recipe-set-preflight/v1', selected: selection, consumers: descriptors, endpoints: descriptors.flatMap(c => c.requirements.map(r => ({id: `${c.id}:${r.id}`, consumer: c.id, requirement: r.id, placement: 'local'}))), observations, placementInventories: [{id: 'synthetic-proposed-placement', scope: 'local', availability: 'available', complete: true, observedVersion: 'synthetic-proposal-not-live-observation', files: [...observations.flatMap(o => o.definitions.map(d => ({path: `${d.id}.md`, bytes: d.bytes}))), ...pageFiles]}]};
     }
     await t.test('existing preflight handles selected composition, missing base, collisions and unsupported predicates', async () => {
       const ready = await preflightRecipeSet(proposed());
@@ -108,11 +112,13 @@ test('My Home: installed public artifacts, inert composition and scoped fictiona
       for (const key of ['malformed', 'kind_warnings', 'unresolved_links', 'link_type_violations', 'conformance_debt']) assert.equal(state[key], 0, `${key}: ${JSON.stringify(state)}`);
       return state;
     };
-    await t.test('installation creates only seven definitions and static references; repeat preserves customization', async () => {
+    await t.test('installation creates only seven definitions, static references and one read-only View; repeat preserves customization', async () => {
       const before = await clean();
       assert.equal(before.kinds, 7);
       const listing = await native(['list', '--limit', '0']);
-      assert.ok(listing.docs.every(d => d.id.startsWith('conventions/') || d.id.startsWith('references/')));
+      assert.ok(listing.docs.every(d => d.id.startsWith('conventions/') || d.id.startsWith('references/') || d.id === viewRegistry));
+      assert.deepEqual((await native(['view', 'list'])).views.rows.map(v => [v.id, v.access]), [[viewRegistry, 'bundle-read']]);
+      assert.equal(await readFile(path.join(bundle, viewEntry), 'utf8'), await readFile(path.join(root, 'recipes/my-home-maintenance', viewEntry), 'utf8'));
       const observed = proposed();
       for (const observation of observed.observations) {
         for (const definition of observation.definitions) {
@@ -122,6 +128,7 @@ test('My Home: installed public artifacts, inert composition and scoped fictiona
       }
       observed.placementInventories[0].files = [];
       for (const doc of listing.docs) observed.placementInventories[0].files.push({path: `${doc.id}.md`, bytes: await readFile(path.join(bundle, `${doc.id}.md`), 'utf8')});
+      observed.placementInventories[0].files.push({path: viewEntry, bytes: await readFile(path.join(bundle, viewEntry), 'utf8')});
       observed.placementInventories[0].observedVersion = 'native-owned-single-writer-fixture';
       assert.equal((await preflightRecipeSet(observed)).verdict, 'valid', 'actual installed bytes, separately from proposed evidence');
       for (const dir of recipeDirs) assert.equal((await native(['recipe', 'add', dir, '--actor', actor])).changed, false);

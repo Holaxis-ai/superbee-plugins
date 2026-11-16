@@ -16,6 +16,9 @@ same dwelling concept; no live installation or data migration is implied by this
 Release `0.1.1` rewrites each Kind description and adds an `offer` sentence in plain words for
 people choosing a recipe. Fields, links and the operating contracts are unchanged; the precise
 definitions stay in each recipe's reference.
+Maintenance release `0.1.2` adds a read-only "What's due" View: overdue and upcoming Plans and
+recent service visits, following the maintenance reference. Kinds and fields are unchanged; the
+reference gains a short section on what the View shows.
 
 ## Run the executable example
 
