@@ -5,19 +5,8 @@ import {readFile} from 'node:fs/promises';
 const entry = new URL('../recipes/my-home-maintenance/views/my-home-maintenance/whats-due.html', import.meta.url);
 const html = await readFile(entry, 'utf8');
 
-// The View's own link scanner, lifted from the committed entry so the test runs the shipped bytes.
-function scanner() {
-  const start = html.indexOf('  function bodyLinks(');
-  const end = html.indexOf('  function linked(', start);
-  assert.ok(start > 0 && end > start, 'bodyLinks is in the entry');
-  const constant = html.indexOf('MAX_SCAN = ');
-  assert.ok(constant > 0, 'the scan bound is declared');
-  const bound = Number.parseInt(html.slice(constant + 'MAX_SCAN = '.length), 10);
-  return new Function('MAX_SCAN', `${html.slice(start, end)}\nreturn bodyLinks;`)(bound);
-}
-
-// The View's domain rules, lifted the same way: the date helpers, `linked` and `model`.
-function rules(unread = {}) {
+// The View's domain rules, lifted from the committed entry: the date helpers, `linked` and `model`.
+function rules(missing = {}) {
   const slice = (from, to) => {
     const start = html.indexOf(from), end = html.indexOf(to, start);
     assert.ok(start > 0 && end > start, `${from.trim()} is in the entry`);
@@ -25,11 +14,12 @@ function rules(unread = {}) {
   };
   const source = [
     'function str(v) { return typeof v === "string" ? v.trim() : ""; }',
-    slice('  function validDate(', '  // Labeled body links'),
+    slice('  function validDate(', '  // Typed links are the host'),
     slice('  function linked(', '  // ---- bridge reads'),
     slice('  function model(', '  // ---- rendering'),
   ].join('\n');
-  return new Function('unread', `${source}\nreturn {model, todayIn};`)(unread);
+  const fn = new Function(`${source}\nreturn {model, todayIn};`)();
+  return {todayIn: fn.todayIn, model: (...args) => fn.model(...args, missing)};
 }
 
 test('What\'s due: a recorded time zone wins, else the viewer\'s own date classifies the plan', () => {
@@ -67,9 +57,8 @@ test('What\'s due: a recorded time zone wins, else the viewer\'s own date classi
   assert.equal(html.includes('Needs a time zone'), false);
 });
 
-test('What\'s due: a fallback behind an unanswered read on the Home path says so on the row', () => {
-  const unread = {'my-home/assets/a01': true};
-  const {model} = rules(unread);
+test('What\'s due: a fallback behind a record too large to answer on the Home path says so on the row', () => {
+  const {model} = rules({'my-home/assets/a01': 'large'});
   const empty = {rows: [], cut: false};
   const q = {plan: empty, service: empty, home: empty, space: empty, asset: empty};
   const names = {'my-home/assets/a01': {kind: 'asset', title: 'Furnace', fm: {}}};
@@ -81,38 +70,183 @@ test('What\'s due: a fallback behind an unanswered read on the Home path says so
   assert.deepEqual(row({schedule_timezone: 'Europe/London'}).notes, []);
 });
 
-test('What\'s due: typed body links resolve the way the bundle writes them', () => {
-  const bodyLinks = scanner();
-  const body = [
-    '[asset](../assets/a01.md)',
-    '[performed in space](/my-home/spaces/s04.md#top)',
-    '![photo](../assets/a01.md)',
-    '[site](https://example.test/x.md)',
-    '`[asset](../assets/a02.md)`',
-    '```\n[asset](../assets/a03.md)\n```',
-    '[Plan](../maintenance/p01.md)',
-  ].join('\n\n');
-  assert.deepEqual(bodyLinks('my-home/services/v01', body), [
-    {text: 'asset', to: 'my-home/assets/a01'},
-    {text: 'performed in space', to: 'my-home/spaces/s04'},
-    {text: 'plan', to: 'my-home/maintenance/p01'},
-  ]);
-  assert.deepEqual(bodyLinks('my-home/services/v01', undefined), []);
+// The View's load path, lifted from the committed entry (constants through the domain rules) and
+// run against a fake bridge, so the test counts the calls the shipped bytes make.
+function loader(bridge, hello = {edges: true}) {
+  const start = html.indexOf('  var KINDS = {');
+  const end = html.indexOf('  // ---- rendering', start);
+  assert.ok(start > 0 && end > start, 'the load path is in the entry');
+  const document = {getElementById: () => ({})};
+  const make = new Function('document', 'window', `${html.slice(start, end)}
+    host.caps = []; host.edges = ${JSON.stringify(!!hello.edges)};
+    return {load, edgeCache};`);
+  return make(document, {Bridge: bridge});
+}
+function fixture(plans, visits, assets = 10, spaces = 3) {
+  const fm = (title, extra) => ({title, ...extra});
+  const today = new Date().toISOString().slice(0, 10);
+  const rows = {
+    'My Home Maintenance Plan': Array.from({length: plans}, (_, i) => ({id: `my-home/maintenance/p${i}`, version: 'v1',
+      frontmatter: fm(`Plan ${i}`, {plan_status: 'enabled', schedule_mode: 'manual_date', next_due_on: today})})),
+    'My Home Service Record': Array.from({length: visits}, (_, i) => ({id: `my-home/services/v${i}`, version: 'v1', frontmatter: fm(`Visit ${i}`, {occurred_on: today})})),
+    'My Home Home': [{id: 'my-home/homes/h', version: 'v1', frontmatter: fm('Home', {timezone: 'Pacific/Kiritimati'})}],
+    'My Home Space': Array.from({length: spaces}, (_, i) => ({id: `my-home/spaces/s${i}`, version: 'v1', frontmatter: fm(`Space ${i}`)})),
+    'My Home Asset': Array.from({length: assets}, (_, i) => ({id: `my-home/assets/a${i}`, version: 'v1', frontmatter: fm(`Asset ${i}`)})),
+  };
+  const links = [];
+  rows['My Home Maintenance Plan'].forEach((r, i) => links.push({from: r.id, to: `my-home/assets/a${i % assets}`, text: 'asset'}));
+  rows['My Home Service Record'].forEach((r, i) => links.push({from: r.id, to: `my-home/assets/a${i % assets}`, text: 'asset'}));
+  rows['My Home Asset'].forEach((r, i) => links.push({from: r.id, to: `my-home/spaces/s${i % spaces}`, text: 'located in'}));
+  rows['My Home Space'].forEach((r) => links.push({from: r.id, to: 'my-home/homes/h', text: 'home'}));
+  return {rows, links};
+}
+function fakeBridge({rows, links}, answer = (from, out) => ({edges: out, count: out.length})) {
+  const calls = {query: 0, edges: 0, read: 0}, sizes = [];
+  return {
+    calls, sizes,
+    query: async ({type}) => { calls.query++; const list = rows[type] || []; return {rows: list, count: list.length}; },
+    read: async () => { calls.read++; throw Object.assign(new Error('no'), {code: 'NOT_FOUND'}); },
+    edges: async ({from, ...rest}) => {
+      calls.edges++; sizes.push(from.length);
+      assert.deepEqual(Object.keys(rest), [], 'asks by from only');
+      assert.ok(Array.isArray(from) && from.length >= 1 && from.length <= 32, '1 to 32 ids per call');
+      return answer(from, links.filter((l) => !l || typeof l.from !== 'string' || from.includes(l.from)));
+    },
+  };
+}
+async function draw(bridge, hello) {
+  const {load} = loader(bridge, hello);
+  const shown = [];
+  await load(() => true, (next, done) => shown.push({next, done}));
+  return shown;
+}
+
+test('What\'s due: 300 plans and 300 visits take 23 edges calls of at most 32 ids, and no reads', async () => {
+  const bridge = fakeBridge(fixture(300, 300, 100, 30));
+  const shown = await draw(bridge);
+  assert.deepEqual(bridge.calls, {query: 5, edges: 23, read: 0});
+  assert.equal(Math.ceil(730 / 32), 23);
+  const last = shown.at(-1).next;
+  assert.equal(shown.at(-1).done, true);
+  // Placed through asset -> space -> home, and classified in the Home's zone.
+  const p0 = last.rows.find((r) => r.id === 'my-home/maintenance/p0');
+  assert.equal(p0.about, 'Asset 0 · Space 0');
+  assert.deepEqual(last.notes, []);
+  // Tiles never show a plan number before the plan-side calls are done.
+  assert.equal(shown[0].next.plansFinal, false);
 });
 
-test('What\'s due: a 1 MiB hostile body scans in well under a second and the scan is bounded', () => {
-  const bodyLinks = scanner();
-  const size = 1024 * 1024;
-  const fill = (unit) => unit.repeat(Math.ceil(size / unit.length)).slice(0, size);
-  for (const unit of ['[](', '[', '](', '(', '[a](b', '```', '`', '[a](b(c']) {
-    const body = fill(unit) + '\n[asset](../assets/a01.md)';
-    const began = performance.now();
-    bodyLinks('my-home/maintenance/p01', body);
-    const took = performance.now() - began;
-    assert.ok(took < 500, `${JSON.stringify(unit)} took ${took.toFixed(0)} ms`);
+test('What\'s due: a TOO_LARGE answer splits the call in half and retries, down to one id', async () => {
+  const data = fixture(20, 0, 10, 2);
+  let first = true;
+  const bridge = fakeBridge(data, (from, out) => {
+    if (first) { first = false; throw Object.assign(new Error('too many'), {code: 'TOO_LARGE'}); }
+    if (from.includes('my-home/maintenance/p3')) throw Object.assign(new Error('too many'), {code: 'TOO_LARGE'});
+    return {edges: out, count: out.length};
+  });
+  const last = (await draw(bridge)).at(-1).next;
+  assert.deepEqual(bridge.sizes, [32, 16, 8, 4, 2, 2, 1, 1, 4, 8, 16]);
+  const p3 = last.rows.find((r) => r.id === 'my-home/maintenance/p3');
+  assert.deepEqual(p3.notes, ['Some details couldn’t load.']);
+  assert.equal(p3.about, '');
+  assert.equal(last.rows.find((r) => r.id === 'my-home/maintenance/p2').about, 'Asset 2 · Space 0');
+  assert.deepEqual(last.notes, [], 'a record too large to answer is not a refusal');
+});
+
+test('What\'s due: a refused call or a host without edges draws records without placement, said once', async () => {
+  const refusing = fakeBridge(fixture(40, 5), () => { throw Object.assign(new Error('indexing'), {code: 'RUNTIME'}); });
+  const refused = (await draw(refusing)).at(-1).next;
+  assert.equal(refusing.calls.edges, 2);
+  assert.deepEqual(refused.notes, ['Can’t show what some items are about right now.']);
+  // Every row is marked too: its links could not be read.
+  assert.ok(refused.rows.every((r) => r.about === '' && r.notes.includes('Some details couldn\u2019t load.')));
+
+  const older = fakeBridge(fixture(40, 5));
+  const shown = await draw(older, {edges: false});
+  assert.deepEqual(older.calls, {query: 5, edges: 0, read: 0}, 'no reads and no link parsing on such hosts');
+  assert.deepEqual(shown.at(-1).next.notes, ['Can’t show what some items are about right now.']);
+  // Without placement the plan falls back to its own zone, else the viewer's: still classified.
+  assert.ok(shown.at(-1).next.rows.some((r) => r.section === 'soon' || r.section === 'overdue'));
+});
+
+test('What\'s due: a refused edges call classifies by the viewer\'s date and marks the row', async () => {
+  const {todayIn} = rules();
+  const kiritimati = todayIn('Pacific/Kiritimati'), pagoPago = todayIn('Pacific/Pago_Pago');
+  assert.notEqual(kiritimati, pagoPago, 'the Home\'s "today" differs from the viewer\'s');
+  const empty = {rows: [], cut: false};
+  const q = {plan: empty, service: empty, home: empty, space: empty, asset: empty};
+  const names = {
+    'my-home/homes/h': {kind: 'home', title: 'Home', fm: {timezone: 'Pacific/Kiritimati'}},
+    'my-home/spaces/s': {kind: 'space', title: 'Porch', fm: {}},
+    'my-home/assets/a': {kind: 'asset', title: 'Fridge', fm: {}},
+  };
+  const plan = {id: 'my-home/maintenance/p', version: '1', frontmatter: {title: 'p', plan_status: 'enabled', schedule_mode: 'manual_date', next_due_on: pagoPago}};
+  const links = {
+    'my-home/maintenance/p': [{text: 'asset', to: 'my-home/assets/a'}],
+    'my-home/assets/a': [{text: 'located in', to: 'my-home/spaces/s'}],
+    'my-home/spaces/s': [{text: 'home', to: 'my-home/homes/h'}],
+  };
+  // All links known: in the Home's zone it was due yesterday.
+  const known = rules().model(q, names, links, [plan], [], pagoPago).rows[0];
+  assert.equal(known.section, 'overdue');
+  assert.deepEqual(known.notes, []);
+  // The plan's, its asset's or its space's links refused: the viewer's date decides, and the row says so.
+  for (const id of ['my-home/assets/a', 'my-home/spaces/s', 'my-home/maintenance/p']) {
+    const partial = {...links};
+    delete partial[id];
+    const row = rules({[id]: 'refused'}).model(q, names, partial, [plan], [], pagoPago).rows[0];
+    assert.equal(row.pill.text, 'Today', id);
+    assert.deepEqual(row.notes, ['Some details couldn’t load.'], id);
   }
-  // Past the bound nothing more is read, so a link after 1 MiB is not seen.
-  assert.deepEqual(bodyLinks('my-home/maintenance/p01', fill(' ') + '[asset](../assets/a01.md)'), []);
+
+  // RUNTIME on every edges call (a bundle the host never indexed): the page settles with final
+  // numbers, every row is marked once and the page line shows once.
+  const bridge = fakeBridge(fixture(40, 5), () => { throw Object.assign(new Error('Links are not indexed'), {code: 'RUNTIME'}); });
+  const last = (await draw(bridge)).at(-1);
+  assert.equal(last.done, true);
+  assert.equal(last.next.plansFinal, true);
+  assert.deepEqual(last.next.notes, ['Can’t show what some items are about right now.']);
+  assert.ok(last.next.rows.every((r) => r.notes.filter((n) => n === 'Some details couldn’t load.').length === 1));
+});
+
+test('What\'s due: two different targets for one label leave the subject unresolved', () => {
+  const empty = {rows: [], cut: false};
+  const q = {plan: empty, service: empty, home: empty, space: empty, asset: empty};
+  const names = {'my-home/assets/a': {kind: 'asset', title: 'Fridge', fm: {}}, 'my-home/assets/z': {kind: 'asset', title: 'Zed', fm: {}}};
+  const plan = {id: 'my-home/maintenance/p', version: '1', frontmatter: {title: 'p'}};
+  const row = (own) => rules().model(q, names, {'my-home/maintenance/p': own}, [plan], [], '2026-11-16').rows[0];
+  const two = row([{text: 'asset', to: 'my-home/assets/a'}, {text: 'asset', to: 'my-home/assets/z'}]);
+  assert.equal(two.asset, null);
+  assert.equal(two.about, '');
+  // A dangling first target does not decide it either.
+  assert.equal(row([{text: 'asset', to: 'my-home/assets/gone'}, {text: 'asset', to: 'my-home/assets/z'}]).asset, null);
+  // The same target written twice is one subject.
+  const same = row([{text: 'asset', to: 'my-home/assets/z'}, {text: 'asset', to: 'my-home/assets/z'}]);
+  assert.equal(same.asset, 'my-home/assets/z');
+  assert.equal(same.about, 'Zed');
+});
+
+test('What\'s due: labels are matched exactly and hostile text or targets place nothing', async () => {
+  const data = fixture(1, 0, 1, 1);
+  data.links = data.links.filter((l) => l.from !== 'my-home/maintenance/p0');
+  for (const text of ['Asset', ' asset', 'asset ', 'ASSET', '<img src=x onerror=alert(1)>', '__proto__', 'constructor', 'x'.repeat(1024)]) {
+    data.links.push({from: 'my-home/maintenance/p0', to: 'my-home/assets/a0', text});
+  }
+  data.links.push({from: 'my-home/maintenance/p0', to: '__proto__', text: 'space'}, {from: 'my-home/maintenance/p0', to: 'constructor', text: 'home'},
+    {from: 'my-home/maintenance/p0', to: 'my-home/assets/a0', text: 7}, {from: 'elsewhere/x', to: 'my-home/assets/a0', text: 'asset'}, null);
+  const last = (await draw(fakeBridge(data))).at(-1).next;
+  const p0 = last.rows.find((r) => r.id === 'my-home/maintenance/p0');
+  assert.equal(p0.about, '');
+  assert.equal(p0.asset, null);
+  assert.equal(p0.space, null);
+  // The one exact label does place it.
+  data.links.push({from: 'my-home/maintenance/p0', to: 'my-home/assets/a0', text: 'asset'});
+  const placed = (await draw(fakeBridge(data))).at(-1).next.rows.find((r) => r.id === 'my-home/maintenance/p0');
+  assert.equal(placed.about, 'Asset 0 · Space 0');
+});
+
+test('What\'s due: the View keeps no link parser of its own', () => {
+  for (const gone of ['bodyLinks', 'Bridge.read(', 'MAX_SCAN', 'toLowerCase']) assert.equal(html.includes(gone), false, `still has ${gone}`);
 });
 
 test('What\'s due: the host\'s light or dark wins over the device, and without one the device decides', () => {

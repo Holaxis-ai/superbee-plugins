@@ -166,11 +166,12 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
     plan: "My Home Maintenance Plan", service: "My Home Service Record",
     home: "My Home Home", space: "My Home Space", asset: "My Home Asset"
   };
-  var REQUEST_TIMEOUT_MS = 20000, READS_IN_FLIGHT = 4, SERVICE_LIMIT = 10, MAX_SCAN = 1048576;
+  var REQUEST_TIMEOUT_MS = 20000, EDGES_IN_FLIGHT = 4, EDGES_PER_CALL = 32, SERVICE_LIMIT = 10;
   var app = document.getElementById("app"), statusLine = document.getElementById("status");
-  var host = { limit: null, caps: [], frame: false };
-  var readCache = {};          // "id@version" -> links [{ text, to }]
-  var unread = {};             // ids whose read got no reply in this load
+  var host = { limit: null, caps: [], frame: false, edges: false };
+  // "id@version" -> { links: [{ text, to }], large }. A record's outgoing links depend only on its
+  // own body, so an answer stays good until the record's version changes.
+  var edgeCache = Object.create(null);
   var state = null;            // the last computed model
   var filter = { space: "", asset: "" };
   var showAllServices = false;
@@ -223,27 +224,15 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
   function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
   function byTitle(a, b) { return a.title.localeCompare(b.title); }
 
-  // Labeled body links, as the bundle stores typed links: [label](relative-or-/absolute.md).
-  // Images, code, external and in-page targets are not links.
-  function bodyLinks(docId, body) {
-    if (typeof body !== "string") return [];
-    // Bodies above 1 MiB are refused by every host; never scan more than that.
-    if (body.length > MAX_SCAN) body = body.slice(0, MAX_SCAN);
-    var text = body.replace(/```[\s\S]*?```/g, "").replace(/`[^`\n]*`/g, "");
-    var dir = docId.indexOf("/") >= 0 ? docId.slice(0, docId.lastIndexOf("/")) : "";
-    var out = [], re = /(!?)\[([^[\]\n]*)\]\(([^()\s]+)\)/g, m;
-    while ((m = re.exec(text))) {
-      var href = m[3].split("#")[0];
-      if (m[1] || !href || /^[a-z][a-z0-9+.-]*:/i.test(href) || !/\.md$/.test(href)) continue;
-      var segs = (href.charAt(0) === "/" ? href.slice(1) : (dir ? dir + "/" : "") + href).split("/"), stack = [];
-      segs.forEach(function (s) { if (s === "" || s === ".") return; if (s === "..") stack.pop(); else stack.push(s); });
-      out.push({ text: m[2].trim().toLowerCase(), to: stack.join("/").replace(/\.md$/, "") });
-    }
-    return out;
-  }
+  // Typed links are the host's: Core's links, exact labels. A label with two different targets is
+  // ambiguous and stays unresolved (no placement); the same target written twice is fine.
   function linked(links, label) {
-    for (var i = 0; i < links.length; i++) if (links[i].text === label) return links[i].to;
-    return null;
+    var to = null;
+    for (var i = 0; i < links.length; i++) if (links[i].text === label) {
+      if (to !== null && links[i].to !== to) return null;
+      to = links[i].to;
+    }
+    return to;
   }
 
   // ---- bridge reads -------------------------------------------------------------------------
@@ -256,36 +245,63 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
       return { rows: rows, cut: !!cut };
     });
   }
-  // A missing or unreadable document answers NOT_FOUND on some hosts and RUNTIME on others:
-  // either way the record simply has no known links. A read with no reply is not cached, so the
-  // next refresh tries again; meanwhile its row is drawn without what it is about. Reads are
-  // cached by id and version for the life of the View, so a refresh only reads what changed.
-  function readLinks(rows) {
-    var todo = rows.filter(function (r) { return !readCache[r.id + "@" + r.version]; }), i = 0;
+  // What each record is about comes from the host's link index, edges({ from: [up to 32 ids] }),
+  // never from reading bodies. Labels are used exactly as the host returns them.
+  // - TOO_LARGE: split the ids in half and ask again; one id still too large is cached as such
+  //   and its row says "Some details couldn't load."
+  // - Any other refusal or no reply (or a host without edges): those records are drawn without
+  //   placement, the page says so once, and the next refresh asks again.
+  // Once a call gets no reply and no other call has answered since it was sent, the host is taken
+  // as silent and the rest of this load is not sent, so a dead host settles in one timeout.
+  function edgeRows(result, rows) {
+    var out = Object.create(null);
+    rows.forEach(function (row) { out[row.id] = []; });
+    (result && Array.isArray(result.edges) ? result.edges : []).forEach(function (e) {
+      if (e && typeof e.from === "string" && typeof e.to === "string" && typeof e.text === "string" && out[e.from]) {
+        out[e.from].push({ text: e.text, to: e.to });
+      }
+    });
+    return out;
+  }
+  function askEdges(rows, trip) {
+    function refuse() { rows.forEach(function (row) { trip.refused[row.id] = true; }); }
+    if (!host.edges || trip.silent) { refuse(); return Promise.resolve(); }
+    var sent = Date.now();
+    return timed(window.Bridge.edges({ from: rows.map(function (row) { return row.id; }) })).then(function (r) {
+      trip.lastReply = Date.now();
+      var got = edgeRows(r, rows);
+      rows.forEach(function (row) { edgeCache[row.id + "@" + row.version] = { links: got[row.id] }; });
+    }, function (err) {
+      var code = err && err.code;
+      if (code === "TIMEOUT") { if (trip.lastReply < sent) trip.silent = true; refuse(); return; }
+      trip.lastReply = Date.now();
+      if (code !== "TOO_LARGE") { refuse(); return; }
+      if (rows.length === 1) { edgeCache[rows[0].id + "@" + rows[0].version] = { links: [], large: true }; return; }
+      var half = Math.ceil(rows.length / 2);
+      return askEdges(rows.slice(0, half), trip).then(function () { return askEdges(rows.slice(half), trip); });
+    }).catch(refuse);
+  }
+  // Runs the calls at most EDGES_IN_FLIGHT at a time; one promise per call, none rejects.
+  function inFlight(calls) {
+    var started = 0, ends = calls.map(function () { var d = {}; d.promise = new Promise(function (resolve) { d.resolve = resolve; }); return d; });
     function next() {
-      if (i >= todo.length) return Promise.resolve();
-      var row = todo[i++];
-      return timed(window.Bridge.read(row.id)).then(function (doc) {
-        readCache[row.id + "@" + row.version] = bodyLinks(row.id, doc && doc.body);
-      }, function (err) {
-        if (err && err.code === "TIMEOUT") unread[row.id] = true;
-        else readCache[row.id + "@" + row.version] = [];
-      }).then(next);
+      if (started >= calls.length) return;
+      var k = started++;
+      calls[k]().then(ends[k].resolve, ends[k].resolve).then(next);
     }
-    var workers = [];
-    for (var w = 0; w < Math.min(READS_IN_FLIGHT, todo.length); w++) workers.push(next());
-    return Promise.all(workers);
+    for (var w = 0; w < Math.min(EDGES_IN_FLIGHT, calls.length); w++) next();
+    return ends.map(function (d) { return d.promise; });
   }
 
-  // Queries first, then the lists are drawn at once; what each record is about fills in as its
-  // typed links are read (a query row carries no links, so that costs one read per record).
+  // Queries first, then the lists are drawn at once; what each record is about fills in from one
+  // round of edges calls over the shown plans and visits and every asset and space (an asset's
+  // and a space's links place records and lead to the Home's time zone). Plan-side ids go first.
   function load(isCurrent, show) {
     var q = {}, kinds = Object.keys(KINDS);
-    unread = {};
     return Promise.all(kinds.map(function (k) { return queryKind(KINDS[k]); })).then(function (results) {
       kinds.forEach(function (k, i) { q[k] = results[i]; });
       if (q.plan.rows.length === 0 && q.service.rows.length === 0) { show({ empty: true }, true); return; }
-      var names = {};
+      var names = Object.create(null);
       ["home", "space", "asset"].forEach(function (k) {
         q[k].rows.forEach(function (r) { names[r.id] = { kind: k, title: str(r.frontmatter && r.frontmatter.title) || "Untitled", fm: r.frontmatter || {} }; });
       });
@@ -295,45 +311,38 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
         var d = serviceDate(r.frontmatter || {});
         return d && dayNumber(d) <= dayNumber(today) && dayNumber(d) > yearAgo;
       });
-      var all = plans.concat(services, q.asset.rows, q.space.rows);
+      var planSide = plans.concat(q.asset.rows, q.space.rows), all = planSide.concat(services);
+      var trip = { refused: Object.create(null), silent: false, lastReply: 0 };
       function links() {
-        var m = {};
-        all.forEach(function (r) { var c = readCache[r.id + "@" + r.version]; if (c) m[r.id] = c; });
-        return m;
+        var m = Object.create(null), missing = Object.create(null);
+        all.forEach(function (r) {
+          var c = edgeCache[r.id + "@" + r.version];
+          if (c) { m[r.id] = c.links; if (c.large) missing[r.id] = "large"; }
+          else if (trip.refused[r.id]) missing[r.id] = "refused";
+        });
+        return { links: m, missing: missing };
       }
       function draw(plansLinked, done) {
         if (!isCurrent()) return;
-        var next = model(q, names, links(), plans, services, today);
-        // A plan count is final only once each plan's links (and so its Home's time zone) are read;
-        // a filtered visit count only once every visit's links are read.
+        var L = links(), next = model(q, names, L.links, plans, services, today, L.missing);
+        // A plan count is final only once each plan's links (and so its Home's time zone) are
+        // known or known to be missing; a filtered visit count only once every visit's are.
         next.plansFinal = plansLinked;
         next.allFinal = !!done;
         show(next, done);
       }
-      // The Assets and Spaces these records point at, for names and for the Home's time zone.
-      function placements(records) {
-        var L = links(), assetIds = {}, spaceIds = {};
-        function wantSpace(id) { if (id && names[id] && names[id].kind === "space") spaceIds[id] = true; }
-        records.forEach(function (r) {
-          var a = linked(L[r.id] || [], "asset");
-          if (a && names[a] && names[a].kind === "asset") assetIds[a] = true;
-          wantSpace(linked(L[r.id] || [], "space"));
-          wantSpace(linked(L[r.id] || [], "performed in space"));
-        });
-        var assets = q.asset.rows.filter(function (r) { return assetIds[r.id]; });
-        return readLinks(assets).then(function () {
-          var L2 = links();
-          assets.forEach(function (r) { wantSpace(linked(L2[r.id] || [], "located in")); });
-          return readLinks(q.space.rows.filter(function (r) { return spaceIds[r.id]; }));
-        });
-      }
       // On a refresh the page already holds final numbers: wait for new final ones instead.
       if (!state || state.empty || !state.plansFinal) draw(false);
-      return readLinks(plans).then(function () { return placements(plans); }).then(function () {
+      var todo = all.filter(function (r) { return !edgeCache[r.id + "@" + r.version]; }), chunks = [];
+      for (var i = 0; i < todo.length; i += EDGES_PER_CALL) chunks.push(todo.slice(i, i + EDGES_PER_CALL));
+      var planIds = Object.create(null);
+      planSide.forEach(function (r) { planIds[r.id] = true; });
+      var ends = inFlight(chunks.map(function (c) { return function () { return askEdges(c, trip); }; }));
+      var planEnds = ends.filter(function (_, k) { return planIds[chunks[k][0].id]; });
+      return Promise.all(planEnds).then(function () {
         draw(true);
-        if (!isCurrent()) return;
-        return readLinks(services).then(function () { return placements(services); }).then(function () { draw(true, true); });
-      });
+        return Promise.all(ends);
+      }).then(function () { draw(true, true); });
     });
   }
 
@@ -345,7 +354,8 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
   }
 
   // ---- the domain rules (references/my-home-maintenance-v1.md) ------------------------------
-  function model(q, names, links, plans, services, today) {
+  // links: id -> [{ text, to }]; missing: id -> "large" (too many links to answer) or "refused".
+  function model(q, names, links, plans, services, today, missing) {
     function title(id, kind) { return id && names[id] && names[id].kind === kind ? names[id].title : null; }
     function homeOf(id) {
       if (!id || !names[id]) return null;
@@ -374,7 +384,8 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
     plans.forEach(function (r) {
       var fm = r.frontmatter || {}, s = subject(links[r.id] || []);
       var row = { id: r.id, kind: "plan", title: str(fm.title) || "Untitled plan", about: s.about, asset: s.asset, space: s.space, notes: [] };
-      if (unread[r.id]) row.notes.push("Some details couldn\u2019t load.");
+      // Links that could not be read (too large, refused or no reply): the row says so.
+      if (missing[r.id]) row.notes.push("Some details couldn\u2019t load.");
       var status = str(fm.plan_status), scheduleText = str(fm.schedule_text);
       if (status !== "enabled") {
         row.section = "later";
@@ -405,8 +416,10 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
           // The Plan's time zone, else its Home's, else the viewer's own date. A Home's zone is
           // known only once the plan's links are read, so plan counts wait for them (plansFinal).
           var zone = validZone(fm.schedule_timezone) || (s.home && names[s.home] ? validZone(names[s.home].fm.timezone) : null);
-          // A Home zone behind a read that got no reply may still apply: say so on the row.
-          if (!zone && !unread[r.id] && (unread[s.asset] || unread[s.space])) row.notes.push("Some details couldn\u2019t load.");
+          // Without a zone the viewer's date classifies the plan, as the reference says; when a Home
+          // zone may sit behind links that could not be read, the row says so, so the count's
+          // fallback is never hidden.
+          if (!zone && !missing[r.id] && (missing[s.asset] || missing[s.space])) row.notes.push("Some details couldn\u2019t load.");
           var days = dayNumber(due) - dayNumber(zone ? todayIn(zone) : today);
           if (days < 0) {
             row.section = "overdue";
@@ -430,7 +443,7 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
       var fm = r.frontmatter || {}, s = subject(links[r.id] || []), d = serviceDate(fm), result = str(fm.result);
       rows.push({
         id: r.id, kind: "service", section: "services", title: str(fm.title) || "Untitled service record",
-        about: s.about, asset: s.asset, space: s.space, notes: unread[r.id] ? ["Some details couldn\u2019t load."] : [], lines: [showDate(d)], sortDay: dayNumber(d),
+        about: s.about, asset: s.asset, space: s.space, notes: missing[r.id] ? ["Some details couldn\u2019t load."] : [], lines: [showDate(d)], sortDay: dayNumber(d),
         pill: RESULTS[result] ? { text: RESULTS[result], tone: result === "unknown" ? "quiet" : "result" } : null
       });
     });
@@ -441,6 +454,7 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
     if (q.service.cut) cut.push(plural(q.service.rows.length, "service record", "service records"));
     if (cut.length) notes.push("Showing the first " + cut.join(" and ") + ". Some may be missing.");
     else if (q.home.cut || q.space.cut || q.asset.cut) notes.push("Some home, space or asset names may be missing.");
+    for (var id in missing) if (missing[id] === "refused") { notes.push("Can\u2019t show what some items are about right now."); break; }
     function choices(key, kind) {
       var seen = {}, list = [];
       rows.forEach(function (r) { if (r[key] && !seen[r[key]]) { seen[r[key]] = true; list.push({ id: r[key], title: title(r[key], kind) }); } });
@@ -634,6 +648,8 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
         host.caps = Array.isArray(d.capabilities) ? d.capabilities : [];
         host.limit = d.limits && typeof d.limits.query === "number" && d.limits.query > 0 ? d.limits.query : null;
         host.frame = !!d.frame && host.caps.indexOf("frame.resize") >= 0;
+        // A host without edges (or one that declares a zero limit) draws records without placement.
+        host.edges = host.caps.indexOf("edges") >= 0 && !(d.limits && d.limits.edges === 0);
         // The host prints the View's name and owns the page's h1: drop ours entirely, so a screen
         // reader does not hear the title again; the sections' h2s follow the host's h1.
         if (d.frame && d.frame.title === "host") document.getElementById("title").hidden = true;

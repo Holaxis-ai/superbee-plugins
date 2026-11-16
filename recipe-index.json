@@ -95,11 +95,11 @@
     },
     {
       "id": "my-home-maintenance",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:d97c633b002e4489e9b71f856e7df30497b7bcca9620434eb38a014a38118a36",
-      "files_digest": "sha256:e4d21bb7398bb976c22f6ee581180a18a58f3a74ed6f9bcffb9bd42a12577e3b",
+      "source_digest": "sha256:e1655ee9daf089cd7aa126e5c3a2589ed1a65699d03f04f75477daf6cd8a5c45",
+      "files_digest": "sha256:d1b9f4f009558b37f1905dd0c38cdf73d5c0c12693f15228cb5e58e34b5090f5",
       "root": "recipes/my-home-maintenance",
       "files": [
         "conventions/my-home-maintenance-plan.md",
