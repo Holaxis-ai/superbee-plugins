@@ -115,6 +115,27 @@ test('What\'s due: a 1 MiB hostile body scans in well under a second and the sca
   assert.deepEqual(bodyLinks('my-home/maintenance/p01', fill(' ') + '[asset](../assets/a01.md)'), []);
 });
 
+test('What\'s due: the host\'s light or dark wins over the device, and without one the device decides', () => {
+  const start = html.indexOf('  function applyScheme(');
+  const end = html.indexOf('  function start(', start);
+  assert.ok(start > 0 && end > start, 'applyScheme is in the entry');
+  const draw = (descriptor) => {
+    const attributes = {};
+    const document = {documentElement: {setAttribute: (name, value) => { attributes[name] = value; }}};
+    new Function('document', `${html.slice(start, end)}\nreturn applyScheme;`)(document)(descriptor);
+    return attributes['data-scheme'];
+  };
+  assert.equal(draw({theme: {scheme: 'dark', ground: '#10243a'}}), 'dark');
+  assert.equal(draw({theme: {scheme: 'light'}}), 'light');
+  // An older or local host sends no theme, or one this View does not know: the device decides.
+  assert.equal(draw({}), undefined);
+  assert.equal(draw({theme: {scheme: 'dim'}}), undefined);
+  // The stamped scheme is what picks each light-dark() pair.
+  assert.match(html, /:root\[data-scheme="light"\] \{ color-scheme: light; \}/);
+  assert.match(html, /:root\[data-scheme="dark"\] \{ color-scheme: dark; \}/);
+  assert.equal(html.includes('prefers-color-scheme'), false, 'one token set, picked by color-scheme');
+});
+
 test('What\'s due: the entry stays a small, inert, self-contained page', () => {
   assert.ok(Buffer.byteLength(html) < 512 * 1024, 'within the 512 KiB entry limit');
   for (const sink of ['innerHTML', 'outerHTML', 'insertAdjacentHTML', 'document.write', 'eval(', 'fetch(', 'XMLHttpRequest', 'localStorage']) {
