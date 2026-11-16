@@ -1,0 +1,181 @@
+{
+  "format": "recipe-index/v1",
+  "source": "superbee-plugins",
+  "title": "Superbee plugin recipes",
+  "recipes": [
+    {
+      "id": "deep-research",
+      "version": "0.1.0-pre.2",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:1b3ca8c0b758634e40465f0e19ddeb58296c66e1c9108c175b6c56d18b0093a9",
+      "files_digest": "sha256:b4a5ec880b11d36eac1d424f81580712b0e0dfc59778f4c739c751872b295cf1",
+      "root": "recipes/deep-research",
+      "files": [
+        "conventions/research-claim.md",
+        "conventions/research-observation.md",
+        "conventions/research-question.md",
+        "conventions/research-source.md",
+        "recipe.md",
+        "references/deep-research-contract.md",
+        "references/deep-research-extension.md",
+        "references/deep-research-workflow.md"
+      ],
+      "discovery": {
+        "keywords": [
+          "evidence",
+          "sources",
+          "claims",
+          "literature",
+          "citations"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
+    },
+    {
+      "id": "my-home",
+      "version": "0.1.1",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:7a4ee37b5df3135b796207d915cc3801e62f88c384cbe29df8e87ebf367e72ee",
+      "files_digest": "sha256:2de7f048ceb48cb47bcfd0a535c24f82d938be063e4f06d7fb80bcf35e870b15",
+      "root": "recipes/my-home",
+      "files": [
+        "conventions/my-home-asset.md",
+        "conventions/my-home-home.md",
+        "conventions/my-home-space.md",
+        "recipe.md",
+        "references/my-home-core-v1.md"
+      ],
+      "discovery": {
+        "keywords": [
+          "house",
+          "apartment",
+          "room",
+          "appliance",
+          "inventory"
+        ],
+        "categories": [
+          "home"
+        ],
+        "audience": "personal"
+      }
+    },
+    {
+      "id": "my-home-costs",
+      "version": "0.1.1",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:9ca7a165de391be612247c1274069561ac641a94545752d5461a413db54da12e",
+      "files_digest": "sha256:3c69e900950955cb7c8999073da7fd885ef695c1f6e9dabc339c6581bc629092",
+      "root": "recipes/my-home-costs",
+      "files": [
+        "conventions/my-home-money-record.md",
+        "conventions/my-home-project.md",
+        "recipe.md",
+        "references/my-home-money-v1.md"
+      ],
+      "discovery": {
+        "keywords": [
+          "quote",
+          "budget",
+          "invoice",
+          "renovation",
+          "spending"
+        ],
+        "categories": [
+          "home",
+          "money"
+        ],
+        "audience": "personal"
+      }
+    },
+    {
+      "id": "my-home-maintenance",
+      "version": "0.1.1",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:da230df1fadcd0b3b26a4fbf0dd6550e2f46458b3660ae2f1446476a17034a6f",
+      "files_digest": "sha256:b816fefffd2fd2c7053b221a90c5f57677d0e0a7dcd6b506404a4a6c9b90b001",
+      "root": "recipes/my-home-maintenance",
+      "files": [
+        "conventions/my-home-maintenance-plan.md",
+        "conventions/my-home-service-record.md",
+        "recipe.md",
+        "references/my-home-maintenance-v1.md"
+      ],
+      "discovery": {
+        "keywords": [
+          "repair",
+          "service",
+          "upkeep",
+          "maintenance schedule",
+          "contractor"
+        ],
+        "categories": [
+          "home"
+        ],
+        "audience": "personal"
+      }
+    }
+  ],
+  "cookbooks": [
+    {
+      "id": "my-home",
+      "title": "My Home",
+      "summary": "Kinds for homes, spaces, assets, maintenance and service history, projects and money records. Installs definitions only, with no household records.",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "recipes": [
+        "my-home",
+        "my-home-maintenance",
+        "my-home-costs"
+      ],
+      "discovery": {
+        "offer": "Keep track of your home: rooms, appliances, repairs, warranties and what you spent.",
+        "keywords": [
+          "house",
+          "apartment",
+          "appliance",
+          "repair",
+          "warranty",
+          "renovation",
+          "contractor"
+        ],
+        "categories": [
+          "home",
+          "money"
+        ],
+        "audience": "personal"
+      }
+    },
+    {
+      "id": "research",
+      "title": "Research",
+      "summary": "Kinds and a method for located evidence, scoped claims and persistent questions. The deep-research recipe is still a prerelease and may change.",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "recipes": [
+        "deep-research"
+      ],
+      "discovery": {
+        "offer": "Build up research over time: evidence with its source, claims with their scope, and the questions still open.",
+        "keywords": [
+          "evidence",
+          "sources",
+          "claims",
+          "literature",
+          "citations",
+          "due diligence"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
+    }
+  ]
+}

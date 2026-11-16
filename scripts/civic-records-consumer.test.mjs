@@ -9,9 +9,9 @@ test('standalone Civic Records package: pinned public CLI recipe/install/registe
  const run=(cmd,args,expected=0)=>runProcess(cmd,args,{cwd:scratch,env,expected,timeout:120000,maxBuffer:2*1024*1024});
  try{
   assert.ok(process.env.npm_execpath,'invoke through npm');await writeFile(path.join(scratch,'package.json'),JSON.stringify({private:true,type:'module'}));
-  await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.6-pre.5','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.6-pre.7','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
   const cli=path.join(scratch,'node_modules/superbee/dist/superbee.mjs'),command=async(args,expected=0)=>JSON.parse((await run(process.execPath,[cli,...args,'--json'],expected)).stdout);
-  const identity=await command(['version']);assert.equal(identity.identity.package.version,'0.4.6-pre.5');assert.equal(identity.identity.source.commit,'0ff46d60d3788ca8510cebc4dd2f141fc4ace73e');assert.equal(identity.identity.source.dirty,false);
+  const identity=await command(['version']);assert.equal(identity.identity.package.version,'0.4.6-pre.7');assert.equal(identity.identity.source.commit,'f98d11d4e5ecabcc0ad9f60caa509c2cd36ee30b');assert.equal(identity.identity.source.dirty,false);
   for(const file of ['package.json','dist/operation.mjs'])await copyFile(path.join(root,'integrations/civic-records',file),path.join(plugin,file));
   await cp(path.join(root,'recipes/civic-records'),recipe,{recursive:true});assert.equal((await command(['recipe','validate',recipe])).ok,true);
   const bundle=path.join(scratch,'bundle'),flags=['--dir',bundle];await command(['init','--create-only','--recipe','none',...flags]);await command(['recipe','add',recipe,...flags]);
@@ -32,6 +32,6 @@ test('standalone Civic Records package: pinned public CLI recipe/install/registe
   assert.equal((await command(['list',...flags])).count,before,'execution did not create domain documents');
   await writeFile(resources.text.path,'changed captured input');await run(process.execPath,[cli,'op','run','local.civic.prepare-text.v1','--local','--binding',binding.binding,'--input-file',input,...flags,'--json'],2);
   await command(['op','unregister','civic-records','--local',...flags]);
-  t.diagnostic('Public CLI 0.4.6-pre.5 exact producer, standalone inert recipe + accepted native operation + finite inputs + JSON output + byte-equal repeats + changed-input refusal. Synthetic only; no PDF conversion, official identity, live crawl or publication established.');
+  t.diagnostic('Public CLI 0.4.6-pre.7 exact producer, standalone inert recipe + accepted native operation + finite inputs + JSON output + byte-equal repeats + changed-input refusal. Synthetic only; no PDF conversion, official identity, live crawl or publication established.');
  }finally{await workspace.close();}
 });

@@ -16,10 +16,10 @@ test('public supplied-file onboarding: two records/texts, native query/repeats a
  const run=(cmd,args,expected=0)=>runProcess(cmd,args,{cwd:scratch,env,expected,timeout:120000,maxBuffer:2*1024*1024});
  try{
   await writeFile(path.join(scratch,'package.json'),JSON.stringify({private:true,type:'module'}));
-  assert.ok(process.env.npm_execpath,'invoke through npm');await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.6-pre.5','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
+  assert.ok(process.env.npm_execpath,'invoke through npm');await run(process.execPath,[process.env.npm_execpath,'install','superbee@0.4.6-pre.7','--ignore-scripts','--no-audit','--no-fund','--package-lock=false','--registry=https://registry.npmjs.org/']);
   const cli=path.join(scratch,'node_modules/superbee/dist/superbee.mjs'),bundle=path.join(scratch,'bundle'),flags=['--dir',bundle];
   const command=async(args,expected=0)=>JSON.parse((await run(process.execPath,[cli,...args,'--json'],expected)).stdout);
-  const identity=await command(['version']);assert.equal(identity.identity.package.version,'0.4.6-pre.5');assert.equal(identity.identity.source.dirty,false);assert.equal(identity.identity.source.commit,'0ff46d60d3788ca8510cebc4dd2f141fc4ace73e');
+  const identity=await command(['version']);assert.equal(identity.identity.package.version,'0.4.6-pre.7');assert.equal(identity.identity.source.dirty,false);assert.equal(identity.identity.source.commit,'f98d11d4e5ecabcc0ad9f60caa509c2cd36ee30b');
   await command(['init','--create-only','--recipe','none',...flags]);
   for(const name of ['civic-records','civic-research'])await command(['recipe','add',path.join(root,'recipes',name),...flags]);
   await command(['new','Civic Source','synthetic-council','--title','Synthetic Council','--jurisdiction_key','synthetic-town','--jurisdiction_name','Synthetic Town','--body_name','Synthetic Council','--provider','synthetic-files','--registry_url','https://example.org/records/','--coverage','sample','--capture_mode','manual-pilot',...flags]);

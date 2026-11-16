@@ -54,7 +54,7 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
     const artifacts = path.join(scratch,'artifacts'); await mkdir(artifacts);
     const packed = {};
     const coreVersion = JSON.parse(await readFile(path.join(root,'integrations/github/package.json'),'utf8')).superbeeIntegration.core;
-    const cliVersion = '0.4.6-pre.5';
+    const cliVersion = '0.4.6-pre.7';
     for (const name of ['core','integration-github','superbee']) {
       const target = name === 'core' ? [process.env.SUPERBEE_CORE_TARBALL ?? `@superbee/core@${coreVersion}`]
         : name === 'superbee' ? [process.env.SUPERBEE_CLI_TARBALL ?? `superbee@${cliVersion}`]
@@ -110,7 +110,7 @@ test('packed GitHub factory, recipes, browser and public harness work outside ch
     const command = args => run(process.execPath,[cli,...args]);
     const identity = JSON.parse((await command(['version','--json'])).stdout).identity;
     assert.equal(identity.package.version,cliVersion);
-    assert.equal(identity.source.commit,'0ff46d60d3788ca8510cebc4dd2f141fc4ace73e');
+    assert.equal(identity.source.commit,'f98d11d4e5ecabcc0ad9f60caa509c2cd36ee30b');
     assert.equal(identity.source.dirty,false);
     assert.equal(identity.artifact.channel,'npm-package');
     const proposal = JSON.parse((await command(['source','plugin','register',installed,'--json'])).stdout);

@@ -1,0 +1,4 @@
+# Digests pin exact bytes, so no checkout may convert line endings in these.
+recipes/** -text
+recipe-index.json -text
+recipe-index.source.json -text

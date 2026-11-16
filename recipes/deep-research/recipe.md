@@ -4,6 +4,7 @@ id: deep-research
 title: Deep, Deep Research
 version: "0.1.0-pre.2"
 summary: Located evidence, scoped claims and persistent questions for cumulative research.
+offer: "Build up research over time: evidence with its source, claims with their scope, and the questions still open."
 content_policy: definitions-only
 references:
   - references/deep-research-contract.md

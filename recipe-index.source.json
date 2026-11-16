@@ -1,0 +1,137 @@
+{
+  "source": "superbee-plugins",
+  "title": "Superbee plugin recipes",
+  "recipes": [
+    {
+      "id": "my-home",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "discovery": {
+        "keywords": [
+          "house",
+          "apartment",
+          "room",
+          "appliance",
+          "inventory"
+        ],
+        "categories": [
+          "home"
+        ],
+        "audience": "personal"
+      }
+    },
+    {
+      "id": "my-home-maintenance",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "discovery": {
+        "keywords": [
+          "repair",
+          "service",
+          "upkeep",
+          "maintenance schedule",
+          "contractor"
+        ],
+        "categories": [
+          "home"
+        ],
+        "audience": "personal"
+      }
+    },
+    {
+      "id": "my-home-costs",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "discovery": {
+        "keywords": [
+          "quote",
+          "budget",
+          "invoice",
+          "renovation",
+          "spending"
+        ],
+        "categories": [
+          "home",
+          "money"
+        ],
+        "audience": "personal"
+      }
+    },
+    {
+      "id": "deep-research",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "discovery": {
+        "keywords": [
+          "evidence",
+          "sources",
+          "claims",
+          "literature",
+          "citations"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
+    }
+  ],
+  "cookbooks": [
+    {
+      "id": "my-home",
+      "title": "My Home",
+      "summary": "Kinds for homes, spaces, assets, maintenance and service history, projects and money records. Installs definitions only, with no household records.",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "recipes": [
+        "my-home",
+        "my-home-maintenance",
+        "my-home-costs"
+      ],
+      "discovery": {
+        "offer": "Keep track of your home: rooms, appliances, repairs, warranties and what you spent.",
+        "keywords": [
+          "house",
+          "apartment",
+          "appliance",
+          "repair",
+          "warranty",
+          "renovation",
+          "contractor"
+        ],
+        "categories": [
+          "home",
+          "money"
+        ],
+        "audience": "personal"
+      }
+    },
+    {
+      "id": "research",
+      "title": "Research",
+      "summary": "Kinds and a method for located evidence, scoped claims and persistent questions. The deep-research recipe is still a prerelease and may change.",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "recipes": [
+        "deep-research"
+      ],
+      "discovery": {
+        "offer": "Build up research over time: evidence with its source, claims with their scope, and the questions still open.",
+        "keywords": [
+          "evidence",
+          "sources",
+          "claims",
+          "literature",
+          "citations",
+          "due diligence"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
+    }
+  ],
+  "removed": [],
+  "removed_cookbooks": []
+}
