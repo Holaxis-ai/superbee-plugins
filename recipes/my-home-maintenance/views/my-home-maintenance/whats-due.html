@@ -176,7 +176,6 @@ section > .notice { margin: 0 0 8px; }
   var host = { limit: null, caps: [], frame: false };
   var readCache = {};          // "id@version" -> links [{ text, to }]
   var unread = {};             // ids whose read got no reply in this load
-  var readsSilent = false;     // a read in this load got no reply
   var state = null;            // the last computed model
   var filter = { space: "", asset: "" };
   var showAllServices = false;
@@ -271,13 +270,10 @@ section > .notice { margin: 0 0 8px; }
     function next() {
       if (i >= todo.length) return Promise.resolve();
       var row = todo[i++];
-      // After one read got no reply, the host is not answering reads: stop waiting on the rest
-      // in this load, so the page settles in one timeout instead of one per batch.
-      if (readsSilent) { unread[row.id] = true; return next(); }
       return timed(window.Bridge.read(row.id)).then(function (doc) {
         readCache[row.id + "@" + row.version] = bodyLinks(row.id, doc && doc.body);
       }, function (err) {
-        if (err && err.code === "TIMEOUT") { unread[row.id] = true; readsSilent = true; }
+        if (err && err.code === "TIMEOUT") unread[row.id] = true;
         else readCache[row.id + "@" + row.version] = [];
       }).then(next);
     }
@@ -291,7 +287,6 @@ section > .notice { margin: 0 0 8px; }
   function load(isCurrent, show) {
     var q = {}, kinds = Object.keys(KINDS);
     unread = {};
-    readsSilent = false;
     return Promise.all(kinds.map(function (k) { return queryKind(KINDS[k]); })).then(function (results) {
       kinds.forEach(function (k, i) { q[k] = results[i]; });
       if (q.plan.rows.length === 0 && q.service.rows.length === 0) { show({ empty: true }, true); return; }
