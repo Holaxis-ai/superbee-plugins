@@ -4,6 +4,18 @@ title: Adopting Decision in an existing bundle
 ---
 # Adopting Decision in an existing bundle
 
+## Qualified pilot boundary
+
+The checks below concern this canonical recipe's unexpanded, bare Kind identities.
+The repository's `examples/decision-research-qualified` configuration instead
+allocates `github.com/holaxis-ai/superbee-plugins/decision/Decision` and its companion
+selectors, binding research targets explicitly and retaining the existing bare
+Task Kind. Install only its generated expanded artifacts for that journey. A title
+such as Decision is a display label, not an alias for the qualified selector.
+Existing bare records retain their identities; qualification is not adoption or
+migration. Prose, frontmatter Markdown and example commands remain author-owned:
+read the receipt and use exact selectors rather than copying bare example types.
+
 Do not assume that a bundle's already-declared Decision means exactly the
 same thing as this recipe. Even identical names can carry different authority
 rules, required fields, enums, link labels, readers and historical instances.

@@ -2,7 +2,7 @@
 type: Recipe
 id: deep-research
 title: Deep, Deep Research
-version: "0.1.0-pre.2"
+version: "0.1.0-pre.3"
 summary: Located evidence, scoped claims and persistent questions for cumulative research.
 offer: "Build up research over time: evidence with its source, claims with their scope, and the questions still open."
 content_policy: definitions-only
@@ -20,3 +20,9 @@ credentials, executable integrations, schedules or publication rules.
 Read the contract and workflow before treating a support link or review state as a
 conclusion. Examples and their explicitly invoked starter live outside this recipe.
 No dependency installation, inheritance, entity matching or automated research is implied.
+
+The repository's `examples/decision-research-qualified` pilot uses this directory
+as canonical unexpanded source. It explicitly binds Decision to these research
+Kinds and generates separately staged ordinary recipes. Qualified consumers install
+those expanded artifacts and use the receipt's exact selectors; the existing bare
+research Kinds and examples are not automatically migrated or rebound.

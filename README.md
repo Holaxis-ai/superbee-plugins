@@ -74,6 +74,12 @@ Do not install over a conflicting local Kind without an explicit adoption plan.
 
 ## Deep, Deep Research (experimental)
 
+The [qualified Decision + Deep Research authoring pilot](examples/decision-research-qualified/README.md)
+keeps these canonical sources unexpanded and prepares separately staged recipes with
+explicit Kind identities and bindings. Its packaged-consumer proof uses ordinary
+installation, exact queries and evolution alongside legacy records; no qualified
+release is added to the production catalog.
+
 The data-only [`deep-research`](recipes/deep-research/recipe.md) recipe supplies four
 Kinds—Source, Observation, Claim and Question—with defined evidence, challenge,
 dependency and correction relationships. Its references explain bounded research,
