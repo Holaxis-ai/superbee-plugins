@@ -33,8 +33,8 @@ no merge, release or deployment authority.
 [`recipe-index.json`](recipe-index.json) is the curated `recipe-index/v1` index. A CLI at a version
 that has `recipe add --index` can install from it; Hosted does not install from it yet. It lists one
 current version of each listed recipe, pinned by two digests, and two cookbooks: `my-home` (recipes
-`my-home`, `my-home-maintenance`, `my-home-costs`, in dependency order) and `research` (recipe
-`deep-research`, an experimental prerelease). A cookbook is a named group; every recipe in it stays
+`my-home`, `my-home-maintenance`, `my-home-costs`, in dependency order) and `research`
+(qualified Deep Research, an experimental prerelease). A cookbook is a named group; every recipe in it stays
 individually installable. Other folders under `recipes/` are unlisted and stay installable by path.
 
 The digests are the integrity guarantee. `designation`, `maintainer`, every cookbook field and each
