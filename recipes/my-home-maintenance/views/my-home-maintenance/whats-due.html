@@ -6,22 +6,19 @@
 <title>What's due</title>
 <style>
 /* Colors, radius and spacing copy Workspace Next's tokens. Fonts cannot load in the View sandbox,
-   so the system font stack stands in for Next's DM Sans and Space Grotesk. */
+   so the system font stack stands in for Next's DM Sans and Space Grotesk. Each color is a light and
+   dark pair: the host's scheme (hello.host.theme) picks one when it sends it, else the device does. */
 :root {
   color-scheme: light dark;
-  --ground: #f3f7fa; --surface: #ffffff; --text: #0f1a24; --muted: #4a5d6e; --rule: #dadee2;
-  --blue: #00618f; --blue-soft: #e3f1fa; --focus: #956300;
-  --warn-bg: #fff0d1; --warn-text: #754b13; --warn-rule: #e2c48c; --warn-strong: #754b13; --warn-on-strong: #ffffff;
-  --control-rule: #868f99;
+  --ground: light-dark(#f3f7fa, #10243a); --surface: light-dark(#ffffff, #162e47); --text: light-dark(#0f1a24, #e8eff5);
+  --muted: light-dark(#4a5d6e, #a7b6c4); --rule: light-dark(#dadee2, #2b4660);
+  --blue: light-dark(#00618f, #7cc6fa); --blue-soft: light-dark(#e3f1fa, #12324a); --focus: light-dark(#956300, #e0a93a);
+  --warn-bg: light-dark(#fff0d1, #493921); --warn-text: light-dark(#754b13, #ffcf85); --warn-rule: light-dark(#e2c48c, #6b5530);
+  --warn-strong: light-dark(#754b13, #ffcf85); --warn-on-strong: light-dark(#ffffff, #2b1d05);
+  --control-rule: light-dark(#868f99, #5f7a94);
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ground: #10243a; --surface: #162e47; --text: #e8eff5; --muted: #a7b6c4; --rule: #2b4660;
-    --blue: #7cc6fa; --blue-soft: #12324a; --focus: #e0a93a;
-    --warn-bg: #493921; --warn-text: #ffcf85; --warn-rule: #6b5530; --warn-strong: #ffcf85; --warn-on-strong: #2b1d05;
-    --control-rule: #5f7a94;
-  }
-}
+:root[data-scheme="light"] { color-scheme: light; }
+:root[data-scheme="dark"] { color-scheme: dark; }
 * { box-sizing: border-box; }
 html { background: var(--ground); }
 body { margin: 0; padding: 16px; background: var(--ground); color: var(--text);
@@ -623,10 +620,17 @@ a.title:hover, a.title:focus-visible { text-decoration: underline; }
       if (!drawn) renderError();
     });
   }
+  // Draw in the host's light or dark when it says which (hello.host.theme), else the device's.
+  // The host's other tokens are not used yet.
+  function applyScheme(d) {
+    var scheme = d && d.theme && d.theme.scheme;
+    if (scheme === "light" || scheme === "dark") document.documentElement.setAttribute("data-scheme", scheme);
+  }
   function start() {
     timed(window.Bridge.hello()).then(function (hello) {
       var d = hello && hello.host;
       if (d) {
+        applyScheme(d);
         host.caps = Array.isArray(d.capabilities) ? d.capabilities : [];
         host.limit = d.limits && typeof d.limits.query === "number" && d.limits.query > 0 ? d.limits.query : null;
         host.frame = !!d.frame && host.caps.indexOf("frame.resize") >= 0;
