@@ -1,5 +1,5 @@
 ---
-type: Decision Question
+type: github.com/holaxis-ai/superbee-plugins/decision/Decision Question
 title: Choose a notification delivery service
 superbee_progress_status: resolved
 decision_owner: Fictional platform lead

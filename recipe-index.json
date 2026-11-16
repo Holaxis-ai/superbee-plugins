@@ -4,38 +4,6 @@
   "title": "Superbee plugin recipes",
   "recipes": [
     {
-      "id": "deep-research",
-      "version": "0.1.0-pre.3",
-      "designation": "supported",
-      "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:060b1ef01c2a8ddc773b87548ec9c6bdd2f9590bdcaf01645828c19c9d429353",
-      "files_digest": "sha256:99915503ff319b1100586f4b4f071549a0270e95ca84f867ce7fe02e3b7b6442",
-      "root": "recipes/deep-research",
-      "files": [
-        "conventions/research-claim.md",
-        "conventions/research-observation.md",
-        "conventions/research-question.md",
-        "conventions/research-source.md",
-        "recipe.md",
-        "references/deep-research-contract.md",
-        "references/deep-research-extension.md",
-        "references/deep-research-workflow.md"
-      ],
-      "discovery": {
-        "keywords": [
-          "evidence",
-          "sources",
-          "claims",
-          "literature",
-          "citations"
-        ],
-        "categories": [
-          "research"
-        ],
-        "audience": "both"
-      }
-    },
-    {
       "id": "my-home",
       "version": "0.1.1",
       "designation": "supported",
@@ -122,6 +90,38 @@
         ],
         "audience": "personal"
       }
+    },
+    {
+      "id": "ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb",
+      "version": "0.1.0-pre.3",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:c082dee61983c241f55564ce083f69f6b98fa09f0b6b0de4cb3f4dd6d3006b13",
+      "files_digest": "sha256:9ed53a041e88c4689fc9cb2ac19da0362645a975980e5b35a7c11444a65bd3de",
+      "root": "recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb",
+      "files": [
+        "conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-claim.md",
+        "conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-observation.md",
+        "conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-question.md",
+        "conventions/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/research-source.md",
+        "recipe.md",
+        "references/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/deep-research-contract.md",
+        "references/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/deep-research-extension.md",
+        "references/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/deep-research-workflow.md"
+      ],
+      "discovery": {
+        "keywords": [
+          "evidence",
+          "sources",
+          "claims",
+          "literature",
+          "citations"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
     }
   ],
   "cookbooks": [
@@ -161,7 +161,7 @@
       "designation": "supported",
       "maintainer": "Holaxis-ai",
       "recipes": [
-        "deep-research"
+        "ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb"
       ],
       "discovery": {
         "offer": "Build up research over time: evidence with its source, claims with their scope, and the questions still open.",

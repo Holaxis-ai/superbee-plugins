@@ -59,28 +59,40 @@ model bindings, vendor messages or financial transactions.
 
 ## Decision making (experimental)
 
-The inert [`decision`](recipes/decision/recipe.md) recipe defines `Decision Question`,
+The inert [`decision`](recipes/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/recipe.md) recipe defines `Decision Question`,
 `Decision Option` and `Decision` for deliberation, comparison, rationale,
 authority, supersession and follow-through. It composes with the built-in
-`Task` Kind and optionally with [`deep-research`](recipes/deep-research)
+`Task` Kind and optionally with [`deep-research`](recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb)
 without redefining either. Installation creates no decisions or tasks and
 does not grant approval or execution authority.
 
-An existing bundle may already define `Decision` differently. The
-[adoption guide](recipes/decision/references/adopting-existing-decisions.md)
-documents the required pre-install Kind inventory: adding a convention can change
-which declaration wins for an existing type, even without overwriting files.
-Do not install over a conflicting local Kind without an explicit adoption plan.
+These recipe folders are the single authored definitions and the installable
+product. Their `ns-...` folder names match stable recipe ownership IDs; edit the
+fully qualified declarations directly. There is no separate source tree or
+regeneration step. Friendly Kind titles are labels, not aliases. Decision uses
+`github.com/holaxis-ai/superbee-plugins/decision/<Kind>` and Deep Research uses
+`github.com/holaxis-ai/superbee-plugins/deep-research/<Kind>`; Task remains bare.
+These are claimed identities, not authenticated ownership or download URLs.
+
+Existing bare Decision and research records keep their types and bytes. The
+[adoption guide](recipes/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/references/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/adopting-existing-decisions.md)
+explains the inventory needed before any separately authorized migration.
+The `research` cookbook now selects the qualified recipe; the old `deep-research`
+index ID is retired at its last main-branch version, `0.1.0-pre.2`. Decision stays
+path-installable and is not newly listed as supported.
+
+The mandatory `scripts/decision-research-qualified.test.mjs` proof installs the
+actual research cookbook and a portable copy of the authored Decision recipe
+with published `superbee@0.4.6-pre.7`. It checks exact identities, retained legacy
+bytes, a synthetic evidence-to-decision graph, ordinary relationship lint,
+create-only refusal and compatible/incompatible evolution. It runs in the normal
+packaged test suite with no skip or unpublished compiler dependency. For an offline
+run, set `QUALIFIED_RECIPE_CONSUMER_CLI` to that installed published executable;
+otherwise run through npm so the test installs its exact public dependency.
 
 ## Deep, Deep Research (experimental)
 
-The [qualified Decision + Deep Research authoring pilot](examples/decision-research-qualified/README.md)
-keeps these canonical sources unexpanded and prepares separately staged recipes with
-explicit Kind identities and bindings. Its packaged-consumer proof uses ordinary
-installation, exact queries and evolution alongside legacy records; no qualified
-release is added to the production catalog.
-
-The data-only [`deep-research`](recipes/deep-research/recipe.md) recipe supplies four
+The data-only [`deep-research`](recipes/ns-815e3ae7d133368a71937aa924183b9b1643329543c6de13fa03ecd0ccbf35bb/recipe.md) recipe supplies four
 Kinds—Source, Observation, Claim and Question—with defined evidence, challenge,
 dependency and correction relationships. Its references explain bounded research,
 scope, inspection limits and extension ownership. It does not run research or install

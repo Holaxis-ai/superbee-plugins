@@ -1,5 +1,5 @@
 ---
-type: Decision Option
+type: github.com/holaxis-ai/superbee-plugins/decision/Decision Option
 title: Use fictional Service B
 ---
 # Proposal

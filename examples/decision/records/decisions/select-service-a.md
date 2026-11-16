@@ -1,5 +1,5 @@
 ---
-type: Decision
+type: github.com/holaxis-ai/superbee-plugins/decision/Decision
 title: Select fictional Service A for internal notifications
 decision_status: recorded
 decider: Fictional steering group

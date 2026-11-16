@@ -4,13 +4,11 @@ title: Extending Deep Research without inheriting its Kinds
 ---
 # Extending Deep Research without inheriting its Kinds
 
-The repository's `examples/decision-research-qualified` pilot binds another recipe
-to exact qualified Research Claim and Research Question identities. Its canonical
-sources stay unexpanded; ordinary installers consume the separately staged expanded
-artifacts. The receipt records selectors, ownership and retained prerequisites.
-Bare examples below still describe the unexpanded recipe and are not rewritten by
-preparation. Extensions must explicitly bind their research targets to the selected
-recipe; matching titles do not establish identity, and no existing records migrate.
+Distributed research Kinds use exact selectors under
+`github.com/holaxis-ai/superbee-plugins/deep-research`. Extensions declare those
+exact targets rather than matching display titles. The Place Comparison example
+uses qualified Research Claim and Research Observation. Existing bare records
+are not migrated or rebound. Install this qualified recipe before its extension.
 
 Install the selected core, then explicitly install a domain recipe that owns new
 Kinds. Current recipes do not apply `requires`, `composes` or schema inheritance.

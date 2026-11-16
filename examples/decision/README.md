@@ -5,8 +5,11 @@ Decision Options, one recorded Decision, and two built-in Tasks. A completed
 investigation and an open implementation task remain distinct. No actual
 provider service, authenticated approval or automated execution is claimed.
 
+Stored Decision types use `github.com/holaxis-ai/superbee-plugins/decision/`
+followed by the friendly Kind title; Task remains the built-in exact type.
+
 The six standalone Markdown records in `records/` are example instances,
-**not** recipe payload. Installing `recipes/decision` creates none of them.
+**not** recipe payload. Installing `recipes/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3` creates none of them.
 
 ## Reproduce in a fresh local bundle
 
@@ -20,7 +23,7 @@ BUNDLE=/absolute/path/to/absent-example-bundle
 
 superbee init --create-only --recipe none --dir "$BUNDLE"
 superbee recipe add work-tracking --actor process:decision-example --dir "$BUNDLE"
-superbee recipe add "$REPO/recipes/decision" --actor process:decision-example --dir "$BUNDLE"
+superbee recipe add "$REPO/recipes/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3" --actor process:decision-example --dir "$BUNDLE"
 
 for relative in \
   decision-options/service-a.md \
@@ -29,8 +32,8 @@ for relative in \
   tasks/configure-service-a.md \
   decision-questions/notifications.md \
   decisions/select-service-a.md; do
-  superbee promote "$REPO/examples/decision/records/$relative" \
-    --doc-key "$relative" --actor process:decision-example --dir "$BUNDLE"
+  SUPERBEE_ACTOR=process:decision-example superbee promote "$REPO/examples/decision/records/$relative" \
+    --doc-key "$relative" --strict --dir "$BUNDLE"
 done
 
 superbee kinds --json --dir "$BUNDLE"
@@ -58,9 +61,10 @@ bypassing the model by overwriting files.
   invoke another Recipe or execute work.
 
 The structural test `scripts/decision.test.mjs` checks the definitions
-and fictional link graph. With `DECISION_CLI` set to a reviewed installed
-Superbee executable it also validates the recipe, installs it in a disposable
+and fictional link graph. Run it through `npm exec -- node --test scripts/decision.test.mjs`;
+it installs public `superbee@0.4.4-pre.9` into a temporary tool directory unless
+`DECISION_CLI` explicitly selects a reviewed executable. It validates the recipe, installs it in a disposable
 bundle, and checks that the example adds no unresolved links or Kind violations.
 This example does not demonstrate semantic validity, real decision-making
 outcomes or general Kind migration. For existing bundles, consult
-`recipes/decision/references/adopting-existing-decisions.md`.
+`recipes/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/references/ns-10fe0c6e18c73ef84d3a025b4fda1a80fd97e7f950e7a949cbe607884f3026d3/adopting-existing-decisions.md`.

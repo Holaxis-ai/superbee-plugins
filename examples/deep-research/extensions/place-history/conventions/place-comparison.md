@@ -13,8 +13,8 @@ fields:
     question: The specific correspondence being tested; conclusions stay in the linked Research Claim.
     geometry_note: Actual method and limitations of the comparison; no fabricated coordinate precision.
 links:
-  assessed by: Research Claim
-  compares observation: Research Observation
+  assessed by: github.com/holaxis-ai/superbee-plugins/deep-research/Research Claim
+  compares observation: github.com/holaxis-ai/superbee-plugins/deep-research/Research Observation
 sections: [Comparison, Evidence links, Limits]
 ---
 # Place Comparison
