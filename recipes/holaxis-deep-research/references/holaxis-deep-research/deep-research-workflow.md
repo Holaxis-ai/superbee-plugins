@@ -4,6 +4,10 @@ title: 'Bounded research, reduction and continuation'
 ---
 # Bounded research, reduction and continuation
 
+See the [model and relationship contract](deep-research-contract.md) for the
+Kinds and their links, and [extending Deep Research](deep-research-extension.md)
+for adding a domain-specific research Kind.
+
 1. **Inventory before searching.** Read the current questions and held evidence.
    Search identifiers, alternate literal names and prior corrections before acquiring
    another copy. Describe what is known, uncertain and worth deciding.

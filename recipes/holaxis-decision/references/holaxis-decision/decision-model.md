@@ -108,4 +108,5 @@ Decision for a substantively different commitment. Keep actual observed
 results separate from anticipated consequences. Native validation verifies
 declared structure and some links; it cannot prove reasoning or authorization.
 
-See adopting-existing-decisions for schema conflicts and migration boundaries.
+See [Adopting existing decisions](adopting-existing-decisions.md) for schema
+conflicts and migration boundaries.

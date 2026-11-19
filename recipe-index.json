@@ -8,8 +8,8 @@
       "version": "0.1.2",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:cb508ca28d053b0dad3e3a9900469ec2cf7be82fa00162f7c2bd028b1edd7a3f",
-      "files_digest": "sha256:8018581a706b261abce5012dc38b456fbd5a0c85da08a77c8c519e4690d28acf",
+      "source_digest": "sha256:6a19251feadd61ce62d4ce5e9b5131ce6db144e7769095f5f251700937eaabba",
+      "files_digest": "sha256:f0fb2876f154fcf919ae51fe478868936c4f85e7aa688bdd6b5d7bcaf3fccb4a",
       "root": "recipes/holaxis-decision",
       "files": [
         "conventions/holaxis-decision/decision-option.md",
@@ -37,8 +37,8 @@
       "version": "0.1.0-pre.4",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:27604691a793b7460260aa96809b89b073d78705c8a0f46470a868924a155495",
-      "files_digest": "sha256:4a4f8628bbe196b7c226696fec46077040977affa1ee39518d86818d8bfab6e1",
+      "source_digest": "sha256:d4a5134590acc890d02e145320e22f14e7446db1756f182c59e871f83c7821af",
+      "files_digest": "sha256:171121e8a99def38e3d27eed5ee7f3b31a6eb3c672359310d09e71c19bece02d",
       "root": "recipes/holaxis-deep-research",
       "files": [
         "conventions/holaxis-deep-research/research-claim.md",
