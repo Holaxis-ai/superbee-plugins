@@ -77,3 +77,5 @@ A paper, interview, dataset, archival item, software artifact or other research 
 One record identifies a selected input/representation, not every revision ever issued.
 If several captures or transformations matter, use a separately designed companion.
 Do not manufacture a Source merely to attach a confidence score to an agent's prose.
+
+For how these Kinds work together, see the [Deep Research workflow](../../references/holaxis-deep-research/deep-research-workflow.md).

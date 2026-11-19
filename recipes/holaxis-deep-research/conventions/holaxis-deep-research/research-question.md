@@ -72,3 +72,5 @@ Keep small attempts here: when, where, query/method, scope actually examined,
 outcome, limits and repeat trigger. An optional Attempt companion becomes useful
 when attempts need independent retrieval or reuse. Do not turn every task or
 editorial choice into a Research Question.
+
+For how these Kinds work together, see the [Deep Research workflow](../../references/holaxis-deep-research/deep-research-workflow.md).

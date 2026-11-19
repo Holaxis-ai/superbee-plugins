@@ -63,3 +63,5 @@ Normally one observation has one `drawn from` Source link. Split observations wh
 different inputs or locators would otherwise be obscured. This is a workflow rule,
 not an automatic cardinality constraint. A source statement can be faithfully
 observed while its real-world content remains false or unverified.
+
+For how these Kinds work together, see the [Deep Research workflow](../../references/holaxis-deep-research/deep-research-workflow.md).

@@ -100,3 +100,5 @@ Preserve the original record when superseded; create a newer Decision with a
 superseded decision link. A Decision can create follow-up Tasks, but its
 recorded status does not mean those Tasks are completed or external actions
 have been authorized or executed.
+
+For how these Kinds work together, see the [Decision Making guide](../../references/holaxis-decision/decision-model.md).

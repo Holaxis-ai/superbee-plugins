@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
-import {parseRecipeIndex, resolveCookbook} from '@superbee/core/recipe-sources';
+import {parseRecipeIndex, resolveCookbook, resolveIndexRecipe} from '@superbee/core/recipe-sources';
 import {buildRecipeIndex, compareVersions, escapeWorkflowData} from './build-recipe-index.mjs';
 
 const repo = fileURLToPath(new URL('../', import.meta.url));
@@ -385,13 +385,15 @@ test('the committed index is current and Core accepts it', async () => {
   const parsed = parseRecipeIndex(bytes);
   assert.equal(parsed.ok, true, JSON.stringify(parsed.error));
   assert.deepEqual((await buildRecipeIndex(repo)).bytes, bytes);
-  assert.deepEqual(parsed.index.recipes.map(entry => entry.id), ['holaxis-deep-research', 'my-home', 'my-home-costs', 'my-home-maintenance']);
+  assert.deepEqual(parsed.index.recipes.map(entry => entry.id), [
+    'holaxis-decision', 'holaxis-deep-research', 'my-home', 'my-home-costs', 'my-home-maintenance', 'resource',
+  ]);
   assert.deepEqual(parsed.index.cookbooks.map(entry => [entry.id, entry.recipes]), [
     ['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']],
     ['research', ['holaxis-deep-research']],
   ]);
   assert.match(parsed.index.cookbooks[1].summary, /prerelease/);
-  assert.equal(parsed.index.recipes.find(entry => entry.id === 'holaxis-deep-research').version, '0.1.0-pre.3');
+  assert.match(parsed.index.recipes.find(entry => entry.id === 'holaxis-deep-research').version, /-pre\.\d+$/);
   const myHome = parsed.index.cookbooks[0].discovery;
   assert.equal(myHome.offer, 'Keep track of your home: rooms, appliances, repairs, warranties and what you spent.');
   assert.deepEqual([myHome.categories, myHome.audience], [['home', 'money'], 'personal']);
@@ -413,7 +415,7 @@ test('readers tolerate discovery values the generator refuses, and still resolve
   assert.equal(result.ok, true, JSON.stringify(result.error));
 });
 
-test('both cookbooks resolve through a reader over this checkout, verifying every digest', async () => {
+test('cookbooks and standalone recipes resolve through a reader over this checkout, verifying every digest', async () => {
   const {index} = parseRecipeIndex(await readFile(path.join(repo, 'recipe-index.json')));
   const seen = [];
   const read = location => {
@@ -427,6 +429,11 @@ test('both cookbooks resolve through a reader over this checkout, verifying ever
     for (const entry of result.recipes) {
       assert.equal(entry.source_digest, index.recipes.find(candidate => candidate.id === entry.recipe.id).source_digest);
     }
+  }
+  for (const id of ['holaxis-decision', 'resource']) {
+    const result = await resolveIndexRecipe(index, id, read);
+    assert.equal(result.ok, true, JSON.stringify(result.error));
+    assert.equal(result.verified.source_digest, index.recipes.find(entry => entry.id === id).source_digest);
   }
   const listed = index.recipes.flatMap(entry => entry.files.map(file => `${entry.root}/${file}`));
   assert.deepEqual(seen.sort(), listed.sort());

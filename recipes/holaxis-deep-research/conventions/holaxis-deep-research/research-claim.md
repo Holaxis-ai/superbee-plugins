@@ -80,3 +80,5 @@ There is no universal numerical confidence score or automated truth promotion.
 Support, challenge and dependency edges remain distinct. A superseded support path
 does not erase other independent evidence. Use a decision companion for actual
 decisions: evidence of someone's remark is not authorization to implement it.
+
+For how these Kinds work together, see the [Deep Research workflow](../../references/holaxis-deep-research/deep-research-workflow.md).

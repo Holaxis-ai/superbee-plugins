@@ -73,3 +73,5 @@ epistemic unknown; Task represents intended work. Neither is redefined here.
 
 Resolved records preserve their deliberation; later changes belong in a new
 Decision, explicitly linked as superseding the earlier one.
+
+For how these Kinds work together, see the [Decision Making guide](../../references/holaxis-decision/decision-model.md).

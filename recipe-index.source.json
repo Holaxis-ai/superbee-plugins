@@ -74,6 +74,40 @@
         ],
         "audience": "both"
       }
+    },
+    {
+      "id": "holaxis-decision",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "discovery": {
+        "keywords": [
+          "decisions",
+          "alternatives",
+          "criteria",
+          "rationale"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
+    },
+    {
+      "id": "resource",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "discovery": {
+        "keywords": [
+          "resources",
+          "references",
+          "links",
+          "sources"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
     }
   ],
   "cookbooks": [
