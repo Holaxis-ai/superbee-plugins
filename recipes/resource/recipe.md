@@ -2,8 +2,9 @@
 type: Recipe
 id: resource
 title: Resource
-version: "0.1.0"
+version: "0.1.1"
 summary: External resource pointers with descriptive metadata and resource-to-resource relationships.
+offer: "Keep a directory of useful resources, links, and how they relate."
 content_policy: definitions-only
 references:
   - references/resource.md

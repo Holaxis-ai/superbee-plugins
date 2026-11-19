@@ -2,7 +2,7 @@
 type: Recipe
 id: holaxis-deep-research
 title: 'Deep, Deep Research'
-version: 0.1.0-pre.3
+version: 0.1.0-pre.4
 summary: >-
   Located evidence, scoped claims and persistent questions for cumulative
   research.

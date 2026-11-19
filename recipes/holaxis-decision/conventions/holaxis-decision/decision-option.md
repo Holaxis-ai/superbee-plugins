@@ -43,3 +43,5 @@ explicit link; do not store a second competing selected-state flag here.
 Evidence stays with its authoritative Research Source, Observation or Claim
 when those Kinds are installed. A reviewed hypothesis is not authorization
 to adopt the option.
+
+For how these Kinds work together, see the [Decision Making guide](../../references/holaxis-decision/decision-model.md).

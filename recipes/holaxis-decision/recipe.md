@@ -2,7 +2,7 @@
 type: Recipe
 id: holaxis-decision
 title: Decision Making
-version: 0.1.1
+version: 0.1.2
 summary: >-
   Explicit choices, alternatives and deliberation with research and task
   companions.

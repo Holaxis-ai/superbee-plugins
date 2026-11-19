@@ -76,10 +76,12 @@ test('Decision is a definitions-only recipe with three independent Kinds', () =>
     const reference = read(path.join(recipe, 'references', ownership, name + '.md'));
     assert.equal(field(frontmatter(reference), 'type'), 'Reference');
     assert.ok(frontmatter(source).references.includes('references/' + ownership + '/' + name + '.md'));
-    // Superbee 0.4.5 extracts Markdown links even inside code spans/fences.
-    // Installed references must not contain illustrative .md links to missing targets.
-    assert.doesNotMatch(reference, /\]\([^\n)]*\.md(?:#[^\n)]*)?\)/,
-      name + ' reference must not contain Markdown links to .md targets');
+    // Superbee extracts Markdown links even inside code spans and fences.
+    // Any relative document link must point to a reference the recipe actually installs.
+    for (const [, target] of reference.matchAll(/\]\(([^\n)#]+\.md)(?:#[^\n)]*)?\)/g)) {
+      assert.ok(frontmatter(source).references.includes(path.posix.join('references', ownership, target)),
+        name + ' links to an undeclared reference: ' + target);
+    }
   }
   const guide = read(path.join(recipe, 'references', ownership, 'adopting-existing-decisions.md'));
   assert.match(guide, /first-by-ID/);

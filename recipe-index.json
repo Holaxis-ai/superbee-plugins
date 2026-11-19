@@ -4,12 +4,41 @@
   "title": "Superbee plugin recipes",
   "recipes": [
     {
-      "id": "holaxis-deep-research",
-      "version": "0.1.0-pre.3",
+      "id": "holaxis-decision",
+      "version": "0.1.2",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:7b96cae346a84820ad7e69ecab0a97587079db8ced59a78d9c0fdd11f4c8ee60",
-      "files_digest": "sha256:e83fcfa167a54b6804c1e87a4ebaba4c16e1a818ee6c0537cbaa1354b2055aee",
+      "source_digest": "sha256:6a19251feadd61ce62d4ce5e9b5131ce6db144e7769095f5f251700937eaabba",
+      "files_digest": "sha256:f0fb2876f154fcf919ae51fe478868936c4f85e7aa688bdd6b5d7bcaf3fccb4a",
+      "root": "recipes/holaxis-decision",
+      "files": [
+        "conventions/holaxis-decision/decision-option.md",
+        "conventions/holaxis-decision/decision-question.md",
+        "conventions/holaxis-decision/decision.md",
+        "recipe.md",
+        "references/holaxis-decision/adopting-existing-decisions.md",
+        "references/holaxis-decision/decision-model.md"
+      ],
+      "discovery": {
+        "keywords": [
+          "decisions",
+          "alternatives",
+          "criteria",
+          "rationale"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
+    },
+    {
+      "id": "holaxis-deep-research",
+      "version": "0.1.0-pre.4",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:d4a5134590acc890d02e145320e22f14e7446db1756f182c59e871f83c7821af",
+      "files_digest": "sha256:171121e8a99def38e3d27eed5ee7f3b31a6eb3c672359310d09e71c19bece02d",
       "root": "recipes/holaxis-deep-research",
       "files": [
         "conventions/holaxis-deep-research/research-claim.md",
@@ -121,6 +150,32 @@
           "home"
         ],
         "audience": "personal"
+      }
+    },
+    {
+      "id": "resource",
+      "version": "0.1.1",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:36d2955a19b3fd80c89f0a8bcb992067ab1a59e162996a7cb2838fd5e0b4e1bc",
+      "files_digest": "sha256:f9855215fd330051648b662848950939ad5e694b0f5c915c9781ac3d25beea91",
+      "root": "recipes/resource",
+      "files": [
+        "conventions/resource.md",
+        "recipe.md",
+        "references/resource.md"
+      ],
+      "discovery": {
+        "keywords": [
+          "resources",
+          "references",
+          "links",
+          "sources"
+        ],
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
       }
     }
   ],
