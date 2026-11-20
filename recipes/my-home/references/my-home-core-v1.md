@@ -62,11 +62,11 @@ they have no field and stay in the Source Record.
 ## Where a fact came from and what to check
 
 Say where a fact came from in the standard `sources` field of the record that uses it: one entry
-per record it came from, such as a Source Record, each with a plain `title` a person can read,
-such as "the public property record". List the names of the fields a person should confirm in
-`superbee_to_check`. This recipe declares neither: `sources` is standard on every record and
-`superbee_to_check` belongs to Superbee. `basis` stays this recipe's own summary of how the facts
-were learned.
+per record it came from, such as a Source Record, with that record's path as `resource` and a
+plain `title` a person can read, such as "the public property record". List the names of the
+fields a person should confirm in `superbee_to_check`. This recipe declares neither: `sources` is
+standard on every record, and `superbee_to_check` is a Superbee field (keys starting `superbee_`
+need no declaration). `basis` stays this recipe's own summary of how the facts were learned.
 
 ## Composition, reading and authority
 

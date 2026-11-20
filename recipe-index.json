@@ -69,8 +69,8 @@
       "version": "0.3.0",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:b8253e4e5394dca44626b4555ab7eb79698b1373bbd97402c15ac1f90a4fb62b",
-      "files_digest": "sha256:15b084cdf28e0fd9d9e9b88453d516f493b85cd15da24efbdf34721b9867dd5e",
+      "source_digest": "sha256:8e0b2c0faf119b39110f14a9d757d157530210ca0c1b148443b498374bdbd005",
+      "files_digest": "sha256:b3cb91a2463be09bd9157b52ab10146147836a8486c5dfb4016986bcd183f27f",
       "root": "recipes/my-home",
       "files": [
         "conventions/my-home-asset.md",
@@ -99,8 +99,8 @@
       "version": "0.1.2",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:b228c5e9b6dc50c0a9a932bdbf7b18e95872fd0e90517fcb2a50026cd52632a7",
-      "files_digest": "sha256:c881e4f44744df9e7513c601f29494256c6f99d959f435b73363dfa7e1a20546",
+      "source_digest": "sha256:5441708d86aeeb22890dd3a49606f89ab5f786aa581062ad0055426b97baa143",
+      "files_digest": "sha256:cb030f4e981145d2f41ba3e8e9cc2c6ecf8b2a4ccbe569f14d0bd4bf4823e3b7",
       "root": "recipes/my-home-costs",
       "files": [
         "conventions/my-home-money-record.md",
@@ -128,8 +128,8 @@
       "version": "0.1.6",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:f59e57a4ca29f7e9b12ab70274bbaea7920c31d7f487d2426edd2d6e9b0c0d4c",
-      "files_digest": "sha256:90f7e9da882b1e0652c4116b8ae1126bf17095d7544fba210d85a3fe0ac30b5b",
+      "source_digest": "sha256:1b1c72186bfc533ea1c827eb7998ba5925e04d0f3427eeaab00d912786ef40c0",
+      "files_digest": "sha256:9ad28c8454b4e199c4cf2e7a8090cd5df195d4219c1bc5c0d9a720b433f4ac3e",
       "root": "recipes/my-home-maintenance",
       "files": [
         "conventions/my-home-maintenance-plan.md",
