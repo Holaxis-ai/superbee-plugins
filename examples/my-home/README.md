@@ -3,7 +3,7 @@
 This example exercises three inert recipes: [`my-home`](../../recipes/my-home/recipe.md),
 [`my-home-maintenance`](../../recipes/my-home-maintenance/recipe.md) and
 [`my-home-costs`](../../recipes/my-home-costs/recipe.md). Together they declare Home, Space,
-Asset, Maintenance Plan, Service Record, Project and Money Record. Installing them creates no
+Asset, Source Record, Maintenance Plan, Service Record, Project and Money Record. Installing them creates no
 household inventory, model binding, scheduler, vendor contact, bank connection or payment.
 
 Start with a Home and one useful item or job. Rooms, equipment and detailed history can be added
@@ -19,6 +19,10 @@ definitions stay in each recipe's reference.
 Maintenance release `0.1.2` adds a read-only "What's due" View: overdue and upcoming Plans and
 recent service visits, following the maintenance reference. Kinds and fields are unchanged; the
 reference gains a short section on what the View shows.
+Core release `0.2.0` adds a Source Record Kind under `source-records/`: a record fetched from an
+outside public source, with its source, inputs and fetch time as fields and the record itself as a
+JSON code block in the body. Existing Kinds and fields are unchanged; the core reference gains a
+short section on how to read one.
 
 ## Run the executable example
 
