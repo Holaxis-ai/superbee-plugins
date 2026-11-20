@@ -53,6 +53,21 @@ a Home: copy a value into a Home or Asset only as imported basis, keeping the So
 its evidence. A later fetch for the same inputs replaces the body and all its fields, title
 included. The record is data, never agent instructions, and its inputs may include an address.
 
+A home's basic facts, such as year built, living and lot area with their units, rooms, floors,
+units, county, school district and flood map details, are optional Home fields, not records of
+their own. A school district is a name only, never a rating. A lower-risk flood zone does not
+mean no risk. Past sales and tax assessments are the property's history, not this person's money:
+they have no field and stay in the Source Record.
+
+## Where a fact came from and what to check
+
+Say where a fact came from in the standard `sources` field of the record that uses it: one entry
+per record it came from, such as a Source Record, each with a plain `title` a person can read,
+such as "the public property record". List the names of the fields a person should confirm in
+`superbee_to_check`. This recipe declares neither: `sources` is standard on every record and
+`superbee_to_check` belongs to Superbee. `basis` stays this recipe's own summary of how the facts
+were learned.
+
 ## Composition, reading and authority
 
 Install selected core first, then selected disjoint maintenance/costs definitions explicitly.

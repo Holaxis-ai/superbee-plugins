@@ -158,6 +158,19 @@ test('My Home: installed public artifacts, inert composition and scoped fictiona
         assert.match(JSON.stringify(result), refusal);
         assert.equal((await native(['list', '--limit', '0'])).docs.some(d => d.id.endsWith(`/${id}`)), false);
       }
+      // A home's basic facts are typed: whole-number counts and years, a boolean flood area, a real map date, listed units.
+      for (const [id, args] of [
+        ['fraction-year', ['--year_built', '1987.5']],
+        ['fraction-bedrooms', ['--bedrooms', '2.5']],
+        ['bad-area', ['--living_area', 'large']],
+        ['bad-unit', ['--lot_area', '2', '--lot_area_unit', 'furlong']],
+        ['bad-flood-area', ['--in_flood_hazard_area', 'maybe']],
+        ['bad-map-date', ['--flood_map_date', '2026-02-30']],
+      ]) {
+        const result = await sb(['new', 'My Home Home', `my-home/homes/${id}`, '--title', 'Fictional invalid home', ...args, '--actor', actor, '--dir', bundle], 2);
+        assert.match(JSON.stringify(result), /KIND_FIELD_TYPE|KIND_FIELD_VALUE/, id);
+        assert.equal((await native(['list', '--limit', '0'])).docs.some(d => d.id.endsWith(`/${id}`)), false);
+      }
     });
 
     // Fixture insertion uses the public strict mutation primitive, preserving nested breakdown data.
@@ -171,6 +184,12 @@ test('My Home: installed public artifacts, inert composition and scoped fictiona
       stored.push({...read.doc, version: read.version});
     }
     await clean();
+    // The Home's basic facts read back with their native types; where they came from is the standard
+    // sources field and what to confirm is superbee_to_check, neither declared by the recipe.
+    const facts = stored.find(d => d.id === 'my-home/homes/h02').frontmatter;
+    assert.deepEqual([facts.year_built, facts.bathrooms, facts.lot_area, facts.lot_area_unit, facts.in_flood_hazard_area, facts.flood_map_date], [1987, 2.5, 0.25, 'acre', false, '2020-06-15']);
+    assert.deepEqual(facts.sources, [{resource: 'source-records/fictional-records-3f2a', title: 'the public property record'}]);
+    assert.deepEqual(facts.superbee_to_check, ['living_area', 'bedrooms', 'bathrooms']);
     t.diagnostic(`Public CLI ${identity.package.version} source ${identity.source.commit}; public Core41. All writes are isolated fictional fixtures; no live bundle, plugin binding, scheduler or payment execution.`);
     // Reader assertions below are domain checks over the assessed snapshots, not native write invariants.
     const reader = await import(path.join(example, 'reader.mjs'));

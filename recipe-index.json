@@ -66,11 +66,11 @@
     },
     {
       "id": "my-home",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:f75d62a9ebb8b90824a05155ab025b04743de510d11d4827a2529106fdd3bff4",
-      "files_digest": "sha256:ef7e68a98b7ce76c596ecb2483bf216b48eea30b7c1c092e7f3bd100adcc2646",
+      "source_digest": "sha256:b8253e4e5394dca44626b4555ab7eb79698b1373bbd97402c15ac1f90a4fb62b",
+      "files_digest": "sha256:15b084cdf28e0fd9d9e9b88453d516f493b85cd15da24efbdf34721b9867dd5e",
       "root": "recipes/my-home",
       "files": [
         "conventions/my-home-asset.md",
@@ -96,11 +96,11 @@
     },
     {
       "id": "my-home-costs",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:9ca7a165de391be612247c1274069561ac641a94545752d5461a413db54da12e",
-      "files_digest": "sha256:3c69e900950955cb7c8999073da7fd885ef695c1f6e9dabc339c6581bc629092",
+      "source_digest": "sha256:b228c5e9b6dc50c0a9a932bdbf7b18e95872fd0e90517fcb2a50026cd52632a7",
+      "files_digest": "sha256:c881e4f44744df9e7513c601f29494256c6f99d959f435b73363dfa7e1a20546",
       "root": "recipes/my-home-costs",
       "files": [
         "conventions/my-home-money-record.md",
@@ -125,11 +125,11 @@
     },
     {
       "id": "my-home-maintenance",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:e1655ee9daf089cd7aa126e5c3a2589ed1a65699d03f04f75477daf6cd8a5c45",
-      "files_digest": "sha256:d1b9f4f009558b37f1905dd0c38cdf73d5c0c12693f15228cb5e58e34b5090f5",
+      "source_digest": "sha256:f59e57a4ca29f7e9b12ab70274bbaea7920c31d7f487d2426edd2d6e9b0c0d4c",
+      "files_digest": "sha256:90f7e9da882b1e0652c4116b8ae1126bf17095d7544fba210d85a3fe0ac30b5b",
       "root": "recipes/my-home-maintenance",
       "files": [
         "conventions/my-home-maintenance-plan.md",
