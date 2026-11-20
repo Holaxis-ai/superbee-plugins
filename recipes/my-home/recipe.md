@@ -10,6 +10,6 @@ references: ["references/my-home-core-v1.md"]
 ---
 # My Home
 
-Installs four disjoint Kinds and one operating reference: Home, Space, Asset, and Source Record for a record fetched from an outside public source. Start with one useful Home or Asset; no property records, addresses, model, tasks, credentials or execution are installed. Optional maintenance and costs recipes link into these Kinds rather than redefining them.
+Installs four disjoint Kinds and one operating reference: Home, Space, Asset, and Source Record for a record fetched from an outside public source. Start with one useful Home or Asset; installing creates no records, addresses, model, tasks, credentials or execution. Optional maintenance and costs recipes link into these Kinds rather than redefining them.
 
 Use the existing recipe-set structural preflight for a selected composition. Manifest dependency resolution is not assumed. Examples and executable qualification remain outside the recipe payload.

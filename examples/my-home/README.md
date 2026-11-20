@@ -19,6 +19,7 @@ definitions stay in each recipe's reference.
 Maintenance release `0.1.2` adds a read-only "What's due" View: overdue and upcoming Plans and
 recent service visits, following the maintenance reference. Kinds and fields are unchanged; the
 reference gains a short section on what the View shows.
+
 Core release `0.2.0` adds a Source Record Kind under `source-records/`: a record fetched from an
 outside public source, with its source, inputs and fetch time as fields and the record itself as a
 JSON code block in the body. Existing Kinds and fields are unchanged; the core reference gains a

@@ -4,7 +4,7 @@ title: "Source Record"
 governs: "Source Record"
 path: "source-records/"
 description: "A record fetched from an outside public source, such as a property record for an address, kept as it was on the day it was fetched."
-fields: {"required": ["title", "source_id", "source_host", "source_path", "query", "fetched_at"], "optional": [], "types": {"fetched_at": "datetime"}, "descriptions": {"title": "Display name; changing it does not rename the immutable document path.", "source_id": "Short name of the outside source the record came from.", "source_host": "Host name the record was fetched from.", "source_path": "Fixed path on that host the record was fetched from.", "query": "The inputs the record was looked up by, normalized. May include an address; avoid disclosing it unnecessarily.", "fetched_at": "Instant the record was fetched; a later fetch for the same inputs replaces the body and this value."}}
+fields: {"required": ["title", "source_id", "source_host", "source_path", "query", "fetched_at"], "optional": [], "types": {"fetched_at": "datetime"}, "descriptions": {"title": "Set by the fetch; a later fetch resets it.", "source_id": "Short name of the source.", "source_host": "The website the record came from.", "source_path": "Where on that website the record came from.", "query": "What was looked up, such as an address, in lowercase without punctuation. Avoid sharing it unnecessarily.", "fetched_at": "When the record was fetched. A later fetch for the same inputs replaces the record and all its fields."}}
 ---
 # Source Record
 

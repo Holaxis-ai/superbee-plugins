@@ -69,8 +69,8 @@
       "version": "0.2.0",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:1354a548d0864f3522a1b1a2d1beff7119847f18ca9b6527e324e08693b26165",
-      "files_digest": "sha256:1d3a68cb3eb70e357f4c3df66401b6e807729c1b6c7d123e70a71471a1a20a67",
+      "source_digest": "sha256:f75d62a9ebb8b90824a05155ab025b04743de510d11d4827a2529106fdd3bff4",
+      "files_digest": "sha256:ef7e68a98b7ce76c596ecb2483bf216b48eea30b7c1c092e7f3bd100adcc2646",
       "root": "recipes/my-home",
       "files": [
         "conventions/my-home-asset.md",
