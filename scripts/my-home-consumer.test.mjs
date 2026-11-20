@@ -112,9 +112,9 @@ test('My Home: installed public artifacts, inert composition and scoped fictiona
       for (const key of ['malformed', 'kind_warnings', 'unresolved_links', 'link_type_violations', 'conformance_debt']) assert.equal(state[key], 0, `${key}: ${JSON.stringify(state)}`);
       return state;
     };
-    await t.test('installation creates only seven definitions, static references and one read-only View; repeat preserves customization', async () => {
+    await t.test('installation creates only eight definitions, static references and one read-only View; repeat preserves customization', async () => {
       const before = await clean();
-      assert.equal(before.kinds, 7);
+      assert.equal(before.kinds, 8);
       const listing = await native(['list', '--limit', '0']);
       assert.ok(listing.docs.every(d => d.id.startsWith('conventions/') || d.id.startsWith('references/') || d.id === viewRegistry));
       assert.deepEqual((await native(['view', 'list'])).views.rows.map(v => [v.id, v.access]), [[viewRegistry, 'bundle-read']]);
@@ -150,6 +150,12 @@ test('My Home: installed public artifacts, inert composition and scoped fictiona
       ]) {
         const result = await sb(['new', 'My Home Money Record', `my-home/money/${id}`, '--title', 'Fictional invalid input', ...args, '--actor', actor, '--dir', bundle], 2);
         assert.match(JSON.stringify(result), /KIND_FIELD_TYPE|KIND_FIELD_VALUE/);
+        assert.equal((await native(['list', '--limit', '0'])).docs.some(d => d.id.endsWith(`/${id}`)), false);
+      }
+      const record = ['--source_id', 'fictional-records', '--source_host', 'records.example.com', '--source_path', '/v1/properties', '--query', '12 example lane springfield'];
+      for (const [id, args, refusal] of [['bad-fetched-at', [...record, '--fetched_at', '2026-02-30T00:00:00Z'], /KIND_FIELD_TYPE/], ['missing-source', ['--fetched_at', '2026-11-20T12:00:00.000Z'], /requires a non-empty 'source_id'/]]) {
+        const result = await sb(['new', 'Source Record', `source-records/${id}`, '--title', 'Fictional invalid record', ...args, '--actor', actor, '--dir', bundle], 2);
+        assert.match(JSON.stringify(result), refusal);
         assert.equal((await native(['list', '--limit', '0'])).docs.some(d => d.id.endsWith(`/${id}`)), false);
       }
     });

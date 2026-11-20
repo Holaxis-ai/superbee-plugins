@@ -136,6 +136,19 @@
       "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n[located in](../spaces/s02.md)\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
     },
     {
+      "id": "source-records/fictional-records-3f2a",
+      "frontmatter": {
+        "type": "Source Record",
+        "title": "fictional-records record",
+        "source_id": "fictional-records",
+        "source_host": "records.example.com",
+        "source_path": "/v1/properties",
+        "query": "12 example lane springfield",
+        "fetched_at": "2026-11-20T12:00:00.000Z"
+      },
+      "body": "```json\n{\n  \"address\": \"12 Example Lane, Springfield\",\n  \"bedrooms\": 3,\n  \"yearBuilt\": 1987\n}\n```\n"
+    },
+    {
       "id": "my-home/maintenance/p01",
       "frontmatter": {
         "type": "My Home Maintenance Plan",
