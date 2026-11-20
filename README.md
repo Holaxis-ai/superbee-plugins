@@ -51,7 +51,9 @@ The data-only [`my-home`](recipes/my-home/recipe.md) core and its
 [`maintenance`](recipes/my-home-maintenance/recipe.md) and
 [`costs`](recipes/my-home-costs/recipe.md) extensions supply eight Kinds for homes,
 spaces, assets, records fetched from outside sources, service history, projects and money
-records. Basic quotes, budgets, invoices and actual reported payments are included;
+records. A Home holds its basic facts, such as year built, size, rooms and flood zone, as
+fields. Each Kind's description says what belongs in it and where the nearest thing that does
+not belong goes. Basic quotes, budgets, invoices and actual reported payments are included;
 alternatives, billed amounts and cash spent stay separate. The [fictional consumer example](examples/my-home/README.md)
 qualifies explicit composition, native field validation and scoped read-time domain
 checks against public artifacts. Installation creates no household records, schedules,

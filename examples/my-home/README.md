@@ -25,6 +25,16 @@ outside public source, with its source, inputs and fetch time as fields and the 
 JSON code block in the body. Existing Kinds and fields are unchanged; the core reference gains a
 short section on how to read one.
 
+Core release `0.3.0` gives Home optional fields for a home's basic facts: year built, living and
+lot area each with a unit, bedrooms, bathrooms, floors, units, county, school district (a name,
+never a rating) and flood map details. No Kind, Kind name or link changes. Every Kind description
+now says in plain words what belongs, when to make one and where the nearest thing that does not
+belong goes, and field descriptions are shorter while keeping the rules a writer needs, such as a
+Money Record amount that is never negative, with a credit or refund told by its kind; maintenance `0.1.6` and costs `0.1.2` carry the
+same rewrite with no field changes. The core reference says that where a fact came from goes in
+the standard `sources` field and the fields to confirm in `superbee_to_check`. The fixture's
+owner Home carries these facts, cites the fictional Source Record and lists fields to check.
+
 ## Run the executable example
 
 From a reviewed checkout with its locked development dependencies installed:

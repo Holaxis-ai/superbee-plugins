@@ -99,7 +99,33 @@
         "title": "Dev home",
         "occupancy_role": "owner",
         "timezone": "America/New_York",
-        "basis": "reported"
+        "basis": "reported",
+        "home_category": "house",
+        "year_built": 1987,
+        "living_area": 1640.5,
+        "living_area_unit": "sq_ft",
+        "lot_area": 0.25,
+        "lot_area_unit": "acre",
+        "bedrooms": 3,
+        "bathrooms": 2.5,
+        "floor_count": 2,
+        "unit_count": 1,
+        "county": "Example County",
+        "school_district": "Example Unified School District",
+        "flood_zone": "X",
+        "in_flood_hazard_area": false,
+        "flood_map_date": "2020-06-15",
+        "sources": [
+          {
+            "resource": "source-records/fictional-records-3f2a",
+            "title": "the public property record"
+          }
+        ],
+        "superbee_to_check": [
+          "living_area",
+          "bedrooms",
+          "bathrooms"
+        ]
       },
       "body": "# Context\n\nSynthetic household fixture for scoped reference-reader tests.\n\n# Evidence\n\nFictional example; no real-world action or fact is asserted.\n\n# Unknowns\n\nNo bank, physical or professional verification is implied."
     },
