@@ -1,6 +1,6 @@
 ---
 type: "Convention"
-title: "My Home Asset"
+title: "Asset"
 governs: "My Home Asset"
 path: "my-home/assets/"
 description: "A physical thing in a home that may be looked after, repaired, replaced or paid for: an appliance, a fixture, a finish such as flooring or siding, or a whole system such as heating or cooling. A plain fact about the home, such as its size or age, belongs on the Home. Something only quoted or considered is not an Asset yet; it goes in a Project, or its quote in a Money Record."

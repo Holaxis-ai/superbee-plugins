@@ -35,6 +35,14 @@ same rewrite with no field changes. The core reference says that where a fact ca
 the standard `sources` field and the fields to confirm in `superbee_to_check`. The fixture's
 owner Home carries these facts, cites the fictional Source Record and lists fields to check.
 
+Core release `0.3.1`, maintenance `0.1.7` and costs `0.1.3` give each Kind a plain display title:
+Home, Space, Asset, Maintenance Plan, Service Record, Project and Money Record; Source Record
+already had one. Only the `title` of each Kind's definition changes. Each Kind's `governs` type,
+such as `My Home Asset`, its links, fields, paths and body are unchanged, so existing records keep
+their type and need no migration. A bundle installed from an earlier release keeps its old titles:
+`recipe evolve` does not replace an installed title, so set each title by hand, then run
+`recipe evolve` to record the new release.
+
 ## Run the executable example
 
 From a reviewed checkout with its locked development dependencies installed:

@@ -1,6 +1,6 @@
 ---
 type: "Convention"
-title: "My Home Service Record"
+title: "Service Record"
 governs: "My Home Service Record"
 path: "my-home/services/"
 description: "Work that was actually done on the home, a room or a thing, such as a repair, an inspection or a service visit; one per visit or job. Upkeep still to do is a Maintenance Plan; what it cost is a Money Record."

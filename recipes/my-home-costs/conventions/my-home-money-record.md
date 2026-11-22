@@ -1,6 +1,6 @@
 ---
 type: "Convention"
-title: "My Home Money Record"
+title: "Money Record"
 governs: "My Home Money Record"
 path: "my-home/money/"
 description: "One amount of money quoted, budgeted, billed, paid, credited or refunded for a home, and what backs it up: a quote, budget, order, invoice, payment, credit or refund. One per amount as the document or person states it, such as an invoice's total; never a total added up from other records. A past sale price or a tax assessment from a public record is not one and stays in the Source Record; a tax bill that is paid is."

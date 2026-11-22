@@ -1,6 +1,6 @@
 ---
 type: "Convention"
-title: "My Home Maintenance Plan"
+title: "Maintenance Plan"
 governs: "My Home Maintenance Plan"
 path: "my-home/maintenance/"
 description: "Upkeep intended for a home, once or repeatedly, such as servicing the furnace each fall, and when it is next due; make one only for upkeep someone wants to keep up with. Work already done is a Service Record; a job to track costs for is a Project."
