@@ -57,7 +57,7 @@ A home's basic facts, such as year built, living and lot area with their units, 
 units, county, school district and flood map details, are optional Home fields, not records of
 their own. A school district is a name only, never a rating. A lower-risk flood zone does not
 mean no risk. Past sales and tax assessments are the property's history, not this person's money:
-they have no field and stay in the Source Record.
+they have no field, and are never a Money Record.
 
 ## Where a fact came from and what to check
 

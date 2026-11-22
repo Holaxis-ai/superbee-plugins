@@ -47,6 +47,10 @@ Core release `0.3.2` changes one sentence of the Source Record description: it n
 that facts without a field elsewhere stay in the fetched record. A writer may keep a useful fact on
 the record it describes, in a field or in the body. No field, link or path changes.
 
+Core release `0.3.3` and costs `0.1.4` drop the same instruction from two more sentences: a past
+sale or tax assessment is still never a Money Record, but nothing says it must stay only in the
+fetched record. No field, link or path changes.
+
 ## Run the executable example
 
 From a reviewed checkout with its locked development dependencies installed:
