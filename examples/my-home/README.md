@@ -43,6 +43,10 @@ their type and need no migration. A bundle installed from an earlier release kee
 `recipe evolve` does not replace an installed title, so set each title by hand, then run
 `recipe evolve` to record the new release.
 
+Core release `0.3.2` changes one sentence of the Source Record description: it no longer says
+that facts without a field elsewhere stay in the fetched record. A writer may keep a useful fact on
+the record it describes, in a field or in the body. No field, link or path changes.
+
 ## Run the executable example
 
 From a reviewed checkout with its locked development dependencies installed:

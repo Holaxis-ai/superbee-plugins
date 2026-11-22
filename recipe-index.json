@@ -66,11 +66,11 @@
     },
     {
       "id": "my-home",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "designation": "supported",
       "maintainer": "Holaxis-ai",
-      "source_digest": "sha256:e2994e1d4bcdd398bec643208da4038c2289a6b8974bc0f98aedf8627c1076fe",
-      "files_digest": "sha256:a78daa08cd52692abe57588933dd091168124b7e27fe9bc6e3f410fe03941b31",
+      "source_digest": "sha256:d7a58e0429c71192d4c3e1976bc9f9405d81a11bc77926c3a8f04f001f527575",
+      "files_digest": "sha256:a6fc8e5d89f894806c425d44b12f739b18b8fcab8e15dbde046c6d446b68f26f",
       "root": "recipes/my-home",
       "files": [
         "conventions/my-home-asset.md",

@@ -2,7 +2,7 @@
 type: "Recipe"
 id: "my-home"
 title: "My Home"
-version: "0.3.1"
+version: "0.3.2"
 summary: "Stable Home, Space and Asset identities without an exhaustive inventory, a home's basic facts and records fetched from outside sources."
 offer: "Set up your home, its rooms and the things in them, so everything else has a place to attach."
 content_policy: "definitions-only"
