@@ -1,6 +1,6 @@
 ---
 type: "Convention"
-title: "My Home Project"
+title: "Project"
 governs: "My Home Project"
 path: "my-home/projects/"
 description: "A job on a home that is wanted or under way, such as a new roof or a kitchen remodel, with its quotes and costs; make one only for work someone names. Its amounts are Money Records; upkeep that repeats is a Maintenance Plan."

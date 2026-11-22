@@ -1,6 +1,6 @@
 ---
 type: "Convention"
-title: "My Home Space"
+title: "Space"
 governs: "My Home Space"
 path: "my-home/spaces/"
 description: "A room or area of one home, indoors or out, such as the kitchen, garage or yard; make one when something is kept, done or planned there. A thing in it is an Asset; a fact about the whole home belongs on the Home."

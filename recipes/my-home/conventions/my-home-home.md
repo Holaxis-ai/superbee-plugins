@@ -1,6 +1,6 @@
 ---
 type: "Convention"
-title: "My Home Home"
+title: "Home"
 governs: "My Home Home"
 path: "my-home/homes/"
 description: "A house, apartment or other home someone lives in or looks after; one per home. Its basic facts, such as year built, size, rooms and flood zone, are fields here, not records of their own. A room or area is a Space; equipment, a system or a finish is an Asset."
