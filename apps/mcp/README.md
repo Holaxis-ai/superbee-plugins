@@ -46,27 +46,39 @@ npm install --prefix "$prefix" --ignore-scripts --no-audit --no-fund \
 "$prefix/node_modules/.bin/superbee-mcp" --help
 ```
 
-Add a separate entry to the MCP Apps host's server configuration. Substitute the absolute
-installation and workspace paths for the example values. Choose the actor to attribute to
-confirmed changes. Use `--workspace planning` in place of `--dir /absolute/path/to/bundle`
-to pin the process to an existing catalog label.
+Register the installed executable in the client you use. For example, with Codex:
 
-```json
-{
-  "mcpServers": {
-    "superbee-experimental": {
-      "command": "/absolute/path/to/install/node_modules/.bin/superbee-mcp",
-      "args": ["--dir", "/absolute/path/to/bundle", "--actor", "human:editor"]
-    }
-  }
-}
+```sh
+mcp="$prefix/node_modules/.bin/superbee-mcp"
+"$mcp" install --host codex --dir /absolute/path/to/bundle --actor human:editor
+"$mcp" status --host codex
 ```
+
+Choose `codex`, `claude-code`, `claude-desktop` (macOS), or `opencode`. You can replace
+`--dir` with `--workspace planning` for a registered catalog label or ID. Install checks
+that the selected workspace can open with the supplied actor. Keep this prefix and its Node
+installation available to the client. Restart the client after a changed registration.
+
+The plugin manages the user-level entry named `superbee-experimental`. The bundled CLI
+uses the separate name `superbee`. Repeating the same install is safe. To switch workspace
+or actor, uninstall the experimental entry and install it again. A same-name entry with
+custom settings needs manual review in the client. OpenCode reads either its v1 or v2
+configuration, including JSONC. If multiple standard files exist, select the intended file
+with an absolute `OPENCODE_CONFIG`. Manage inline OpenCode configuration directly.
 
 Use `show_document` to display Markdown and `list_views` or `show_view` for a registered
 View. A temporary View uses `show_view` with `mode: "transient"`, exact HTML and declared
 access. The App shell collects local trust and a separate decision for each proposed edit.
-To roll back, remove the `superbee-experimental` registration, restart the host and use
-the bundled registration. Uninstall the two packages from the dedicated prefix when finished.
+To roll back, run the following before removing the dedicated installation. Restart
+the client and use its existing bundled registration if configured.
+
+```sh
+"$mcp" uninstall --host codex
+"$mcp" status --host codex
+```
+
+Repeat uninstall for each client where you installed the plugin, then remove the packages
+from the dedicated prefix.
 
 ## Verify an installation
 

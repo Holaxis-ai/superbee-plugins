@@ -37,6 +37,7 @@ await build({
   format: "esm",
   target: "node22",
   external: ["@superbee/cli/*"],
+  alias: { "jsonc-parser": "jsonc-parser/lib/esm/main.js" },
   banner: {
     js: "#!/usr/bin/env node\nimport {createRequire as makeRequire} from 'node:module'; const require=makeRequire(import.meta.url);",
   },

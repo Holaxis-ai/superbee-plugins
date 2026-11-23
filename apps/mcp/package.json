@@ -1,6 +1,6 @@
 {
   "name": "@superbee/experimental-mcp",
-  "version": "0.1.0-experimental.1",
+  "version": "0.1.0-experimental.2",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
@@ -29,7 +29,9 @@
     "@superbee/view-host": "0.1.0",
     "@types/node": "22.20.0",
     "esbuild": "0.25.12",
+    "jsonc-parser": "3.3.1",
     "playwright": "1.61.1",
+    "smol-toml": "1.6.0",
     "typescript": "5.9.3",
     "zod": "4.6.7"
   }

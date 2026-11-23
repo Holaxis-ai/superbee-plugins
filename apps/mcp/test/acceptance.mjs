@@ -1,4 +1,5 @@
 // Run from apps/mcp after building. The client communicates with the installed binary over stdio.
+import { registrationAcceptance } from "./registration.mjs";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import {
@@ -96,6 +97,7 @@ try {
     { cwd: install },
   );
   const bin = path.join(install, "node_modules/.bin/superbee-mcp");
+  await registrationAcceptance(bin, scratch, bundle);
   await client.connect(
     new StdioClientTransport({
       command: process.execPath,

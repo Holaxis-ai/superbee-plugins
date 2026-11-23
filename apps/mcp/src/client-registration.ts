@@ -1,0 +1,427 @@
+import { execFileSync } from "node:child_process";
+import { mkdirSync, realpathSync, rmdirSync } from "node:fs";
+import { homedir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { isDeepStrictEqual, parseArgs } from "node:util";
+import { parse as parseToml } from "smol-toml";
+import {
+  configObject,
+  patchConfig,
+  record,
+  snapshot,
+  type Snapshot,
+} from "./client-config.js";
+
+const name = "superbee-experimental";
+export const clientUsage = `superbee-mcp install --host <host> (--dir <directory> | --workspace <catalog label or ID>) --actor <identity>
+superbee-mcp status --host <host>
+superbee-mcp uninstall --host <host>
+Hosts: codex, claude-code, claude-desktop (macOS), opencode`;
+
+type Host = "codex" | "claude-code" | "claude-desktop" | "opencode";
+type Operation = "install" | "uninstall" | "status";
+type Launch = { command: string; args: string[] };
+const executable = fileURLToPath(import.meta.url);
+const node = process.execPath;
+
+function native(command: string, args: string[]) {
+  try {
+    return execFileSync(command, args, {
+      cwd: homedir(),
+      encoding: "utf8",
+      timeout: 10000,
+      maxBuffer: 4 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+  } catch {
+    throw new Error(
+      `Could not run ${command} ${args.slice(0, 2).join(" ")}. Check the client installation and its user configuration.`,
+    );
+  }
+}
+
+function table(value: unknown): Record<string, unknown> {
+  if (value === undefined) return {};
+  if (!record(value)) throw new Error("Invalid MCP configuration table.");
+  return value;
+}
+
+function absolute(file: string) {
+  if (!path.isAbsolute(file))
+    throw new Error("Client config overrides must be absolute paths.");
+  return file;
+}
+
+function openCodeVersion() {
+  for (const cmd of ["opencode2", "opencode"]) {
+    try {
+      const result = native(cmd, ["--version"])
+        .trim()
+        .match(/^v?(\d+)\./);
+      if (result) return Number(result[1]) >= 2 ? 2 : 1;
+    } catch {
+      /* Try the other supported executable. */
+    }
+  }
+  throw new Error(
+    "Cannot determine OpenCode version. Install OpenCode or define the MCP table in its configuration.",
+  );
+}
+
+function entryAt(root: Record<string, unknown>, keys: string[]): unknown {
+  let object = root;
+  for (const key of keys.slice(0, -1)) object = table(object[key]);
+  return object[name];
+}
+
+interface Target {
+  before: Snapshot;
+  keys: string[];
+  entry: unknown;
+}
+
+function inspect(host: Host, creating: boolean): Target {
+  const home = homedir();
+  const env = process.env;
+  if (host === "opencode") {
+    if (env.OPENCODE_CONFIG_CONTENT?.trim())
+      throw new Error(
+        "OpenCode inline configuration is active. Manage that registration explicitly.",
+      );
+    const dir = path.join(
+      absolute(env.XDG_CONFIG_HOME || path.join(home, ".config")),
+      "opencode",
+    );
+    const standard = [
+      path.join(dir, "opencode.json"),
+      path.join(dir, "opencode.jsonc"),
+    ];
+    const override = env.OPENCODE_CONFIG
+      ? absolute(env.OPENCODE_CONFIG)
+      : undefined;
+    const sources = [
+      ...new Set(override ? [...standard, override] : standard),
+    ].map((file) => {
+      const before = snapshot(file);
+      const root = configObject(before.text ?? "{}", true);
+      const mcp = table(root.mcp);
+      if (mcp.servers !== undefined && Object.hasOwn(mcp, name))
+        throw new Error("Mixed OpenCode MCP declarations.");
+      const v2 = mcp.servers !== undefined;
+      const keys = v2 ? ["mcp", "servers", name] : ["mcp", name];
+      return {
+        before,
+        keys,
+        entry: entryAt(root, keys),
+        declared: root.mcp !== undefined,
+      };
+    });
+    const owners = sources.filter((s) => s.entry !== undefined);
+    if (owners.length > 1)
+      throw new Error(
+        "Multiple OpenCode files declare the experimental server.",
+      );
+    if (owners.length) return owners[0];
+    const existing = sources.filter((s) => s.before.text !== undefined);
+    if (!override && existing.length > 1 && creating)
+      throw new Error("Select an OpenCode config using OPENCODE_CONFIG.");
+    const target = override
+      ? sources.find((s) => s.before.file === override)!
+      : (existing[0] ?? sources[0]);
+    if (creating && !target.declared && openCodeVersion() === 2)
+      target.keys = ["mcp", "servers", name];
+    return target;
+  }
+  if (host === "claude-desktop" && process.platform !== "darwin")
+    throw new Error("Claude Desktop setup supports macOS.");
+  const file =
+    host === "codex"
+      ? path.join(
+          absolute(env.CODEX_HOME || path.join(home, ".codex")),
+          "config.toml",
+        )
+      : host === "claude-code"
+        ? path.join(absolute(env.CLAUDE_CONFIG_DIR || home), ".claude.json")
+        : path.join(
+            home,
+            "Library/Application Support/Claude/claude_desktop_config.json",
+          );
+  const before = snapshot(file);
+  if (host === "codex") {
+    const keys = ["mcp_servers", name];
+    const entry = entryAt(parseToml(before.text ?? ""), keys);
+    const listed: unknown = JSON.parse(
+      native("codex", ["mcp", "list", "--json"]),
+    );
+    if (!Array.isArray(listed)) throw new Error("Invalid Codex MCP list.");
+    const matches = listed.filter((row) => row?.name === name);
+    if (matches.length !== (entry === undefined ? 0 : 1))
+      throw new Error(
+        "Codex effective registration differs from the user configuration.",
+      );
+    if (
+      entry !== undefined &&
+      (!record(entry) ||
+        matches[0].enabled !== true ||
+        matches[0].transport?.type !== "stdio" ||
+        matches[0].transport.command !== entry.command ||
+        !isDeepStrictEqual(matches[0].transport.args, entry.args))
+    ) {
+      return { before, keys, entry: null };
+    }
+    return { before, keys, entry };
+  }
+  const keys = ["mcpServers", name];
+  return {
+    before,
+    keys,
+    entry: entryAt(configObject(before.text ?? "{}", false), keys),
+  };
+}
+
+function hostEntry(host: Host, keys: string[], launch: Launch) {
+  if (host === "opencode")
+    return keys.length === 3
+      ? {
+          type: "local",
+          command: [launch.command, ...launch.args],
+          disabled: false,
+        }
+      : {
+          type: "local",
+          command: [launch.command, ...launch.args],
+          enabled: true,
+        };
+  if (host === "claude-code") return { type: "stdio", ...launch, env: {} };
+  return launch;
+}
+
+// Only accept the installed launch and the exact manual shape published with the first preview.
+function owned(host: Host, target: Target): Launch | undefined {
+  if (!record(target.entry)) return;
+  const entry = target.entry;
+  const command =
+    host === "opencode" && Array.isArray(entry.command)
+      ? entry.command[0]
+      : entry.command;
+  const args =
+    host === "opencode" && Array.isArray(entry.command)
+      ? entry.command.slice(1)
+      : entry.args;
+  if (
+    typeof command !== "string" ||
+    !Array.isArray(args) ||
+    !args.every((arg) => typeof arg === "string")
+  )
+    return;
+  const launch = { command, args: args as string[] };
+  const shape = hostEntry(host, target.keys, launch);
+  if (
+    Object.keys(shape).length !== Object.keys(entry).length ||
+    !Object.entries(shape).every(([key, v]) =>
+      key === "env"
+        ? record(entry.env) && Object.keys(entry.env).length === 0
+        : isDeepStrictEqual(entry[key], v),
+    )
+  )
+    return;
+  let flags = launch.args;
+  if (command === node && flags[0] === executable) flags = flags.slice(1);
+  else {
+    const manual = path.resolve(
+      path.dirname(executable),
+      "../../../.bin/superbee-mcp",
+    );
+    if (command !== manual) return;
+    try {
+      if (realpathSync(command) !== executable) return;
+    } catch {
+      return;
+    }
+  }
+  if (
+    flags.length !== 4 ||
+    flags[2] !== "--actor" ||
+    !flags[3].trim() ||
+    !flags[1].trim()
+  )
+    return;
+  if (
+    !(flags[0] === "--dir" && path.isAbsolute(flags[1])) &&
+    flags[0] !== "--workspace"
+  )
+    return;
+  return launch;
+}
+
+function mutate(
+  host: Host,
+  operation: Operation,
+  target: Target,
+  launch?: Launch,
+) {
+  if (host === "codex" || host === "claude-code") {
+    const cmd = host === "codex" ? "codex" : "claude";
+    const scope = host === "claude-code" ? ["--scope", "user"] : [];
+    if (operation === "uninstall")
+      native(cmd, ["mcp", "remove", ...scope, name]);
+    else
+      native(cmd, [
+        "mcp",
+        "add",
+        ...scope,
+        ...(host === "claude-code" ? ["--transport", "stdio"] : []),
+        name,
+        "--",
+        launch!.command,
+        ...launch!.args,
+      ]);
+  } else {
+    patchConfig(
+      target.before,
+      target.keys,
+      launch && hostEntry(host, target.keys, launch),
+    );
+  }
+}
+
+export async function configure(
+  operation: Operation,
+  argv: string[],
+  validate: (
+    dir?: string,
+    workspace?: string,
+    actor?: string,
+  ) => Promise<unknown>,
+) {
+  const { values, tokens } = parseArgs({
+    args: argv,
+    tokens: true,
+    options: {
+      host: { type: "string" },
+      dir: { type: "string" },
+      workspace: { type: "string" },
+      actor: { type: "string" },
+      help: { type: "boolean", short: "h" },
+    },
+  });
+  const seen = new Set<string>();
+  for (const token of tokens) {
+    if (token.kind !== "option") continue;
+    if (seen.has(token.name))
+      throw new Error(`Repeated --${token.name} option.`);
+    seen.add(token.name);
+  }
+  if (values.help) {
+    console.log(clientUsage);
+    return;
+  }
+  const requestedHost = values.host;
+  if (
+    requestedHost !== "codex" &&
+    requestedHost !== "claude-code" &&
+    requestedHost !== "claude-desktop" &&
+    requestedHost !== "opencode"
+  )
+    throw new Error(clientUsage);
+  const host: Host = requestedHost;
+  if (
+    !executable.endsWith(
+      "/node_modules/@superbee/experimental-mcp/dist/superbee-mcp.mjs",
+    ) ||
+    executable.split(path.sep).includes("_npx")
+  )
+    throw new Error(
+      "Run the experimental MCP executable from its installed npm prefix.",
+    );
+  let launch: Launch | undefined;
+  if (operation === "install") {
+    if (
+      (values.dir === undefined) === (values.workspace === undefined) ||
+      !(values.dir ?? values.workspace)?.trim() ||
+      !values.actor?.trim()
+    )
+      throw new Error(clientUsage);
+    const dir = values.dir !== undefined ? path.resolve(values.dir) : undefined;
+    await validate(dir, values.workspace, values.actor);
+    launch = {
+      command: node,
+      args: [
+        executable,
+        ...(dir ? ["--dir", dir] : ["--workspace", values.workspace!]),
+        "--actor",
+        values.actor,
+      ],
+    };
+  } else if (
+    [values.actor, values.dir, values.workspace].some((v) => v !== undefined)
+  )
+    throw new Error(clientUsage);
+
+  function decide(target: Target) {
+    const prior = owned(host, target);
+    const state =
+      target.entry === undefined ? "absent" : prior ? "installed" : "foreign";
+    if (operation === "status") return { state, change: false };
+    if (state === "foreign")
+      throw new Error(
+        `The ${name} entry has a different launcher or client settings. Review it in the client.`,
+      );
+    if (operation === "install" && prior && !isDeepStrictEqual(prior, launch))
+      throw new Error(
+        "Uninstall the existing experimental registration before changing its workspace, actor or launcher.",
+      );
+    return { state, change: operation === "install" ? !prior : !!prior };
+  }
+  const initial = inspect(host, operation === "install");
+  const { state: initialState, change } = decide(initial);
+  let state = initialState;
+  if (change) {
+    const file = initial.before.destination ?? initial.before.file;
+    mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 });
+    const lock = file + ".superbee-experimental.lock";
+    try {
+      mkdirSync(lock, { mode: 0o700 });
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === "EEXIST")
+        throw new Error(
+          `Setup is busy. If an earlier setup was interrupted, check that it has exited before removing ${lock}.`,
+        );
+      throw e;
+    }
+    try {
+      const fresh = inspect(host, operation === "install");
+      if (
+        fresh.before.file !== initial.before.file ||
+        fresh.before.destination !== initial.before.destination ||
+        !isDeepStrictEqual(fresh.entry, initial.entry)
+      )
+        throw new Error(
+          "Client registration changed during setup. Retry the command.",
+        );
+      mutate(host, operation, fresh, launch);
+      const after = inspect(host, false);
+      if (
+        operation === "install"
+          ? !isDeepStrictEqual(owned(host, after), launch)
+          : after.entry !== undefined
+      )
+        throw new Error(
+          "Registration read-back failed. Inspect the client before retrying.",
+        );
+      state = operation === "install" ? "installed" : "absent";
+    } finally {
+      rmdirSync(lock);
+    }
+  }
+  console.log(
+    JSON.stringify({
+      host,
+      name,
+      state,
+      changed: change,
+      restart_required: change,
+    }),
+  );
+}
