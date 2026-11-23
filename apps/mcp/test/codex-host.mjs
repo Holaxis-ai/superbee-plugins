@@ -6,11 +6,8 @@ import path from "node:path";
 import { once } from "node:events";
 import { createInterface } from "node:readline";
 
-const [prefix, previousCli] = process.argv.slice(2);
-assert.ok(
-  prefix && previousCli,
-  "Pass the offline install prefix and the existing CLI entry point.",
-);
+const [prefix] = process.argv.slice(2);
+assert.ok(prefix, "Pass the prefix containing the installed offline pair.");
 const bin = path.resolve(
   prefix,
   "node_modules/@superbee/experimental-mcp/dist/superbee-mcp.mjs",
@@ -39,7 +36,7 @@ const selector = ["--dir", bundle, "--actor", "process:codex-host-test"];
 const preview = "superbee-experimental";
 const existing = "superbee";
 
-async function session(server, exercise) {
+async function session(server, expectedTool, exercise) {
   const child = spawn(
     "codex",
     [
@@ -92,7 +89,7 @@ async function session(server, exercise) {
     });
     assert.ok(
       inventory.data.some(
-        (row) => row.name === server && row.tools.show_document,
+        (row) => row.name === server && row.tools[expectedTool],
       ),
       JSON.stringify(inventory.data.map((row) => row.name)),
     );
@@ -142,16 +139,37 @@ try {
     path.join(bundle, "views/lanterns.html"),
     "<!doctype html><title>Lantern count</title><p>Six copper lanterns are ready.</p>\n",
   );
-  codex([
-    "mcp",
-    "add",
-    existing,
-    "--",
-    process.execPath,
-    path.resolve(previousCli),
-    "mcp",
-    ...selector,
-  ]);
+  const baseline = path.join(scratch, "Pre-existing MCP server.mjs");
+  await writeFile(
+    baseline,
+    String.raw`
+    import { createInterface } from "node:readline";
+    for await (const line of createInterface({ input: process.stdin })) {
+      const request = JSON.parse(line);
+      if (request.id === undefined) continue;
+      let result = {};
+      if (request.method === "initialize") {
+        result = { protocolVersion: request.params.protocolVersion,
+          capabilities: { tools: {} }, serverInfo: { name: "existing-fixture", version: "1" } };
+      } else if (request.method === "resources/list") {
+        result = { resources: [] };
+      } else if (request.method === "resources/templates/list") {
+        result = { resourceTemplates: [] };
+      } else if (request.method === "tools/list") {
+        result = { tools: [{ name: "existing_status", inputSchema: { type: "object" } }] };
+      } else if (request.method === "tools/call" && request.params.name === "existing_status") {
+        result = { content: [{ type: "text", text: "existing fixture still responds" }] };
+      }
+      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: request.id, result }) + "\n");
+    }
+  `,
+  );
+  codex(["mcp", "add", existing, "--", process.execPath, baseline]);
+  const checkExisting = async (call) => {
+    const { content } = await call("existing_status", {});
+    assert.equal(content[0].text, "existing fixture still responds");
+  };
+  await session(existing, "existing_status", checkExisting);
   const config = path.join(env.CODEX_HOME, "config.toml");
   const before = await readFile(config, "utf8");
   assert.equal(plugin("status").state, "absent");
@@ -169,7 +187,7 @@ try {
       /The orchard lantern glows copper at dusk\./,
     );
   }
-  await session(preview, async (call) => {
+  await session(preview, "show_document", async (call) => {
     await openDocument(call);
     const { structuredContent } = await call("show_view", {
       viewId: "views-registry/lanterns",
@@ -182,7 +200,7 @@ try {
   assert.equal(plugin("uninstall").changed, true);
   assert.equal(plugin("status").state, "absent");
   assert.equal(await readFile(config, "utf8"), before);
-  await session(existing, openDocument);
+  await session(existing, "existing_status", checkExisting);
   console.log(
     "Codex loaded the installed provider, opened a document and a View, and reopened the original connection after removal.",
   );
