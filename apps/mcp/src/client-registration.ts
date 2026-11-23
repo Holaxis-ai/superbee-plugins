@@ -53,6 +53,13 @@ function absolute(file: string) {
   return file;
 }
 
+function openCodeRoot() {
+  return path.join(
+    absolute(process.env.XDG_CONFIG_HOME || path.join(homedir(), ".config")),
+    "opencode",
+  );
+}
+
 function openCodeVersion() {
   for (const cmd of ["opencode2", "opencode"]) {
     try {
@@ -87,10 +94,7 @@ function inspect(host: Host, creating: boolean): Target {
       throw new Error(
         "OpenCode inline configuration is active. Manage that registration explicitly.",
       );
-    const dir = path.join(
-      absolute(env.XDG_CONFIG_HOME || path.join(home, ".config")),
-      "opencode",
-    );
+    const dir = openCodeRoot();
     const standard = [
       path.join(dir, "opencode.json"),
       path.join(dir, "opencode.jsonc"),
@@ -394,18 +398,32 @@ export async function configure(
   let state = initialState;
   if (change) {
     const file = initial.before.destination ?? initial.before.file;
-    mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 });
-    const lock = file + ".superbee-experimental.lock";
+    // OpenCode combines multiple files into one server namespace. Lock that namespace
+    // as well as the destination, which can also be shared by different config roots.
+    const locks =
+      host === "opencode"
+        ? [
+            path.join(
+              openCodeRoot(),
+              ".superbee-experimental-registration.lock",
+            ),
+            file + ".superbee-experimental.lock",
+          ]
+        : [file + ".superbee-experimental.lock"];
+    const held: string[] = [];
     try {
-      mkdirSync(lock, { mode: 0o700 });
-    } catch (e) {
-      if ((e as NodeJS.ErrnoException).code === "EEXIST")
-        throw new Error(
-          `Setup is busy. If an earlier setup was interrupted, check that it has exited before removing ${lock}.`,
-        );
-      throw e;
-    }
-    try {
+      for (const lock of locks) {
+        mkdirSync(path.dirname(lock), { recursive: true, mode: 0o700 });
+        try {
+          mkdirSync(lock, { mode: 0o700 });
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+          throw new Error(
+            `Setup is busy. If an earlier setup was interrupted, check that it has exited before removing ${lock}.`,
+          );
+        }
+        held.push(lock);
+      }
       const fresh = inspect(host, operation === "install");
       if (
         fresh.before.file !== initial.before.file ||
@@ -427,7 +445,7 @@ export async function configure(
         );
       state = operation === "install" ? "installed" : "absent";
     } finally {
-      rmdirSync(lock);
+      for (const lock of held.reverse()) rmdirSync(lock);
     }
   }
   console.log(

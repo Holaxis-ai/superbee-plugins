@@ -1,8 +1,10 @@
 // Exercise the installed executable using only synthetic user configurations.
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
+import { execFile, spawnSync } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
+const exec = promisify(execFile);
 
 export async function registrationAcceptance(bin, scratch, bundle) {
   const home = path.join(scratch, "registration home");
@@ -228,6 +230,28 @@ if(op==="add"){
   assert.deepEqual(JSON.parse(await readFile(claudeFile, "utf8")).mcpServers, {
     superbee: foreign,
   });
+  // Both standard config files contribute to a single client namespace.
+  const candidates = ["opencode.json", "opencode.jsonc"].map((file) =>
+    path.join(standard, file),
+  );
+  for (const file of candidates) await writeFile(file, '{"mcp":{}}');
+  const outcomes = await Promise.allSettled(
+    candidates.map((file) =>
+      exec(bin, ["install", "--host", "opencode", ...selector], {
+        cwd: home,
+        env: { ...environment, OPENCODE_CONFIG: file },
+      }),
+    ),
+  );
+  assert.ok(outcomes.some((result) => result.status === "fulfilled"));
+  const sources = await Promise.all(
+    candidates.map(async (file) => JSON.parse(await readFile(file, "utf8"))),
+  );
+  assert.equal(
+    sources.filter((source) => Object.hasOwn(source.mcp, name)).length,
+    1,
+  );
+  assert.equal(run(["uninstall", "--host", "opencode"]).changed, true);
   // Preserve a manually installed entry from the documented initial preview.
   const legacyFile = path.join(standard, "opencode.jsonc");
   await writeFile(
