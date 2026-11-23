@@ -17,7 +17,7 @@ export function bundledPackages(metafile) {
 }
 
 export async function desktopNotices(roots) {
-  let text = await readFile("desktop/provider-notices.txt", "utf8");
+  let text = await readFile("node_modules/superbee/dist/THIRD-PARTY-NOTICES.txt", "utf8");
   for (const root of [...new Set(roots)].sort()) {
     const { name, version } = JSON.parse(
       await readFile(path.join(root, "package.json"), "utf8"),
