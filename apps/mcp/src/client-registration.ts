@@ -64,9 +64,7 @@ function openCodeVersion() {
       /* Try the other supported executable. */
     }
   }
-  throw new Error(
-    "Cannot determine OpenCode version. Install OpenCode or define the MCP table in its configuration.",
-  );
+  return undefined;
 }
 
 function entryAt(root: Record<string, unknown>, keys: string[]): unknown {
@@ -122,15 +120,27 @@ function inspect(host: Host, creating: boolean): Target {
       throw new Error(
         "Multiple OpenCode files declare the experimental server.",
       );
-    if (owners.length) return owners[0];
+
     const existing = sources.filter((s) => s.before.text !== undefined);
-    if (!override && existing.length > 1 && creating)
+    if (!owners.length && !override && existing.length > 1 && creating)
       throw new Error("Select an OpenCode config using OPENCODE_CONFIG.");
-    const target = override
-      ? sources.find((s) => s.before.file === override)!
-      : (existing[0] ?? sources[0]);
-    if (creating && !target.declared && openCodeVersion() === 2)
-      target.keys = ["mcp", "servers", name];
+    const target =
+      owners[0] ??
+      (override
+        ? sources.find((s) => s.before.file === override)!
+        : (existing[0] ?? sources[0]));
+    if (target.keys.length === 3 && openCodeVersion() === 1)
+      throw new Error(
+        "OpenCode v1 cannot load a v2 MCP configuration. Check the selected configuration and installed client.",
+      );
+    if (creating && !target.declared) {
+      const version = openCodeVersion();
+      if (!version)
+        throw new Error(
+          "Cannot determine OpenCode version. Install OpenCode or define the MCP table in its configuration.",
+        );
+      if (version === 2) target.keys = ["mcp", "servers", name];
+    }
     return target;
   }
   if (host === "claude-desktop" && process.platform !== "darwin")

@@ -203,6 +203,17 @@ if(op==="add"){
   assert.equal(run(["install", "--host", "codex", ...selector]).changed, false);
   assert.equal(run(["uninstall", "--host", "codex"]).changed, true);
   assert.equal(await readFile(codexFile, "utf8"), bundled);
+  const override = path.join(home, "custom.jsonc");
+  const v2Source = await readFile(override, "utf8");
+  await writeFile(path.join(tools, "opencode"), "#!/bin/sh\necho 1.5.0\n", {
+    mode: 0o755,
+  });
+  run(
+    ["install", "--host", "opencode", ...selector],
+    { OPENCODE_CONFIG: override },
+    /v1 cannot load a v2/,
+  );
+  assert.equal(await readFile(override, "utf8"), v2Source);
   // Preserve a manually installed entry from the documented initial preview.
   const legacyFile = path.join(standard, "opencode.jsonc");
   await writeFile(
