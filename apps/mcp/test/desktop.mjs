@@ -121,7 +121,7 @@ try {
   // Retain the exact shown revision even if the document changes before its reader appears.
   const changed = document.replace("Visible in **Superbee**.", "Edited after the receipt.");
   await writeFile(path.join(workspace, "tasks/sample.md"), changed);
-  async function readOn(installation, folder, actor) {
+  async function withReader(installation, folder, actor, run) {
     const reader = new Client({ name: "desktop-reader-test", version: "1" });
     try {
       await reader.connect(new StdioClientTransport({
@@ -130,11 +130,13 @@ try {
         cwd: installation,
         env: { HOME: home, USERPROFILE: home, PATH: path.dirname(process.execPath) },
       }));
-      return await reader.callTool({ name: "resolve_document", arguments: { claim } });
+      return await run(reader);
     } finally {
       await reader.close();
     }
   }
+  const redeem = (reader, claim) => reader.callTool({ name: "resolve_document", arguments: { claim } });
+  const readOn = (install, folder, actor) => withReader(install, folder, actor, reader => redeem(reader, claim));
   const secondFolder = path.join(scratch, "Other workspace");
   const secondInstall = path.join(scratch, "Other install");
   await cp(workspace, secondFolder, { recursive: true });
@@ -148,6 +150,17 @@ try {
     assert.equal(refused.isError, true);
     assert.match(refused.content[0].text, /Unknown, expired, or already-redeemed/);
   }
+  // Fill and overflow a second registration while the first reader's receipt is pending.
+  await withReader(extensionPath, secondFolder, "human:desktop-test", async other => {
+    const receipts = [];
+    for (let index = 0; index < 17; index++) {
+      const result = await other.callTool({ name: "show_document", arguments: { docId: "tasks/sample" } });
+      assert.ok(!result.isError);
+      receipts.push(result.content[0].text.match(/\[agentstate-claim:v1:([\w-]+)\]/)[1]);
+    }
+    assert.equal((await redeem(other, receipts.shift())).isError, true);
+    for (const pending of receipts) assert.ok((await redeem(other, pending)).structuredContent.document);
+  });
   const read = () => readOn(extensionPath, workspace, "human:desktop-test");
   const results = await Promise.all([read(), read()]);
   assert.equal(results.filter(result => result.isError).length, 1);

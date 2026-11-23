@@ -2,7 +2,7 @@
 // Keep the render key solely in the tool receipt. Only the encrypted, already-rendered snapshot
 // enters the user's temporary directory, so a later edit cannot change what that receipt shows.
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
-import { lstat, mkdir, readFile, readdir, realpath, stat, unlink, writeFile } from "node:fs/promises";
+import { lstat, mkdir, opendir, readFile, realpath, rmdir, stat, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -32,16 +32,27 @@ export async function desktopDocumentClaims(directory: string | null, actor: str
   // /tmp is shared by GUI and model processes even if their TMPDIR settings differ.
   const profile = digest(JSON.stringify(home)).slice(0, 16);
   const root = path.join(await realpath("/tmp"), `superbee-desktop-reader-${uid}-${profile}`);
-  const filename = (claim: string) => digest(scope + claim);
+  const prefix = scope + ".";
+  const filename = (claim: string) => prefix + digest(claim);
 
   async function locked<T>(fn: () => Promise<T>): Promise<T> {
-    await mkdir(root, { mode: 0o700 }).catch((error: NodeJS.ErrnoException) => {
-      if (error.code !== "EEXIST") throw error;
+    return withFilesystemMutationLock(root, async () => {
+      await mkdir(root, { mode: 0o700 }).catch((error: NodeJS.ErrnoException) => {
+        if (error.code !== "EEXIST") throw error;
+      });
+      const info = await lstat(root);
+      if (!info.isDirectory() || info.uid !== uid || (info.mode & 0o077) !== 0)
+        throw new Error("The private Desktop reader directory is unavailable.");
+      try {
+        return await fn();
+      } finally {
+        // The lock lives outside this directory. Its last consumer can remove the empty
+        // directory without racing a writer that is about to publish the next receipt.
+        await rmdir(root).catch((error: NodeJS.ErrnoException) => {
+          if (error.code !== "ENOTEMPTY" && error.code !== "EEXIST") throw error;
+        });
+      }
     });
-    const info = await lstat(root);
-    if (!info.isDirectory() || info.uid !== uid || (info.mode & 0o077) !== 0)
-      throw new Error("The private Desktop reader directory is unavailable.");
-    return withFilesystemMutationLock(root, fn);
   }
   return {
     async record(claim, payload) {
@@ -52,17 +63,18 @@ export async function desktopDocumentClaims(directory: string | null, actor: str
       ]);
       const sealed = Buffer.concat([iv, cipher.getAuthTag(), ciphertext]);
       await locked(async () => {
-        const now = Date.now();
-        const files = (await readdir(root)).filter(name => /^[a-f0-9]{64}$/.test(name));
-        const entries = await Promise.all(files.map(async name => {
+        const cutoff = Date.now() - TTL_MS;
+        const own: { file: string; written: number }[] = [];
+        for await (const { name } of await opendir(root)) {
+          // Older previews used a single hash. Sweep those after expiry as well.
+          if (!/^(?:[a-f0-9]{64}\.)?[a-f0-9]{64}$/.test(name)) continue;
           const file = path.join(root, name);
-          return { file, written: (await lstat(file)).mtimeMs };
-        }));
-        entries.sort((a, b) => a.written - b.written);
-        const evict = entries.filter((entry, index) =>
-          entry.written <= now - TTL_MS || entries.length - index >= LIMIT
-        );
-        await Promise.all(evict.map(entry => unlink(entry.file)));
+          const written = (await lstat(file)).mtimeMs;
+          if (written <= cutoff) await unlink(file);
+          else if (name.startsWith(prefix)) own.push({ file, written });
+        }
+        own.sort((a, b) => b.written - a.written);
+        for (const { file } of own.slice(LIMIT - 1)) await unlink(file);
         await writeFile(path.join(root, filename(claim)), sealed, {
           flag: "wx", mode: 0o600,
         });
