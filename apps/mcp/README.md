@@ -36,22 +36,25 @@ The extension includes both screens and the compatible workspace library. Its ma
 
 ## Codex on Windows
 
-Use Node 24 and a working Codex installation. In PowerShell, open the extracted offline preview folder and verify its checksums:
+Use Node 24.2 or newer in the Node 24 series and a working Codex installation. In PowerShell, open the extracted offline preview folder and verify its checksums:
 
 ```powershell
-foreach ($line in Get-Content SHA256SUMS) {
+$archives = foreach ($line in Get-Content -LiteralPath SHA256SUMS -ErrorAction Stop) {
     $hash, $file = $line -split '  ', 2
-    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $file).Hash -ne $hash) {
+    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $file -ErrorAction Stop).Hash -ne $hash) {
         throw "Checksum differs for $file"
     }
+    if ($file -match '^superbee-(cli|experimental-mcp)-[a-z0-9.-]+\.tgz$') {
+        (Get-Item -LiteralPath $file -ErrorAction Stop).FullName
+    }
 }
+if (@($archives).Count -ne 2) { throw "Expected two verified npm archives" }
 ```
 
 Install the two packages into a dedicated prefix. Replace the bundle path and actor with your own.
 
 ```powershell
 $prefix = Join-Path $env:LOCALAPPDATA 'Superbee MCP Preview'
-$archives = (Get-ChildItem -Filter '*.tgz').FullName
 npm install --prefix $prefix --offline --ignore-scripts --no-audit --no-fund @archives
 if ($LASTEXITCODE -ne 0) { throw "Offline install failed" }
 $mcp = Join-Path $prefix 'node_modules/.bin/superbee-mcp.cmd'
