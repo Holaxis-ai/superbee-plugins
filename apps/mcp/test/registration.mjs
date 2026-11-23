@@ -1,7 +1,7 @@
 // Exercise the installed executable using only synthetic user configurations.
 import assert from "node:assert/strict";
 import { execFile, spawnSync } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 const exec = promisify(execFile);
@@ -228,7 +228,13 @@ if(op==="add"){
     /v1 cannot load a v2/,
   );
   assert.equal(await readFile(override, "utf8"), v2Source);
-  const manualClaude = { command: bin, args: selector };
+  // A user may install under a symlinked prefix and paste that spelling into Claude.
+  const prefixAlias = path.join(home, "preview-install");
+  await symlink(path.dirname(path.dirname(path.dirname(bin))), prefixAlias, "dir");
+  const manualClaude = {
+    command: path.join(prefixAlias, "node_modules", ".bin", "superbee-mcp"),
+    args: selector,
+  };
   const writeClaude = (entry) =>
     writeFile(
       claudeFile,

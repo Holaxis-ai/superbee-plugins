@@ -237,9 +237,13 @@ function owned(host: Host, target: Target): Launch | undefined {
       path.dirname(executable),
       "../../../.bin/superbee-mcp",
     );
-    if (command !== manual) return;
+    if (!path.isAbsolute(command) || path.basename(command) !== path.basename(manual)) return;
     try {
-      if (realpathSync(command) !== executable) return;
+      // macOS may spell the same install prefix through /var or /private/var.
+      if (
+        realpathSync(path.dirname(command)) !== path.dirname(manual) ||
+        realpathSync(command) !== executable
+      ) return;
     } catch {
       return;
     }
