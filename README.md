@@ -2,6 +2,8 @@
 
 Community recipes and independently versioned integrations for [Superbee](https://github.com/Holaxis-ai/superbee).
 
+**[Use Superbee in your AI client](apps/mcp/README.md)**. Install the optional experimental MCP app to open documents and interactive Views in chat. Get the macOS Claude Desktop extension or the offline Node 24 packages for Codex, Claude Code and OpenCode. The guide includes verification and rollback for existing `superbee mcp` users.
+
 - `recipes/` contains declarative models and Connector mappings.
 - `integrations/` contains provider adapters, synthetic fixtures and their tests.
 - Core, the source engine and CLI loading belong in the Superbee repository.
@@ -10,10 +12,6 @@ Recipes install as data. Code integrations require an explicit installation and 
 contributing to this repository does not automatically enable code in a user's CLI or hosted workspace.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
-
-## Experimental MCP app
-
-The [standalone MCP app](apps/mcp/README.md) can be installed separately for a fixed Superbee workspace or for catalog selection at each tool call. Claude Desktop on macOS can install the [self-contained preview extension](apps/mcp/README.md#claude-desktop-on-macos). It ships the document and View screens and uses an installed CLI library for workspace reads and confirmed edits.
 
 ## Resource pointers
 

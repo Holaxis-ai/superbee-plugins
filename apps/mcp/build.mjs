@@ -1,7 +1,7 @@
 import { build } from "esbuild";
-import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
+import { chmod, copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 
-import { bundledPackages } from "./desktop/notices.mjs";
+import { bundledPackages, desktopNotices } from "./desktop/notices.mjs";
 
 const screenPackages = new Set();
 await mkdir("src/generated", { recursive: true });
@@ -38,7 +38,8 @@ await writeFile(
   JSON.stringify([...screenPackages]),
 );
 const outfile = "dist/superbee-mcp.mjs";
-await build({
+const server = await build({
+  metafile: true,
   entryPoints: ["src/main.ts"],
   outfile,
   bundle: true,
@@ -52,3 +53,9 @@ await build({
   },
 });
 await chmod(outfile, 0o755);
+await copyFile("../../LICENSE", "dist/LICENSE");
+await copyFile("desktop/NOTICE", "dist/NOTICE");
+await writeFile(
+  "dist/THIRD-PARTY-NOTICES.txt",
+  await desktopNotices([...screenPackages, ...bundledPackages(server.metafile)]),
+);

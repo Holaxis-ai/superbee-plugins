@@ -13,15 +13,19 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { createHash } from "node:crypto";
+import { parseArgs } from "node:util";
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 
-const [cliTgz, mode] = process.argv.slice(2);
-if (!cliTgz || (mode && mode !== "--browser"))
+const { positionals, values } = parseArgs({
+  allowPositionals: true,
+  options: { plugin: { type: "string" }, browser: { type: "boolean" } },
+});
+if (positionals.length !== 1)
   throw new Error(
-    "usage: node test/acceptance.mjs <compatible-cli.tgz> [--browser]",
+    "usage: node test/acceptance.mjs <compatible-cli.tgz> [--plugin <built-plugin.tgz>] [--browser]",
   );
-const cli = path.resolve(cliTgz);
+const cli = path.resolve(positionals[0]);
 const scratch = await mkdtemp(path.join(tmpdir(), "sb-mcp-plugin-"));
 const install = path.join(scratch, "install");
 const bundle = path.join(scratch, "bundle");
@@ -75,24 +79,32 @@ try {
     "views/editor.html",
     "<!doctype html><title>Registered editor</title><p>Registered editor</p>",
   );
-  const [packed] = JSON.parse(
-    execFileSync(
-      "npm",
-      ["pack", "--json", "--ignore-scripts", "--pack-destination", scratch],
-      { encoding: "utf8" },
-    ),
-  );
+  let plugin;
+  if (values.plugin) {
+    plugin = path.resolve(values.plugin);
+  } else {
+    const [packed] = JSON.parse(
+      execFileSync(
+        "npm",
+        ["pack", "--json", "--ignore-scripts", "--pack-destination", scratch],
+        { encoding: "utf8" },
+      ),
+    );
+    plugin = path.join(scratch, packed.filename);
+  }
   await writeFile(path.join(install, "package.json"), '{"private":true}');
   execFileSync(
     "npm",
     [
       "install",
       "--offline",
+      "--cache",
+      path.join(scratch, "empty-cache"),
       "--ignore-scripts",
       "--no-audit",
       "--no-fund",
       cli,
-      path.join(scratch, packed.filename),
+      plugin,
     ],
     { cwd: install },
   );
@@ -254,7 +266,7 @@ try {
   } finally {
     await named.close();
   }
-  if (mode === "--browser") {
+  if (values.browser) {
     const { exerciseScreens } = await import("./screens.mjs");
     await exerciseScreens({
       client,

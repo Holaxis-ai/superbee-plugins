@@ -1,123 +1,124 @@
-# Experimental Superbee MCP app
+# Use Superbee in your AI client
 
-Use this standalone stdio server with an MCP Apps host to display a workspace document,
-run a registered or temporary View, and approve individual field changes. The plugin owns
-the MCP tools, presentation resources and confirmation screens. The installed Superbee
-CLI library selects the working copy and enforces launch, approval and document-version checks.
+Install this optional, experimental MCP app to open a Superbee document in chat, run an interactive View, or confirm a proposed field edit. You can use a local bundle folder or choose a workspace from your Superbee catalog. The normal Superbee browser UI and CLI work independently.
 
-This source installation supports macOS and Linux with Node 24 and npm. Starting the server without a
-workspace argument enables catalog mode. Use `list_workspaces` to find the ID or label for
-displaying documents, searching or opening Views. A checkout can also
-list and run the reads its host offers. Only a temporary View explicitly requesting
-`access: none` can open without a selected workspace. Its lifetime stays independent of
-all workspaces. Pass `--dir` or `--workspace` to pin the server to one bundle.
+| Client | Installation | Platform |
+| --- | --- | --- |
+| Claude Desktop | Open the self-contained Desktop extension | macOS |
+| Codex | Install the offline pair and register `--host codex` | macOS, Linux |
+| Claude Code | Install the offline pair and register `--host claude-code` | macOS, Linux |
+| OpenCode | Install the offline pair and register `--host opencode` | macOS, Linux |
+| Claude Desktop with a manual MCP configuration | Install the offline pair and register `--host claude-desktop` | macOS |
+
+The offline pair requires Node 24 and npm. Claude Desktop supplies its own Node runtime for the extension. Clients with MCP Apps support can display the document and View screens. A client that exposes tools only can verify the connection with `list_views`.
+
+## Get the preview
+
+Open a successful **CI** run for the revision you want. In the run summary, scroll to **Artifacts** and download **superbee-desktop-preview** for the Desktop extension or **superbee-mcp-offline-preview** for the two npm tarballs. Extract the downloaded ZIP. GitHub requires sign-in to download workflow artifacts and removes them when the run's retention expires. The source build below also works after an artifact expires. [CI runs](https://github.com/Holaxis-ai/superbee-plugins/actions/workflows/ci.yml) · [Preview pull request checks](https://github.com/Holaxis-ai/superbee-plugins/pull/58/checks)
+
+Both previews are built from source. The npm pair contains the plugin and the matching CLI workspace library from the same CI run. Its `SOURCES` file records both Git commits. The public CLI prerelease with the same version number predates the required library exports.
 
 ## Claude Desktop on macOS
 
-Open the preview `.mcpb` file with Claude Desktop. Review the extension, choose the local
-Superbee bundle folder and enter the actor for confirmed edits, such as `human:editor`.
-Alternatively, enable **Use the workspace catalog** to choose a workspace per tool call.
-The extension includes the compatible workspace library and runs with Desktop’s Node runtime.
-The manifest requires Node 22.14+ in the 22 series, 24.x or 26.x. This is an unsigned local
-preview. Installation depends on the extension policy for your Desktop installation.
+1. Open `superbee-experimental.mcpb` from the extracted **superbee-desktop-preview** download in Claude Desktop. Review the unsigned extension and install it if your Desktop policy allows it.
+2. Choose the folder containing your Superbee bundle, or enable **Use the workspace catalog** to choose a workspace per tool call. Enter the actor to record for confirmed edits, such as `human:editor`.
+3. Start a new chat and follow [Verify in your client](#verify-in-your-client). To remove it, open **Settings → Extensions**, remove **Superbee (experimental)**, and start a new chat.
 
-In a new chat, ask Claude to use **Superbee (experimental)** to show an existing document by
-its bundle-relative ID (for example, `tasks/first-task`). Check that the document renders.
-Remove **Superbee (experimental)** under **Settings → Extensions**, then start a new chat
-and confirm another configured server is usable. The Desktop extension and the manual
-`superbee-mcp install` below have separate registrations. Use one for each workspace in
-Desktop to avoid showing duplicate tools.
+The extension includes both screens and the compatible workspace library. Its manifest accepts Node 22.14+ in the 22 series, 24.x, or 26.x. Choose one Desktop installation method per workspace to avoid duplicate tools.
 
-Maintainers can build the file after installing the compatible CLI tarball from the next
-section. From `apps/mcp`, run `npm run desktop:pack`, then `node test/desktop.mjs`. The
-output is `out/superbee-experimental.mcpb`. Pull request CI provides the same file inside
-the `superbee-desktop-preview` artifact and exercises it on macOS with the MCPB resolver
-and a stdio client. Live Desktop acceptance also requires opening the file in the app.
+## Install the offline pair
 
-## Build the compatible pair
-
-Use a clean OSS checkout at `f68f62c533261467fb7c029fdc20283e3ef690ed` and this plugin checkout.
-The published CLI library with the same prerelease number predates the required
-catalog and bundleless View exports in `@superbee/cli/view-workspace/v1`. Build the
-compatible CLI tarball from source.
-The following commands use absolute paths so the MCP host can start the app from any directory.
+Open a terminal **inside the extracted superbee-mcp-offline-preview folder** and verify the download.
 
 ```sh
-oss=/absolute/path/to/superbee
-plugins=/absolute/path/to/superbee-plugins
-artifacts=$(mktemp -d)
-cd "$oss"
-git checkout --detach f68f62c533261467fb7c029fdc20283e3ef690ed
+shasum -a 256 -c SHA256SUMS
+```
+
+On Linux you can also use `sha256sum -c SHA256SUMS`. After all checks pass, install the two files in a dedicated location. Keep this prefix and its Node installation available to your client.
+
+```sh
+prefix="$HOME/.local/share/superbee-experimental-mcp"
+npm install --prefix "$prefix" --offline --ignore-scripts --no-audit --no-fund \
+  "$PWD"/superbee-cli-*.tgz "$PWD"/superbee-experimental-mcp-*.tgz
+mcp="$prefix/node_modules/.bin/superbee-mcp"
+"$mcp" --help
+```
+
+Installing the files and registering a server with a client are separate steps. If you already have a Superbee MCP entry, follow [Move from an existing `superbee mcp` entry](#move-from-an-existing-superbee-mcp-entry) before registering the preview.
+
+Choose the host ID from the table above, your actor, and **one** workspace mode. For example, register a single folder in Codex like this. Substitute the actual path and the identity that should appear on confirmed edits.
+
+```sh
+host=codex
+actor=human:editor
+"$mcp" install --host "$host" --dir /absolute/path/to/bundle --actor "$actor"
+"$mcp" status --host "$host"
+```
+
+- For a single registered workspace, replace `--dir /absolute/path/to/bundle` with `--workspace planning`, using its exact catalog label or ID.
+- To choose from the private catalog in chat, omit both selectors. Use `list_workspaces` to select the workspace for subsequent tool calls. A hosted checkout can list and run the reads offered by its host. A temporary View with explicit `access: none` can run without a workspace.
+- Registration uses the user-level name `superbee-experimental`. Repeating the same command is safe. For a different workspace or actor, uninstall the existing experimental registration before installing again. Customized same-name entries require manual review.
+- OpenCode accepts v1 and v2 JSON/JSONC configurations. If both standard files exist, select the intended one with an absolute `OPENCODE_CONFIG`. Manage inline OpenCode configurations in the client.
+
+## Move from an existing `superbee mcp` entry
+
+Keep the existing `superbee` entry while you try the preview. In the client's server settings, check its complete launch command, working directory, arguments, environment and tool permissions. Read the existing `--actor` there, or the client's `SUPERBEE_ACTOR` if it supplies attribution through the environment.
+
+- For an ordinary `superbee mcp --dir … --actor …` entry, run the new registration command above with the same folder and actor. Resolve any relative folder against the old launch's working directory.
+- For an ordinary `superbee mcp --actor …` entry, use `"$mcp" install --host "$host" --actor "$actor"`. This preserves selection from the catalog. If the original entry inherits its actor or uses the default, keep that behavior with the manual route below.
+- For a customized entry, make a **second** user-level registration in the client's settings named `superbee-experimental`. Duplicate the old entry's environment, working directory, approvals and restrictions. Change the server executable to the absolute installed `superbee-mcp` path. For a normal direct `superbee mcp` launch remove only the `mcp` subcommand and retain its remaining arguments exactly. If a wrapper launches the CLI, keep its setup and replace the wrapped server invocation in the duplicate. Keep inherited attribution inherited. Use the same restrictions for any client permission rules keyed by server name.
+
+After restarting the client, select the experimental server explicitly and verify it below. If you prefer one set of tools, disable the old registration in the client after verifying the new one. Keep its settings so you can re-enable it.
+
+## Verify in your client
+
+Restart the client or start a new session, then select the experimental server. Ask it to **“Use Superbee experimental to show document `tasks/first-task`.”** Replace that ID with a Markdown document you know exists in the selected bundle. For example, `tasks/first-task.md` has the ID `tasks/first-task`. In catalog mode, also name the workspace label or ID. Check the expected title and content in the client. In a tool-only client, ask it to list registered Views for the same workspace and check that the tool succeeds.
+
+Interactive clients can open a registered View with `show_view`. The View screen asks for trust and a separate confirmation for each proposed edit.
+
+## Roll back
+
+For a registration created with the command, run these from the installation shell. In a new shell, set `mcp="$HOME/.local/share/superbee-experimental-mcp/node_modules/.bin/superbee-mcp"` and `host` to the client you registered.
+
+```sh
+"$mcp" uninstall --host "$host"
+"$mcp" status --host "$host"
+```
+
+Check for `"state":"absent"`. For a manually duplicated or customized entry, remove just `superbee-experimental` in the client. For the Desktop extension, use **Settings → Extensions**. Re-enable the original `superbee` entry if you disabled it, restart the client, and show the same document with the original server. Remove the dedicated package installation only after removing its registrations in every client.
+
+## Build from source
+
+Use Git, Node 24 and npm in a new directory. These commands fetch the preview PR explicitly and the pinned compatible OSS commit, including on a checkout made before the plugin PR merges.
+
+```sh
+work=$(mktemp -d)
+artifacts="$work/artifacts"
+mkdir "$artifacts"
+git clone --no-checkout https://github.com/Holaxis-ai/superbee.git "$work/superbee"
+git -C "$work/superbee" fetch origin refs/pull/767/head
+git -C "$work/superbee" checkout --detach f68f62c533261467fb7c029fdc20283e3ef690ed
+git clone --no-checkout https://github.com/Holaxis-ai/superbee-plugins.git "$work/superbee-plugins"
+git -C "$work/superbee-plugins" fetch origin refs/pull/58/head
+git -C "$work/superbee-plugins" checkout --detach FETCH_HEAD
+
+cd "$work/superbee"
 npm ci
 npm run build
 npm pack -w @superbee/cli --ignore-scripts --pack-destination "$artifacts"
 
-cd "$plugins/apps/mcp"
+cd "$work/superbee-plugins/apps/mcp"
 npm ci
 npm install --no-save --package-lock=false --ignore-scripts "$artifacts"/superbee-cli-*.tgz
 npm run build
 npm run typecheck
 npm pack --ignore-scripts --pack-destination "$artifacts"
+node test/acceptance.mjs "$artifacts"/superbee-cli-*.tgz
+cd "$artifacts"
 ```
 
-## Install and select a workspace
+Continue at **Install the offline pair**, starting with the `prefix` assignment. The checksum manifest is provided with the CI download. To reproduce a particular download, check out the two revisions recorded in its `SOURCES` before building.
 
-Install both tarballs under a dedicated prefix. A package install starts no server and adds
-no host registrations.
+For the Desktop extension, run `npm run desktop:pack` then `node test/desktop.mjs` from the plugin's `apps/mcp` directory. Open the resulting `out/superbee-experimental.mcpb` in Desktop. CI exercises the extracted extension on macOS with the official MCPB resolver and a stdio client. Live Desktop acceptance requires opening the file in the app.
 
-```sh
-prefix="$HOME/.local/share/superbee-experimental-mcp"
-npm install --prefix "$prefix" --ignore-scripts --no-audit --no-fund \
-  "$artifacts"/superbee-cli-*.tgz "$artifacts"/superbee-experimental-mcp-*.tgz
-"$prefix/node_modules/.bin/superbee-mcp" --help
-```
-
-Register the installed executable in the client you use. For example, with Codex:
-
-```sh
-mcp="$prefix/node_modules/.bin/superbee-mcp"
-"$mcp" install --host codex --dir /absolute/path/to/bundle --actor human:editor
-"$mcp" status --host codex
-```
-
-Choose `codex`, `claude-code`, `claude-desktop` (macOS), or `opencode`. You can replace
-`--dir` with `--workspace planning` for a registered catalog label or ID. Omit both selectors to
-register the catalog-mode server and call `list_workspaces`. A fixed-workspace install checks
-that the workspace can open with the supplied actor. Keep this prefix and its Node installation
-available to the client. Restart the client after a changed registration.
-
-The plugin manages the user-level entry named `superbee-experimental`. The bundled CLI
-uses the separate name `superbee`. Repeating the same install is safe. To switch workspace
-or actor, uninstall the experimental entry and install it again. A same-name entry with
-custom settings needs manual review in the client. OpenCode reads either its v1 or v2
-configuration, including JSONC. If multiple standard files exist, select the intended file
-with an absolute `OPENCODE_CONFIG`. Manage inline OpenCode configuration directly.
-
-Use `show_document` to display Markdown and `list_views` or `show_view` for a registered
-View. A temporary View uses `show_view` with `mode: "transient"`, exact HTML and declared
-access. The App shell collects local trust and a separate decision for each proposed edit.
-To roll back, run the following before removing the dedicated installation. Restart
-the client and use its existing bundled registration if configured.
-
-```sh
-"$mcp" uninstall --host codex
-"$mcp" status --host codex
-```
-
-Repeat uninstall for each client where you installed the plugin, then remove the packages
-from the dedicated prefix.
-
-## Verify an installation
-
-From this directory, run `node test/acceptance.mjs /absolute/path/to/cli.tgz` after building.
-The test packs the plugin, installs both tarballs offline in a temporary directory and uses
-a real MCP client over stdio. Add `--browser` after installing Playwright Chromium to run
-both production App screens with a synthetic MCP Apps host. The test uses synthetic files
-and a temporary home.
-
-To compare the installed plugin with the bundled CLI, run the following from this directory.
-The test creates isolated workspaces and a local hosted-service fixture.
-
-```sh
-node test/catalog-parity.mjs "$artifacts"/superbee-cli-*.tgz "$oss/packages/superbee/dist/superbee.mjs"
-```
+Maintainers can run the packaged browser test with `node test/acceptance.mjs "$artifacts"/superbee-cli-*.tgz --browser` after installing Playwright Chromium. To compare the packed plugin's fixed and catalog modes with the bundled CLI, run `node test/catalog-parity.mjs "$artifacts"/superbee-cli-*.tgz "$work/superbee/packages/superbee/dist/superbee.mjs"` in the same directory. These tests use synthetic workspaces and a local hosted-service fixture.

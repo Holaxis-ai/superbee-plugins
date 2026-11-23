@@ -93,11 +93,29 @@ jobs:
       - name: Compare packaged catalog and fixed-mode tools with the bundled CLI
         working-directory: apps/mcp
         run: node test/catalog-parity.mjs "$RUNNER_TEMP"/superbee-cli-*.tgz "$GITHUB_WORKSPACE/.view-workspace-producer/packages/superbee/dist/superbee.mjs"
-      - name: Exercise the installed plugin and its browser screens
+      - name: Assemble the offline preview for this run
+        working-directory: apps/mcp
+        run: |
+          pair="$RUNNER_TEMP/superbee-mcp-offline-preview"
+          mkdir "$pair"
+          cp "$RUNNER_TEMP"/superbee-cli-*.tgz "$pair/"
+          npm pack --ignore-scripts --pack-destination "$pair"
+          cp README.md "$pair/"
+          printf 'superbee %s\nsuperbee-plugins %s\n' \
+            "$(git -C ../../.view-workspace-producer rev-parse HEAD)" "$(git rev-parse HEAD)" > "$pair/SOURCES"
+          cd "$pair"
+          sha256sum *.tgz README.md SOURCES > SHA256SUMS
+      - name: Exercise the downloadable pair and its browser screens
         working-directory: apps/mcp
         run: |
           npx --no-install playwright install --with-deps chromium
-          node test/acceptance.mjs "$RUNNER_TEMP"/superbee-cli-*.tgz --browser
+          pair="$RUNNER_TEMP/superbee-mcp-offline-preview"
+          node test/acceptance.mjs "$pair"/superbee-cli-*.tgz --plugin "$pair"/superbee-experimental-mcp-*.tgz --browser
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: superbee-mcp-offline-preview
+          path: ${{ runner.temp }}/superbee-mcp-offline-preview/
+          if-no-files-found: error
       - name: Pack the standalone Claude Desktop extension
         working-directory: apps/mcp
         run: |
@@ -129,3 +147,15 @@ jobs:
         run: |
           npm ci --ignore-scripts
           node test/desktop.mjs
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: superbee-mcp-offline-preview
+          path: ${{ runner.temp }}/superbee-mcp-offline-preview
+      - name: Install the downloaded pair offline on macOS
+        working-directory: ${{ runner.temp }}/superbee-mcp-offline-preview
+        run: |
+          shasum -a 256 -c SHA256SUMS
+          prefix="$RUNNER_TEMP/installed-preview"
+          npm install --prefix "$prefix" --offline --cache "$RUNNER_TEMP/empty-preview-cache" --ignore-scripts --no-audit --no-fund \
+            "$PWD"/superbee-cli-*.tgz "$PWD"/superbee-experimental-mcp-*.tgz
+          "$prefix/node_modules/.bin/superbee-mcp" --help
