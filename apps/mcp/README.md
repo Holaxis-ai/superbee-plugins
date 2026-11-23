@@ -5,7 +5,7 @@ Install this optional, experimental MCP app to open a Superbee document in chat,
 | Client | Installation | Platform |
 | --- | --- | --- |
 | Claude Desktop | Open the self-contained Desktop extension | macOS |
-| Codex | Install the offline pair and register `--host codex` | macOS, Linux |
+| Codex | Install the offline pair and register `--host codex` | macOS, Linux, Windows |
 | Claude Code | Install the offline pair and register `--host claude-code` | macOS, Linux |
 | OpenCode | Install the offline pair and register `--host opencode` | macOS, Linux |
 | Claude Desktop with a manual MCP configuration | Install the offline pair and register `--host claude-desktop` | macOS |
@@ -33,6 +33,38 @@ For a registered View in Claude Desktop, choose the bundle folder containing its
 Catalog-mode Views and temporary Views currently require a client that routes the tool call and panel actions to the same server process. Use the fixed-folder extension mode for registered Views in Claude Desktop. Catalog document reads continue to use the Desktop reader.
 
 The extension includes both screens and the compatible workspace library. Its manifest accepts Node 22.14+ in the 22 series, 24.x, or 26.x. Choose one Desktop installation method per workspace to avoid duplicate tools.
+
+## Codex on Windows
+
+Use Node 24.2 or newer in the Node 24 series and a working Codex installation. In PowerShell, open the extracted offline preview folder and verify its checksums:
+
+```powershell
+$archives = foreach ($line in Get-Content -LiteralPath SHA256SUMS -ErrorAction Stop) {
+    $hash, $file = $line -split '  ', 2
+    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $file -ErrorAction Stop).Hash -ne $hash) {
+        throw "Checksum differs for $file"
+    }
+    if ($file -match '^superbee-(cli|experimental-mcp)-[a-z0-9.-]+\.tgz$') {
+        (Get-Item -LiteralPath $file -ErrorAction Stop).FullName
+    }
+}
+if (@($archives).Count -ne 2) { throw "Expected two verified npm archives" }
+```
+
+Install the two packages into a dedicated prefix. Replace the bundle path and actor with your own.
+
+```powershell
+$prefix = Join-Path $env:LOCALAPPDATA 'Superbee MCP Preview'
+npm install --prefix $prefix --offline --ignore-scripts --no-audit --no-fund @archives
+if ($LASTEXITCODE -ne 0) { throw "Offline install failed" }
+$mcp = Join-Path $prefix 'node_modules/.bin/superbee-mcp.cmd'
+& $mcp install --host codex --dir 'C:\path with spaces\bundle' --actor human:editor
+& $mcp status --host codex
+```
+
+To use the catalog, install `superbee@0.4.8-pre.2` or a newer release with native Windows catalog support. Run `superbee catalog add <label> --dir <bundle>` to add a local workspace. Use `--workspace <label>` in place of `--dir` to open that workspace, or omit both selectors to choose from the catalog per call.
+
+Restart Codex and follow [Verify in your client](#verify-in-your-client). To roll back, run `& $mcp uninstall --host codex` and restart Codex again.
 
 ## Install the offline pair
 

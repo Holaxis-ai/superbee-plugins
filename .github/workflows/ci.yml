@@ -145,3 +145,43 @@ jobs:
           npm install --prefix "$prefix" --offline --cache "$RUNNER_TEMP/empty-preview-cache" --ignore-scripts --no-audit --no-fund \
             "$PWD"/superbee-cli-*.tgz "$PWD"/superbee-experimental-mcp-*.tgz
           "$prefix/node_modules/.bin/superbee-mcp" --help
+  windows-codex:
+    needs: experimental-mcp
+    runs-on: windows-2025
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24.22.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: superbee-mcp-offline-preview
+          path: ${{ runner.temp }}/offline-pair
+      - name: Install the pinned native Codex host and Superbee executable
+        run: |
+          $tools = Join-Path $env:RUNNER_TEMP 'Codex tools'
+          $cliVersion = node -p "require('./apps/mcp/package.json').devDependencies.superbee"
+          npm install --prefix $tools --no-package-lock --ignore-scripts --no-audit --no-fund '@openai/codex@0.149.0' "superbee@$cliVersion"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Join-Path $tools 'node_modules/.bin' | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Install the download offline and open a document and a View in Codex
+        run: |
+          $pair = Join-Path $env:RUNNER_TEMP 'offline-pair'
+          foreach ($line in Get-Content (Join-Path $pair 'SHA256SUMS')) {
+            $hash, $file = $line -split '  ', 2
+            if ((Get-FileHash -Algorithm SHA256 (Join-Path $pair $file)).Hash -ne $hash) {
+              throw "Offline download checksum differs for $file"
+            }
+          }
+          $prefix = Join-Path $env:RUNNER_TEMP 'Offline install'
+          $archives = (Get-ChildItem $pair -Filter '*.tgz').FullName
+          npm install --prefix $prefix --offline --cache (Join-Path $env:RUNNER_TEMP 'empty-preview-cache') --ignore-scripts --no-audit --no-fund @archives
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & (Join-Path $prefix 'node_modules/.bin/superbee-mcp.cmd') --help
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $codex = Join-Path $env:RUNNER_TEMP "Codex tools/node_modules/@openai/codex/bin/codex.js"
+          $superbee = Join-Path $env:RUNNER_TEMP "Codex tools/node_modules/superbee/dist/superbee.mjs"
+          node apps/mcp/test/codex-host.mjs $prefix $codex $superbee
