@@ -60,3 +60,38 @@ jobs:
           fi
       - run: npm run test:unit
       - run: npm run test:packaged
+  experimental-mcp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24.22.1
+      - name: Check out the compatible OSS library source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Holaxis-ai/superbee
+          ref: 73acbce045d17c3fc97296901518c1b4ed2ae2f6
+          path: .view-workspace-producer
+          persist-credentials: false
+      - name: Build the public CLI tarball
+        working-directory: .view-workspace-producer
+        run: |
+          npm ci
+          npm run build
+          npm pack -w @superbee/cli --ignore-scripts --pack-destination "$RUNNER_TEMP"
+      - name: Install the public provider and build both App resources
+        working-directory: apps/mcp
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false --ignore-scripts "$RUNNER_TEMP"/superbee-cli-*.tgz
+          npm run build
+          npm run typecheck
+      - name: Exercise the installed plugin and its browser screens
+        working-directory: apps/mcp
+        run: |
+          npx --no-install playwright install --with-deps chromium
+          node test/acceptance.mjs "$RUNNER_TEMP"/superbee-cli-*.tgz --browser

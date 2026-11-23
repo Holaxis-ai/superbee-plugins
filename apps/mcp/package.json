@@ -1,0 +1,36 @@
+{
+  "name": "@superbee/experimental-mcp",
+  "version": "0.1.0-experimental.1",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Opt-in Superbee MCP Apps host for an explicitly selected local workspace.",
+  "engines": {
+    "node": "^22.14.0 || ^24.0.0 || ^26.0.0"
+  },
+  "bin": {
+    "superbee-mcp": "./dist/superbee-mcp.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@superbee/cli": "0.1.0-pre.1"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/ext-apps": "2.0.4",
+    "@modelcontextprotocol/server": "2.4.0",
+    "@superbee/core": "0.2.0-pre.48",
+    "@superbee/view-host": "0.1.0",
+    "@types/node": "22.20.0",
+    "esbuild": "0.25.12",
+    "playwright": "1.61.1",
+    "typescript": "5.9.3",
+    "zod": "4.6.7"
+  }
+}

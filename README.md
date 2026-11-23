@@ -11,6 +11,10 @@ contributing to this repository does not automatically enable code in a user's C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
+## Experimental MCP app
+
+The [standalone MCP app](apps/mcp/README.md) can be built and installed separately for a selected Superbee workspace. It ships the document and View screens and uses an installed CLI library for workspace reads and confirmed edits.
+
 ## Resource pointers
 
 The inert [`resource`](recipes/resource/recipe.md) recipe adds one Resource Kind for external
