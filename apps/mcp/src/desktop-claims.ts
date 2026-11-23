@@ -1,14 +1,12 @@
-// Claude Desktop can use different stdio servers for the model call and the reader iframe.
-// Keep the render key solely in the tool receipt. Only the encrypted, already-rendered snapshot
-// enters the user's temporary directory, so a later edit cannot change what that receipt shows.
+// Claude Desktop can use different stdio servers for model and iframe calls. Only ciphertext
+// enters temporary storage. A receipt carries its own key and is bound to the issuing purpose.
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 import { lstat, mkdir, opendir, readFile, realpath, rmdir, stat, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { withFilesystemMutationLock } from "@superbee/core";
-import { parseDocumentPresentationPayload } from "./document-contract.js";
-import type { DocumentClaims } from "./server.js";
+import type { ClaimStore } from "./pending-launches.js";
 
 const TTL_MS = 10 * 60_000;
 const LIMIT = 16;
@@ -20,14 +18,25 @@ async function identity(location: string) {
   return [canonical, String(info.dev), String(info.ino)];
 }
 
-export async function desktopDocumentClaims(directory: string | null, actor: string): Promise<DocumentClaims> {
+export async function desktopClaims<T>(
+  directory: string | null, actor: string, purpose: "document" | "registered-view",
+  parse: (value: unknown) => T | null,
+): Promise<ClaimStore<T>> {
   const uid = process.getuid!(); // The Desktop extension is distributed for macOS.
   const entry = fileURLToPath(import.meta.url);
   const build = await stat(entry, { bigint: true });
   const home = await identity(homedir());
   const selection = directory === null ? ["catalog"] : ["directory", ...await identity(directory)];
+  // The public provider pins a selected working copy but does not export its physical path.
+  // For executable View handoff prove that this configured directory itself is the bundle;
+  // project shorthand and catalog labels could otherwise resolve to another working copy.
+  const registeredRoot = purpose === "registered-view" ? directory : null;
+  const isIndexed = async (root: string) => lstat(path.join(root, "index.md")).then(
+    info => info.isFile(), () => false,
+  );
+  const directAtStart = registeredRoot !== null && await isIndexed(registeredRoot);
   const scope = digest(JSON.stringify([
-    await identity(entry), String(build.size), String(build.mtimeNs), home, selection, actor,
+    await identity(entry), String(build.size), String(build.mtimeNs), home, selection, actor, purpose,
   ]));
   // /tmp is shared by GUI and model processes even if their TMPDIR settings differ.
   const profile = digest(JSON.stringify(home)).slice(0, 16);
@@ -36,6 +45,10 @@ export async function desktopDocumentClaims(directory: string | null, actor: str
   const filename = (claim: string) => prefix + digest(claim);
 
   async function locked<T>(fn: () => Promise<T>): Promise<T> {
+    if (registeredRoot !== null && (!directAtStart || !await isIndexed(registeredRoot) ||
+        JSON.stringify(["directory", ...await identity(registeredRoot)]) !== JSON.stringify(selection))) {
+      throw new Error("Choose the indexed bundle folder itself in the Desktop extension settings and reopen the registered View.");
+    }
     return withFilesystemMutationLock(root, async () => {
       await mkdir(root, { mode: 0o700 }).catch((error: NodeJS.ErrnoException) => {
         if (error.code !== "EEXIST") throw error;
@@ -98,7 +111,7 @@ export async function desktopDocumentClaims(directory: string | null, actor: str
         const decipher = createDecipheriv("aes-128-gcm", Buffer.from(claim, "base64url"), sealed.subarray(0, 12));
         decipher.setAuthTag(sealed.subarray(12, 28));
         const plaintext = Buffer.concat([decipher.update(sealed.subarray(28)), decipher.final()]);
-        const payload = parseDocumentPresentationPayload(JSON.parse(plaintext.toString("utf8")));
+        const payload = parse(JSON.parse(plaintext.toString("utf8")));
         return payload ? { payload } : null;
       });
     },

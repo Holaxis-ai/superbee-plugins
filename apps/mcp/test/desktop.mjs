@@ -161,6 +161,8 @@ try {
     assert.equal((await redeem(other, receipts.shift())).isError, true);
     for (const pending of receipts) assert.ok((await redeem(other, pending)).structuredContent.document);
   });
+  await withReader(extensionPath, workspace, "human:desktop-test", panel => proveRegisteredView(workspace, client, panel, claim =>
+    withReader(extensionPath, workspace, "human:another-person", other => other.callTool({ name: "resolve_launch", arguments: { claim } }))));
   const read = () => readOn(extensionPath, workspace, "human:desktop-test");
   const results = await Promise.all([read(), read()]);
   assert.equal(results.filter(result => result.isError).length, 1);
@@ -199,9 +201,102 @@ try {
     changed,
   );
   console.log(
-    "The packaged Desktop extension displayed the selected revision across stdio processes.",
+    "The packaged Desktop extension passed cross-process document, View trust, bridge and edit checks.",
   );
 } finally {
   await client.close();
   await rm(scratch, { recursive: true, force: true });
+}
+
+async function proveRegisteredView(folder, model, panel, resolveAsOtherActor) {
+  const viewId = "views-registry/desktop";
+  const entry = "views/desktop.html";
+  const registryFile = path.join(folder, viewId + ".md");
+  const entryFile = path.join(folder, entry);
+  const registry = `---\ntype: View\ntitle: Test reader\nentry: ${entry}\naccess: bundle-read\n---\n`;
+  const html = "<!doctype html><title>View handoff test</title>";
+  await mkdir(path.dirname(registryFile), { recursive: true });
+  await mkdir(path.dirname(entryFile), { recursive: true });
+  await writeFile(registryFile, registry);
+  await writeFile(entryFile, html);
+  const show = async () => {
+    const result = await model.callTool({ name: "show_view", arguments: { viewId } });
+    assert.ok(!result.isError);
+    return result.content[0].text.match(/\[agentstate-claim:v1:([\w-]+)\]/)[1];
+  };
+  const resolve = claim => panel.callTool({ name: "resolve_launch", arguments: { claim } });
+  const approve = launchId => panel.callTool({ name: "authorize_durable_view", arguments: { launchId } });
+  const bridge = async (launchId, docId = "tasks/sample") => (await panel.callTool({
+    name: "durable_view_bridge",
+    arguments: { launchId, request: { bridge: "v0", type: "render-document", id: "read", docId } },
+  })).structuredContent.outcome.reply;
+
+  const stale = await show();
+  await writeFile(registryFile, registry + "A new registration revision.\n");
+  assert.equal((await resolve(stale)).isError, true);
+  const changed = await show();
+  await writeFile(entryFile, html + "<p>Changed bytes.</p>");
+  assert.equal((await resolve(changed)).isError, true);
+
+  const removed = await show();
+  await rm(entryFile);
+  assert.equal((await resolve(removed)).isError, true);
+  await writeFile(entryFile, html + "<p>Changed bytes.</p>");
+
+  const ticket = await show();
+  assert.equal((await resolveAsOtherActor(ticket)).isError, true);
+  const presented = (await resolve(ticket)).structuredContent;
+  assert.equal((await resolve(ticket)).isError, true);
+  assert.equal(presented.launch.authorization.authorized, false);
+  assert.equal(presented.launch.access, "bundle-read");
+  const staleApproval = presented.launch.launchId;
+  assert.equal((await bridge(staleApproval)).type, "error");
+  await writeFile(entryFile, html);
+  assert.equal((await approve(staleApproval)).isError, true);
+  const fresh = (await resolve(await show())).structuredContent;
+  const id = fresh.launch.launchId;
+  assert.equal(fresh.launch.authorization.authorized, false);
+  assert.equal((await model.callTool({ name: "authorize_durable_view", arguments: { launchId: id } })).isError, true);
+  const approved = (await approve(id)).structuredContent.view;
+  assert.equal(approved.launch.launchId, id);
+  assert.equal(approved.launch.authorization.authorized, true);
+  assert.equal(approved.source.html, html);
+  assert.match((await bridge(id)).result.html, /Edited after the receipt/);
+  const edit = await panel.callTool({ name: "prepare_view_action", arguments: {
+    launchId: id, requestId: "unexpected-edit",
+    action: { kind: "document.set-field", field: "title", docId: "tasks/sample", value: "Unwanted", expectedVersion: "sha256:" + "0".repeat(64) },
+  } });
+  assert.equal(edit.structuredContent.result.status, "revoked");
+  await panel.callTool({ name: "close_durable_view", arguments: { launchId: id } });
+  assert.equal((await bridge(id)).type, "error");
+
+  await mkdir(path.join(folder, "conventions"), { recursive: true });
+  await writeFile(path.join(folder, "conventions/task.md"),
+    "---\ntype: Convention\ntitle: Task\ngoverns: Task\npath: tasks/\nfields:\n  required: [title, status]\n  values:\n    status: [todo, done]\n---\n");
+  const docId = "tasks/mutable";
+  const editable = path.join(folder, docId + ".md");
+  await writeFile(editable, "---\ntype: Task\ntitle: Editable\nstatus: todo\n---\n");
+  await writeFile(registryFile, registry.replace("bundle-read", "bundle-propose"));
+  const editor = (await resolve(await show())).structuredContent.launch;
+  assert.equal(editor.authorization.authorized, false);
+  assert.equal((await approve(editor.launchId)).structuredContent.view.launch.access, "bundle-propose");
+  const version = (await bridge(editor.launchId, docId)).result.document.version;
+  const prepare = async requestId => (await panel.callTool({ name: "prepare_view_action", arguments: {
+    launchId: editor.launchId, requestId,
+    action: { kind: "document.set-field", field: "status", docId, value: "done", expectedVersion: version },
+  } })).structuredContent.result;
+  const confirm = async (approvalToken, decision) => (await panel.callTool({ name: "finish_view_action", arguments: {
+    launchId: editor.launchId, approvalToken, decision,
+  } })).structuredContent.result;
+  const first = await prepare("first-edit");
+  assert.ok(first.confirmation, JSON.stringify(first));
+  assert.equal(first.confirmation.before, "todo");
+  await confirm(first.approvalToken, "cancel");
+  assert.match(await readFile(editable, "utf8"), /^status: todo$/m);
+  const second = await prepare("second-edit");
+  assert.equal(second.confirmation.after, "done");
+  assert.match(await readFile(editable, "utf8"), /^status: todo$/m);
+  assert.equal((await confirm(second.approvalToken, "commit")).status, "committed");
+  assert.match(await readFile(editable, "utf8"), /^status: done$/m);
+  await panel.callTool({ name: "close_durable_view", arguments: { launchId: editor.launchId } });
 }

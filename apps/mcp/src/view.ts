@@ -666,8 +666,9 @@ async function authorizeDurableView(): Promise<void> {
       arguments: { launchId },
     });
     if (!launchFence.isCurrent(attempt)) return;
+    if (response.isError) throw new Error(firstResultText(response) ?? "The server could not authorize this View. Reopen it.");
     const view = structuredResult(response)?.view;
-    if (!isActiveViewPayload(view) || view.launch.launchId !== launchId) {
+    if (!isActiveViewPayload(view) || !view.launch.authorization.authorized || view.launch.launchId !== launchId) {
       throw new Error("The active View changed or returned an invalid approved launch.");
     }
     renderDurablePayload(view);

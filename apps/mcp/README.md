@@ -26,7 +26,11 @@ Both previews are built from source. The npm pair contains the plugin and the ma
 
 The macOS CI check installs the finished extension archive and starts separate servers for the tool call and the reader. It verifies the original revision after a document edit, concurrent redemption, and refusal from a different actor, workspace or installation. It also fills one workspace’s receipt allowance while a reader in another workspace is waiting. Check the title and body in a signed-in Desktop chat to verify the host itself.
 
-The Desktop reader keeps up to 16 pending receipts per installation, workspace setting and actor. Each receipt expires after ten minutes. The encrypted snapshot lives in a private temporary folder for your OS account and profile. Redemption removes the snapshot. Creating a receipt also removes expired snapshots across settings, including settings you have stopped using. The empty folder is removed after its last snapshot is gone.
+The Desktop reader keeps up to 16 pending document receipts per installation, workspace setting and actor. Each receipt expires after ten minutes. The encrypted snapshot lives in a private temporary folder for your OS account and profile. Redemption removes the snapshot. Creating a receipt also removes expired snapshots across settings, including settings you have stopped using. The empty folder is removed after its last snapshot is gone.
+
+For a registered View in Claude Desktop, choose the bundle folder containing its root `index.md`. The model identifies the registration and entry revision. The panel opens those exact bytes on its own connection and shows **Trust and run** when approval is required. If the registration, HTML or access changes, reopen the View. A View with edit access still requires a separate confirmation for each proposed change. The packaged two-process check exercises stale registration and HTML, trust, reads, cancellation and confirmed edits.
+
+Catalog-mode Views and temporary Views currently require a client that routes the tool call and panel actions to the same server process. Use the fixed-folder extension mode for registered Views in Claude Desktop. Catalog document reads continue to use the Desktop reader.
 
 The extension includes both screens and the compatible workspace library. Its manifest accepts Node 22.14+ in the 22 series, 24.x, or 26.x. Choose one Desktop installation method per workspace to avoid duplicate tools.
 

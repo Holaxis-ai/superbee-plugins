@@ -11,6 +11,12 @@
  * launches. The marker is model-visible by construction and
  * conveys no model authority: the resolver is app-only, same-connection, bounded, and one-shot.
  */
+type Claimed<T> = { payload: T } | null;
+export interface ClaimStore<T> {
+  record(claim: string, payload: T): void | Promise<void>;
+  consume(claim: string): Claimed<T> | Promise<Claimed<T>>;
+}
+
 export interface PendingLaunchEntry {
   claimId: string;
   launchId: string;
