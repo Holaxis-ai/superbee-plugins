@@ -177,6 +177,22 @@ try {
   const config = path.join(env.CODEX_HOME, "config.toml");
   const before = await readFile(config, "utf8");
   assert.equal(plugin("status").state, "absent");
+  if (process.platform === "win32") {
+    const custom = path.join(scratch, "Custom Codex launcher");
+    const launcher = path.join(custom, "node_modules/@openai/codex/bin");
+    await mkdir(launcher, { recursive: true });
+    await writeFile(path.join(launcher, "codex.js"), "");
+    await writeFile(path.join(custom, "codex.cmd"), "@echo custom wrapper\r\n");
+    assert.throws(
+      () =>
+        execFileSync(process.execPath, [bin, "status", "--host", "codex"], {
+          env: { ...env, PATH: custom + path.delimiter + env.PATH },
+          encoding: "utf8",
+          stdio: "pipe",
+        }),
+      (error) => /Codex command is a custom wrapper/.test(error.stderr),
+    );
+  }
   assert.equal(plugin("install", ...selector).changed, true);
   assert.equal(plugin("install", ...selector).changed, false);
   assert.equal(plugin("status").state, "installed");
