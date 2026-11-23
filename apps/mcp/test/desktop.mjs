@@ -41,9 +41,21 @@ try {
   assert.deepEqual((await readdir(extensionPath)).sort(), [
     "LICENSE",
     "NOTICE",
+    "THIRD-PARTY-NOTICES.txt",
     "manifest.json",
     "server.mjs",
   ]);
+  const notices = await readFile(
+    path.join(extensionPath, "THIRD-PARTY-NOTICES.txt"),
+    "utf8",
+  );
+  for (const notice of [
+    "Copyright (c) 2025 Colin McDonnell",
+    "@modelcontextprotocol/ext-apps@",
+    "react@",
+    "pkce-challenge@",
+  ])
+    assert.ok(notices.includes(notice), "Missing bundled notice: " + notice);
   const manifest = JSON.parse(
     await readFile(path.join(extensionPath, "manifest.json"), "utf8"),
   );

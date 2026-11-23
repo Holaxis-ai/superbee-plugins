@@ -98,6 +98,7 @@ jobs:
       - name: Pack the standalone Claude Desktop extension
         working-directory: apps/mcp
         run: |
+          cmp desktop/provider-notices.txt ../../.view-workspace-producer/packages/superbee/dist/THIRD-PARTY-NOTICES.txt
           node desktop/pack.mjs
           node test/desktop.mjs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9

@@ -1,6 +1,9 @@
 import { build } from "esbuild";
 import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
 
+import { bundledPackages } from "./desktop/notices.mjs";
+
+const screenPackages = new Set();
 await mkdir("src/generated", { recursive: true });
 for (const [name, marker, symbol] of [
   ["view", "<!-- ASLITE_MCP_APP_SCRIPT -->", "MCP_VIEW_HTML"],
@@ -15,7 +18,9 @@ for (const [name, marker, symbol] of [
     target: "es2022",
     minify: true,
     write: false,
+    metafile: true,
   });
+  for (const root of bundledPackages(result.metafile)) screenPackages.add(root);
   const script = result.outputFiles[0].text.replaceAll(
     "</script",
     "<\\/script",
@@ -28,6 +33,10 @@ for (const [name, marker, symbol] of [
     `export const ${symbol} = ${JSON.stringify(html)};\n`,
   );
 }
+await writeFile(
+  "src/generated/screen-packages.json",
+  JSON.stringify([...screenPackages]),
+);
 const outfile = "dist/superbee-mcp.mjs";
 await build({
   entryPoints: ["src/main.ts"],
