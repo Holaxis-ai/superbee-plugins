@@ -1,0 +1,134 @@
+{
+  "whoami": {
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "principalId": "person:both",
+      "credentialId": "credential:cli",
+      "tenantIds": ["tenant:a"],
+      "workspaces": [
+        {
+          "tenantId": "tenant:a",
+          "slug": "tenant-a"
+        }
+      ],
+      "surface": "sync",
+      "limits": {
+        "documentInputBytes": 983040
+      },
+      "targetAuthorityKey": "orgs"
+    }
+  },
+  "bundles": {
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "ok": true,
+      "operationId": "bundles.list.v1",
+      "data": {
+        "bundles": [
+          {
+            "bundleId": "notes.a",
+            "name": "notes.a",
+            "purpose": "",
+            "domains": [],
+            "lifecycle": "active",
+            "sensitivity": "private"
+          },
+          {
+            "bundleId": "ro.a",
+            "name": "ro.a",
+            "purpose": "",
+            "domains": [],
+            "lifecycle": "active",
+            "sensitivity": "private"
+          }
+        ]
+      }
+    }
+  },
+  "capabilities": {
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "heads": true,
+      "snapshot": true,
+      "operations": true,
+      "operationsRetentionMs": 2592000000,
+      "bound": {
+        "documents": 1000,
+        "bytes": 1048576
+      },
+      "paged": {
+        "documents": 10000
+      },
+      "limits": {
+        "documentInputBytes": 983040,
+        "blobReadBytes": 16777216,
+        "blobWriteBytes": 16777216
+      },
+      "root": {
+        "content": "---\nokf_version: \"0.2\"\n---\n# notes.a\n",
+        "version": "sha256:7cc1f9e472341f8bdf54f668a9ab98655055e36a9ad41f8bfcc8d5977aaa59d0"
+      },
+      "rootWrites": "allowed"
+    }
+  },
+  "heads": {
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "etag": "\"sha256:92bd771dd86f71d602cca33d4d133788360101e583d68445187bf56a81899689\"",
+      "x-superbee-root-version": "sha256:7cc1f9e472341f8bdf54f668a9ab98655055e36a9ad41f8bfcc8d5977aaa59d0"
+    },
+    "body": {
+      "count": 1,
+      "digest": "sha256:92bd771dd86f71d602cca33d4d133788360101e583d68445187bf56a81899689",
+      "heads": [
+        {
+          "id": "notes/one",
+          "version": "sha256:dfc05cf336bf2eaa2bf4a3319609f596514c2ec0f5abf3e7a173aafe7baac5c4"
+        }
+      ]
+    }
+  },
+  "snapshot": {
+    "headers": {
+      "content-type": "application/x-ndjson; charset=utf-8",
+      "etag": "\"sha256:92bd771dd86f71d602cca33d4d133788360101e583d68445187bf56a81899689\""
+    },
+    "body": "{\"kind\":\"snapshot\",\"count\":1,\"digest\":\"sha256:92bd771dd86f71d602cca33d4d133788360101e583d68445187bf56a81899689\"}\n{\"kind\":\"doc\",\"id\":\"notes/one\",\"version\":\"sha256:dfc05cf336bf2eaa2bf4a3319609f596514c2ec0f5abf3e7a173aafe7baac5c4\",\"frontmatter\":{\"type\":\"Note\"},\"body\":\"one\\n\"}\n{\"kind\":\"end\",\"count\":1}\n"
+  },
+  "run": {
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "ok": true,
+      "operationId": "documents.history.v1",
+      "data": {
+        "documentId": "notes/via",
+        "versions": [
+          {
+            "seq": 2,
+            "version": "sha256:57b4ddc90ccaea13c929a58eb70cd62bb87a594f88e1ff59d8b793237529bdc3",
+            "actor": "person:both",
+            "timestamp": "2030-01-01T00:00:00.000Z",
+            "agent": "sync/credential:cli"
+          },
+          {
+            "seq": 1,
+            "version": "sha256:771ebd568dd01a8482e8ca8254b0c16d466b062548022f671abddfa4cb769d83",
+            "actor": "person:both",
+            "timestamp": "2030-01-01T00:00:00.000Z",
+            "agent": "sync/credential:cli;via=claude-code"
+          }
+        ],
+        "more": false,
+        "total": 2
+      }
+    }
+  }
+}
