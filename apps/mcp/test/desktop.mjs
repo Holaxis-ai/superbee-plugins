@@ -1,6 +1,7 @@
 // Load the finished extension using the official MCPB configuration resolver.
 // The server runs from the extracted bundle without npm or a sibling checkout.
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import {
   mkdtemp,
   mkdir,
@@ -68,7 +69,18 @@ try {
       pathSeparator: path.sep,
     });
   assert.equal(await resolve({ workspace }), undefined);
-  assert.equal(await resolve({ actor: "human:desktop-test" }), undefined);
+
+  const missingFolder = await resolve({ actor: "human:desktop-test" });
+  const refused = spawnSync(process.execPath, missingFolder.args, {
+    cwd: extensionPath,
+    env: { HOME: home, PATH: path.dirname(process.execPath) },
+    input: "",
+    encoding: "utf8",
+    timeout: 10_000,
+  });
+  assert.equal(refused.status, 1);
+  assert.match(refused.stderr, /Select a Superbee bundle directory/);
+
   const config = await resolve({ workspace, actor: "human:desktop-test" });
   assert.deepEqual(config, {
     command: "node",
@@ -76,6 +88,7 @@ try {
       path.join(extensionPath, manifest.server.entry_point),
       workspace,
       "human:desktop-test",
+      "false",
     ],
   });
   await client.connect(
@@ -112,6 +125,30 @@ try {
     /Visible in <strong>Superbee<\/strong>/,
   );
   await client.close();
+  const catalogConfig = await resolve({
+    actor: "human:desktop-test",
+    catalog: true,
+  });
+  const catalogClient = new Client({
+    name: "desktop-catalog-test",
+    version: "1",
+  });
+  try {
+    await catalogClient.connect(
+      new StdioClientTransport({
+        ...catalogConfig,
+        cwd: extensionPath,
+        env: { HOME: home, PATH: path.dirname(process.execPath) },
+      }),
+    );
+    const listed = await catalogClient.callTool({
+      name: "list_workspaces",
+      arguments: {},
+    });
+    assert.deepEqual(listed.structuredContent.workspaces, []);
+  } finally {
+    await catalogClient.close();
+  }
   await rm(extensionPath, { recursive: true });
   assert.equal(
     await readFile(path.join(workspace, "tasks/sample.md"), "utf8"),

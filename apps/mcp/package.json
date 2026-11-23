@@ -1,10 +1,10 @@
 {
   "name": "@superbee/experimental-mcp",
-  "version": "0.1.0-experimental.2",
+  "version": "0.1.0-experimental.3",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
-  "description": "Opt-in Superbee MCP Apps host for an explicitly selected local workspace.",
+  "description": "Opt-in Superbee MCP Apps host for a fixed workspace or the Superbee workspace catalog.",
   "engines": {
     "node": "^22.14.0 || ^24.0.0 || ^26.0.0"
   },

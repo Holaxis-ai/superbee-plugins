@@ -5,14 +5,18 @@ run a registered or temporary View, and approve individual field changes. The pl
 the MCP tools, presentation resources and confirmation screens. The installed Superbee
 CLI library selects the working copy and enforces launch, approval and document-version checks.
 
-This source installation supports macOS and Linux with Node 24 and npm. Each registration
-selects a directory or an existing catalog ID or label. The catalog-wide discovery and
-hosted-operation tools on the unbound bundled server remain part of the migration work.
+This source installation supports macOS and Linux with Node 24 and npm. Starting the server without a
+workspace argument enables catalog mode. Use `list_workspaces` to find the ID or label for
+displaying documents, searching or opening Views. A checkout can also
+list and run the reads its host offers. Only a temporary View explicitly requesting
+`access: none` can open without a selected workspace. Its lifetime stays independent of
+all workspaces. Pass `--dir` or `--workspace` to pin the server to one bundle.
 
 ## Claude Desktop on macOS
 
 Open the preview `.mcpb` file with Claude Desktop. Review the extension, choose the local
 Superbee bundle folder and enter the actor for confirmed edits, such as `human:editor`.
+Alternatively, enable **Use the workspace catalog** to choose a workspace per tool call.
 The extension includes the compatible workspace library and runs with Desktop’s Node runtime.
 The manifest requires Node 22.14+ in the 22 series, 24.x or 26.x. This is an unsigned local
 preview. Installation depends on the extension policy for your Desktop installation.
@@ -32,9 +36,10 @@ and a stdio client. Live Desktop acceptance also requires opening the file in th
 
 ## Build the compatible pair
 
-Use a clean OSS checkout at `73acbce045d17c3fc97296901518c1b4ed2ae2f6` and this plugin checkout.
+Use a clean OSS checkout at `051a0b4204799c6fc2fbb7eefc067ab2f7c91fa2` and this plugin checkout.
 The published CLI library with the same prerelease number predates the required
-`@superbee/cli/view-workspace/v1` export. Build the compatible CLI tarball from source.
+catalog and bundleless View exports in `@superbee/cli/view-workspace/v1`. Build the
+compatible CLI tarball from source.
 The following commands use absolute paths so the MCP host can start the app from any directory.
 
 ```sh
@@ -42,7 +47,7 @@ oss=/absolute/path/to/superbee
 plugins=/absolute/path/to/superbee-plugins
 artifacts=$(mktemp -d)
 cd "$oss"
-git checkout --detach 73acbce045d17c3fc97296901518c1b4ed2ae2f6
+git checkout --detach 051a0b4204799c6fc2fbb7eefc067ab2f7c91fa2
 npm ci
 npm run build
 npm pack -w @superbee/cli --ignore-scripts --pack-destination "$artifacts"
@@ -76,9 +81,10 @@ mcp="$prefix/node_modules/.bin/superbee-mcp"
 ```
 
 Choose `codex`, `claude-code`, `claude-desktop` (macOS), or `opencode`. You can replace
-`--dir` with `--workspace planning` for a registered catalog label or ID. Install checks
-that the selected workspace can open with the supplied actor. Keep this prefix and its Node
-installation available to the client. Restart the client after a changed registration.
+`--dir` with `--workspace planning` for a registered catalog label or ID. Omit both selectors to
+register the catalog-mode server and call `list_workspaces`. A fixed-workspace install checks
+that the workspace can open with the supplied actor. Keep this prefix and its Node installation
+available to the client. Restart the client after a changed registration.
 
 The plugin manages the user-level entry named `superbee-experimental`. The bundled CLI
 uses the separate name `superbee`. Repeating the same install is safe. To switch workspace
@@ -108,3 +114,10 @@ The test packs the plugin, installs both tarballs offline in a temporary directo
 a real MCP client over stdio. Add `--browser` after installing Playwright Chromium to run
 both production App screens with a synthetic MCP Apps host. The test uses synthetic files
 and a temporary home.
+
+To compare the installed plugin with the bundled CLI, run the following from this directory.
+The test creates isolated workspaces and a local hosted-service fixture.
+
+```sh
+node test/catalog-parity.mjs "$artifacts"/superbee-cli-*.tgz "$oss/packages/superbee/dist/superbee.mjs"
+```

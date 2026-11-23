@@ -1,5 +1,4 @@
 import { parseArgs } from "node:util";
-import { startMcpStdioServer } from "./server.js";
 
 import { configure, clientUsage } from "./client-registration.js";
 
@@ -23,16 +22,20 @@ async function main() {
   });
   if (values.help) {
     console.log(
-      "superbee-mcp (--dir <directory> | --workspace <catalog ID or label>) [--actor <identity>]\n" +
+      "superbee-mcp [--dir <directory> | --workspace <catalog ID or label>] [--actor <identity>]\n" +
         clientUsage,
     );
     return;
   }
-  if ((values.dir === undefined) === (values.workspace === undefined))
+  if (values.dir !== undefined && values.workspace !== undefined)
     throw new Error("Select exactly one workspace with --dir or --workspace.");
-  await startMcpStdioServer(
-    await openWorkspace(values.dir, values.workspace, values.actor),
+  const selection = await openWorkspace(
+    values.dir,
+    values.workspace,
+    values.actor,
   );
+  const { startMcpStdioServer } = await import("./server.js");
+  await startMcpStdioServer(selection);
 }
 
 async function openWorkspace(dir?: string, workspace?: string, actor?: string) {
@@ -49,6 +52,18 @@ async function openWorkspace(dir?: string, workspace?: string, actor?: string) {
       throw error;
     },
   );
+  if (
+    typeof provider.createViewWorkspaceCatalog !== "function" ||
+    typeof provider.createBundlelessViewHost !== "function"
+  )
+    throw new Error(
+      "Install the compatible @superbee/cli tarball with catalog and bundleless View support.",
+    );
+  if (dir === undefined && workspace === undefined)
+    return {
+      catalog: provider.createViewWorkspaceCatalog({ actor }),
+      bundleless: provider.createBundlelessViewHost(),
+    };
   return dir !== undefined
     ? provider.openViewWorkspace("directory", dir, { actor })
     : provider.openViewWorkspace("catalog", workspace!, { actor });

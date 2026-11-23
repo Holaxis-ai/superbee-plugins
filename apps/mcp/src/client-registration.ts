@@ -14,7 +14,7 @@ import {
 } from "./client-config.js";
 
 const name = "superbee-experimental";
-export const clientUsage = `superbee-mcp install --host <host> (--dir <directory> | --workspace <catalog label or ID>) --actor <identity>
+export const clientUsage = `superbee-mcp install --host <host> [--dir <directory> | --workspace <catalog label or ID>] --actor <identity>
 superbee-mcp status --host <host>
 superbee-mcp uninstall --host <host>
 Hosts: codex, claude-code, claude-desktop (macOS), opencode`;
@@ -244,18 +244,15 @@ function owned(host: Host, target: Target): Launch | undefined {
       return;
     }
   }
-  if (
-    flags.length !== 4 ||
-    flags[2] !== "--actor" ||
-    !flags[3].trim() ||
-    !flags[1].trim()
-  )
-    return;
-  if (
-    !(flags[0] === "--dir" && path.isAbsolute(flags[1])) &&
-    flags[0] !== "--workspace"
-  )
-    return;
+  const actorOnly =
+    flags.length === 2 && flags[0] === "--actor" && !!flags[1].trim();
+  const selected =
+    flags.length === 4 &&
+    flags[2] === "--actor" &&
+    !!flags[3].trim() &&
+    ((flags[0] === "--dir" && path.isAbsolute(flags[1])) ||
+      (flags[0] === "--workspace" && !!flags[1].trim()));
+  if (!selected && !(actorOnly && command === node)) return;
   const shape =
     host === "claude-code" &&
     command !== node &&
@@ -357,8 +354,9 @@ export async function configure(
   let launch: Launch | undefined;
   if (operation === "install") {
     if (
-      (values.dir === undefined) === (values.workspace === undefined) ||
-      !(values.dir ?? values.workspace)?.trim() ||
+      (values.dir !== undefined && values.workspace !== undefined) ||
+      values.dir?.trim() === "" ||
+      values.workspace?.trim() === "" ||
       !values.actor?.trim()
     )
       throw new Error(clientUsage);
@@ -368,7 +366,11 @@ export async function configure(
       command: node,
       args: [
         executable,
-        ...(dir ? ["--dir", dir] : ["--workspace", values.workspace!]),
+        ...(dir
+          ? ["--dir", dir]
+          : values.workspace
+            ? ["--workspace", values.workspace]
+            : []),
         "--actor",
         values.actor,
       ],

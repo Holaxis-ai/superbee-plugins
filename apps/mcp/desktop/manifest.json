@@ -2,20 +2,31 @@
   "manifest_version": "0.3",
   "name": "superbee-desktop-preview",
   "display_name": "Superbee (experimental)",
-  "version": "0.1.0-experimental.2",
-  "description": "Open documents and interactive Views in one local Superbee bundle. Confirm edits in the View before they are written.",
-  "author": { "name": "Holaxis" },
+  "version": "0.1.0-experimental.3",
+  "description": "Open documents and interactive Views in a selected bundle or choose a workspace from your Superbee catalog. Confirm edits before they are written.",
+  "author": {
+    "name": "Holaxis"
+  },
   "license": "Apache-2.0",
   "compatibility": {
-    "platforms": ["darwin"],
-    "runtimes": { "node": "^22.14.0 || ^24.0.0 || ^26.0.0" }
+    "platforms": [
+      "darwin"
+    ],
+    "runtimes": {
+      "node": "^22.14.0 || ^24.0.0 || ^26.0.0"
+    }
   },
   "server": {
     "type": "node",
     "entry_point": "server.mjs",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/server.mjs", "${user_config.workspace}", "${user_config.actor}"]
+      "args": [
+        "${__dirname}/server.mjs",
+        "${user_config.workspace}",
+        "${user_config.actor}",
+        "${user_config.catalog}"
+      ]
     }
   },
   "user_config": {
@@ -23,13 +34,19 @@
       "type": "directory",
       "title": "Superbee bundle",
       "description": "Choose the local bundle folder containing your Superbee documents.",
-      "required": true
+      "required": false
     },
     "actor": {
       "type": "string",
       "title": "Actor",
       "description": "Enter the identity to record for confirmed edits, for example human:editor.",
       "required": true
+    },
+    "catalog": {
+      "type": "boolean",
+      "title": "Use the workspace catalog",
+      "description": "Select a workspace per tool call. When enabled, the server uses the catalog and ignores the bundle folder setting.",
+      "default": false
     }
   },
   "tools_generated": true

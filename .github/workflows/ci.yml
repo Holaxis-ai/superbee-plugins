@@ -74,7 +74,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: Holaxis-ai/superbee
-          ref: 73acbce045d17c3fc97296901518c1b4ed2ae2f6
+          ref: 051a0b4204799c6fc2fbb7eefc067ab2f7c91fa2
           path: .view-workspace-producer
           persist-credentials: false
       - name: Build the public CLI tarball
@@ -90,6 +90,9 @@ jobs:
           npm install --no-save --package-lock=false --ignore-scripts "$RUNNER_TEMP"/superbee-cli-*.tgz
           npm run build
           npm run typecheck
+      - name: Compare packaged catalog and fixed-mode tools with the bundled CLI
+        working-directory: apps/mcp
+        run: node test/catalog-parity.mjs "$RUNNER_TEMP"/superbee-cli-*.tgz "$GITHUB_WORKSPACE/.view-workspace-producer/packages/superbee/dist/superbee.mjs"
       - name: Exercise the installed plugin and its browser screens
         working-directory: apps/mcp
         run: |

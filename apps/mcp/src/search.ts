@@ -19,7 +19,8 @@ const requestSchema = z
 
 export function registerSearchTool(
   server: McpServer,
-  workspace: ViewWorkspace,
+  select: (selector?: string) => Promise<ViewWorkspace>,
+  selector?: z.ZodString,
 ): void {
   server.registerTool(
     SEARCH_DOCUMENTS_TOOL_NAME,
@@ -27,7 +28,9 @@ export function registerSearchTool(
       title: "Search Superbee documents",
       description:
         "Search current local document text, including unsent edits. Results use the core search contract; cursors require the same unchanged corpus and filters.",
-      inputSchema: requestSchema,
+      inputSchema: selector
+        ? requestSchema.extend({ workspace: selector })
+        : requestSchema,
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -37,7 +40,10 @@ export function registerSearchTool(
     },
     async (input): Promise<CallToolResult> => {
       try {
-        const result = await workspace.search(input);
+        const { workspace, ...query } = input as z.infer<
+          typeof requestSchema
+        > & { workspace?: string };
+        const result = await (await select(workspace)).search(query);
         const text = JSON.stringify(result);
         return {
           content: [{ type: "text", text }],

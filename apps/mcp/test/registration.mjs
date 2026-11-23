@@ -148,6 +148,18 @@ fs.writeFileSync(file,JSON.stringify(root));
     assert.deepEqual(parse(final), initial);
     if (!nativeJson) assert.ok(final.startsWith("// retained client settings"));
   }
+  assert.equal(
+    run(["install", "--host", "claude-code", "--actor", "human:catalog"])
+      .changed,
+    true,
+  );
+  assert.equal(run(["status", "--host", "claude-code"]).state, "installed");
+  run(
+    ["install", "--host", "claude-code", ...selector],
+    {},
+    /Uninstall the existing/,
+  );
+  assert.equal(run(["uninstall", "--host", "claude-code"]).changed, true);
   run(
     ["install", "--host", "opencode", ...selector, "--workspace", "other"],
     {},

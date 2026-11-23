@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import type {
   ActiveView,
+  ViewWorkspaceCatalog,
+  BundlelessViewHost,
   ViewWorkspace,
 } from "@superbee/cli/view-workspace/v1";
 import {
@@ -31,6 +33,7 @@ import {
   PendingLaunchRegistry,
 } from "./pending-launches.js";
 import { McpServer } from "@modelcontextprotocol/server";
+import { registerCatalogTools, workspaceSelectorSchema } from "./catalog.js";
 import { registerSearchTool } from "./search.js";
 const resourceDigest = (html: string) =>
   createHash("sha256").update(html).digest("hex");
@@ -170,6 +173,12 @@ const transientInputSchema = z
   })
   .strict();
 
+const workspaceTransientInputSchema = transientInputSchema
+  .extend({
+    access: z.enum(["none", "bundle-read", "bundle-propose"]).optional(),
+  })
+  .strict();
+
 const inputSchema = z
   .object({
     mode: z.literal("transient").optional(),
@@ -181,6 +190,27 @@ const inputSchema = z
   .strict()
   .describe(
     "Pass exactly viewId for a registered View, or mode:transient plus title/html and optional access for an active process-local View.",
+  );
+
+const workspaceShowViewInputSchema = inputSchema
+  .extend({
+    workspace: workspaceSelectorSchema.optional(),
+    access: workspaceTransientInputSchema.shape.access,
+  })
+  .superRefine((value, context) => {
+    const bundlelessTransient =
+      value.mode === "transient" && value.access === "none";
+    if (!bundlelessTransient && value.workspace === undefined) {
+      context.addIssue({
+        code: "custom",
+        path: ["workspace"],
+        message:
+          "workspace is required unless a transient View explicitly requests access:none",
+      });
+    }
+  })
+  .describe(
+    "Select a workspace for a registered or bundle-capable transient View. A transient View with explicit access:none may omit workspace and remains bundleless.",
   );
 
 const durableOutputSchema = z.object({
@@ -273,6 +303,28 @@ function parseShowViewInput(input: unknown): ShowViewInput {
   if (outer.viewId !== undefined) return durableInputSchema.parse(outer);
   if (outer.mode === "transient") return transientInputSchema.parse(outer);
   throw new Error("pass exactly viewId, or mode:transient plus title and html");
+}
+
+function parseWorkspaceShowViewInput(input: unknown): {
+  workspace?: string;
+  view: ShowViewInput;
+} {
+  const outer = workspaceShowViewInputSchema.parse(input);
+  const { workspace, ...viewInput } = outer;
+  const view =
+    viewInput.viewId !== undefined
+      ? durableInputSchema.parse(viewInput)
+      : viewInput.mode === "transient"
+        ? workspaceTransientInputSchema.parse(viewInput)
+        : (() => {
+            throw new Error(
+              "pass exactly viewId, or mode:transient plus title and html",
+            );
+          })();
+  return {
+    ...(workspace !== undefined ? { workspace } : {}),
+    view,
+  };
 }
 
 function activePayload(view: ActiveView): McpViewPayload {
@@ -442,17 +494,74 @@ function resolveDocumentClaim(
   };
 }
 
-export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
+type ServerSelection =
+  | ViewWorkspace
+  | { catalog: ViewWorkspaceCatalog; bundleless: BundlelessViewHost };
+type LaunchHost = ViewWorkspace | BundlelessViewHost;
+const MAX_ROUTED_LAUNCHES = 256;
+function isWorkspace(host: LaunchHost): host is ViewWorkspace {
+  return "prepare" in host;
+}
+
+export function createMcpAppServer(selection: ServerSelection): McpServer {
+  const catalog = "catalog" in selection ? selection.catalog : undefined;
+  const fixed = "catalog" in selection ? undefined : selection;
+  const routes = new Map<string, LaunchHost>();
+
+  async function select(selector?: unknown): Promise<ViewWorkspace> {
+    if (fixed) return fixed;
+    if (!catalog || typeof selector !== "string")
+      throw new Error("A workspace selector is required.");
+    try {
+      return await catalog.open(selector);
+    } catch {
+      throw new Error(
+        `Could not open Superbee workspace '${selector}'. Call list_workspaces and retry with an available exact ID or label.`,
+      );
+    }
+  }
+
+  function bind(host: LaunchHost, view: ActiveView) {
+    if (catalog) {
+      const existing = routes.get(view.id);
+      if (existing && existing !== host) {
+        host.close(view.id);
+        throw new Error("View launch identity collision");
+      }
+      routes.set(view.id, host);
+      if (routes.size > MAX_ROUTED_LAUNCHES) {
+        const oldest = routes.keys().next().value!;
+        routes.get(oldest)!.close(oldest);
+        routes.delete(oldest);
+      }
+    }
+    return activePayload(view);
+  }
+  function owner(launchId: string): LaunchHost {
+    const host = fixed ?? routes.get(launchId);
+    if (!host) throw new Error("The active View is unknown or expired.");
+    return host;
+  }
+
   const server = new McpServer({
     name: "Superbee Conversational Views",
-    version: "0.1.0-experimental.1",
+    version: "0.1.0-experimental.3",
   });
-  registerSearchTool(server, workspace);
+  if (catalog) registerCatalogTools(server, catalog);
+  registerSearchTool(
+    server,
+    select,
+    catalog ? workspaceSelectorSchema : undefined,
+  );
   const pendingDocuments =
     new PendingClaimRegistry<DocumentPresentationPayload>();
   const pendingLaunches = new PendingLaunchRegistry();
   const navigations = new Map<string, Promise<ActiveViewNavigation>>();
-  function navigate(id: string, viewId: string): Promise<ActiveViewNavigation> {
+  function navigate(
+    workspace: ViewWorkspace,
+    id: string,
+    viewId: string,
+  ): Promise<ActiveViewNavigation> {
     const prior = navigations.get(id);
     if (prior) return prior;
     if (navigations.size >= MAX_NAVIGATION_OPERATIONS)
@@ -460,7 +569,7 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
     const result = workspace.open({ viewId }).then(
       (view) => ({
         status: "opened" as const,
-        view: activePayload(view) as DurableViewLaunchPayload,
+        view: bind(workspace, view) as DurableViewLaunchPayload,
       }),
       (error) => ({
         status: "failed" as const,
@@ -477,7 +586,9 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
       title: "Show Superbee document",
       description:
         "Display one authoritative bundle document by exact id in Superbee's fixed Markdown reader. Use this for human review of documents; it does not launch executable View code or require View authorization.",
-      inputSchema: showDocumentInputSchema,
+      inputSchema: catalog
+        ? showDocumentInputSchema.extend({ workspace: workspaceSelectorSchema })
+        : showDocumentInputSchema,
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -491,8 +602,12 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
         },
       },
     },
-    async ({ docId }): Promise<CallToolResult> =>
-      presentDocument(workspace, docId, pendingDocuments),
+    async (input): Promise<CallToolResult> =>
+      presentDocument(
+        await select("workspace" in input ? input.workspace : undefined),
+        input.docId,
+        pendingDocuments,
+      ),
   );
 
   registerAppTool(
@@ -502,7 +617,9 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
       title: "List registered Superbee Views",
       description:
         "List existing durable bundle Views that this MCP host can invoke by exact id with show_view. Results are deterministic and bounded; use nextCursor to continue.",
-      inputSchema: listViewsInputSchema,
+      inputSchema: catalog
+        ? listViewsInputSchema.extend({ workspace: workspaceSelectorSchema })
+        : listViewsInputSchema,
       outputSchema: listViewsOutputSchema,
       annotations: {
         readOnlyHint: true,
@@ -513,8 +630,10 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
       _meta: { ui: { visibility: ["model"] } },
     },
     async (input): Promise<CallToolResult> => {
-      const { cursor } = listViewsInputSchema.parse(input);
-      return listViews(workspace, cursor);
+      return listViews(
+        await select("workspace" in input ? input.workspace : undefined),
+        input.cursor,
+      );
     },
   );
 
@@ -523,9 +642,10 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
     SHOW_VIEW_TOOL_NAME,
     {
       title: "Show Superbee View",
-      description:
-        "Launch a registered or temporary View in the selected workspace.",
-      inputSchema,
+      description: catalog
+        ? "Launch a registered or temporary View in an explicitly selected workspace. A temporary View with access:none is bundleless. All follow-up actions stay bound to the original launch."
+        : "Launch a registered or temporary View in the selected workspace.",
+      inputSchema: catalog ? workspaceShowViewInputSchema : inputSchema,
       outputSchema,
       annotations: {
         readOnlyHint: true,
@@ -539,14 +659,35 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
     },
     async (input): Promise<CallToolResult> => {
       try {
-        const parsed = parseShowViewInput(input);
-        const payload = activePayload(
-          await workspace.open(
-            "viewId" in parsed
-              ? parsed
-              : { ...parsed, access: parsed.access ?? "bundle-read" },
-          ),
-        );
+        const { workspace: selector, view } = catalog
+          ? parseWorkspaceShowViewInput(input)
+          : { workspace: undefined, view: parseShowViewInput(input) };
+        let payload: McpViewPayload;
+        if (
+          "catalog" in selection &&
+          "mode" in view &&
+          view.access === "none"
+        ) {
+          const host = selection.bundleless;
+          payload = bind(
+            host,
+            await host.open({
+              title: view.title,
+              html: view.html,
+              access: "none",
+            }),
+          );
+        } else {
+          const host = await select(selector);
+          payload = bind(
+            host,
+            await host.open(
+              "viewId" in view
+                ? view
+                : { ...view, access: view.access ?? "bundle-read" },
+            ),
+          );
+        }
         // Claim ticket for hosts whose tool-result notifications strip structuredContent
         // (probe-established for Claude Desktop): the marker rides the preserved text channel
         // and the App redeems it — exact-match, one-shot — via the app-only resolve_launch.
@@ -593,6 +734,12 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
       _meta: { ui: { visibility: ["app"] } },
     },
     async ({ launchId }): Promise<CallToolResult> => {
+      const workspace = owner(launchId);
+      if (!("approve" in workspace)) {
+        workspace.close(launchId);
+        routes.delete(launchId);
+        throw new Error("The active View does not require approval.");
+      }
       const view = activePayload(await workspace.approve(launchId));
       return {
         content: [
@@ -626,6 +773,11 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
     async (input): Promise<CallToolResult> => {
       try {
         const parsed = saveTransientViewInputSchema.parse(input);
+        const workspace = owner(parsed.launchId);
+        if (!("save" in workspace))
+          throw new Error(
+            "a bundleless transient View cannot be saved; reopen it with an explicit workspace and bundle access",
+          );
         const saved = await workspace.save(
           parsed.launchId,
           parsed.viewId,
@@ -697,11 +849,12 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
       _meta: { ui: { visibility: ["app"] } },
     },
     async ({ launchId, request }): Promise<CallToolResult> => {
+      const workspace = owner(launchId);
       const outcome = await workspace.request(launchId, request);
       const navigation =
-        outcome.openPageId === undefined
+        outcome.openPageId === undefined || !("document" in workspace)
           ? undefined
-          : await navigate(launchId, outcome.openPageId);
+          : await navigate(workspace, launchId, outcome.openPageId);
       return {
         content: [
           {
@@ -737,7 +890,8 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
     },
     async ({ launchId }): Promise<CallToolResult> => {
       try {
-        const view = activePayload(await workspace.resume(launchId));
+        const host = owner(launchId);
+        const view = bind(host, await host.resume(launchId));
         return {
           content: [
             {
@@ -783,7 +937,7 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
       _meta: { ui: { visibility: ["app"] } },
     },
     async ({ launchId, acknowledgeGeneration }): Promise<CallToolResult> => {
-      const poll = await workspace.poll(launchId, acknowledgeGeneration);
+      const poll = await owner(launchId).poll(launchId, acknowledgeGeneration);
       return {
         content: [
           { type: "text", text: `Registered View poll: ${poll.status}.` },
@@ -810,7 +964,9 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
       _meta: { ui: { visibility: ["app"] } },
     },
     async ({ launchId }): Promise<CallToolResult> => {
-      workspace.close(launchId);
+      (fixed ?? routes.get(launchId))?.close(launchId);
+      routes.delete(launchId);
+      navigations.delete(launchId);
       return {
         content: [
           { type: "text", text: "Closed the registered Superbee View launch." },
@@ -844,7 +1000,15 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
     },
     async (input): Promise<CallToolResult> => {
       const { launchId } = input;
-      const result = await workspace.prepare(launchId, input.action);
+      const host = owner(launchId);
+      const result =
+        "prepare" in host
+          ? await host.prepare(launchId, input.action)
+          : {
+              status: "rejected" as const,
+              action: "document.set-field",
+              message: "The active View cannot propose edits.",
+            };
       return {
         content: [
           {
@@ -881,7 +1045,15 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
       _meta: { ui: { visibility: ["app"] } },
     },
     async ({ launchId, approvalToken, decision }): Promise<CallToolResult> => {
-      const result = await workspace.finish(launchId, approvalToken, decision);
+      const host = fixed ?? routes.get(launchId);
+      const result =
+        host && isWorkspace(host)
+          ? await host.finish(launchId, approvalToken, decision)
+          : {
+              status: "rejected" as const,
+              action: "document.set-field",
+              message: "the View is unknown or expired",
+            };
       return {
         content: [
           {
@@ -1011,7 +1183,9 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
           ],
         };
       }
-      const view = await workspace.inspect(entry.launchId);
+      const view = await (fixed ?? routes.get(entry.launchId))?.inspect(
+        entry.launchId,
+      );
       const payload = view ? activePayload(view) : null;
       if (!payload) {
         return {
@@ -1035,7 +1209,7 @@ export function createMcpAppServer(workspace: ViewWorkspace): McpServer {
 }
 
 export async function startMcpStdioServer(
-  workspace: ViewWorkspace,
+  workspace: ServerSelection,
 ): Promise<void> {
   await createMcpAppServer(workspace).connect(new StdioServerTransport());
 }
