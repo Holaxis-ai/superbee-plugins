@@ -370,10 +370,16 @@ function fallbackText(payload: McpViewPayload): string {
     : `Registered Superbee View "${payload.title}" (${payload.source.viewId}) is ready for local approval of its exact current bytes before it can read bundle data.`;
 }
 
+type DocumentClaim = { payload: DocumentPresentationPayload } | null;
+export interface DocumentClaims {
+  record(claim: string, payload: DocumentPresentationPayload): void | Promise<void>;
+  consume(claim: string): DocumentClaim | Promise<DocumentClaim>;
+}
+
 async function presentDocument(
   workspace: ViewWorkspace,
   docId: string,
-  pendingDocuments: PendingClaimRegistry<DocumentPresentationPayload>,
+  pendingDocuments: DocumentClaims,
 ): Promise<CallToolResult> {
   try {
     const result = await workspace.document(docId);
@@ -391,7 +397,7 @@ async function presentDocument(
       },
     };
     const claimId = mintClaimId();
-    pendingDocuments.record(claimId, payload);
+    await pendingDocuments.record(claimId, payload);
     return {
       content: [
         {
@@ -467,11 +473,11 @@ async function listViews(
   }
 }
 
-function resolveDocumentClaim(
-  pendingDocuments: PendingClaimRegistry<DocumentPresentationPayload>,
+async function resolveDocumentClaim(
+  pendingDocuments: DocumentClaims,
   claim: string,
-): CallToolResult {
-  const entry = pendingDocuments.consume(claim);
+): Promise<CallToolResult> {
+  const entry = await pendingDocuments.consume(claim);
   if (!entry) {
     return {
       isError: true,
@@ -503,7 +509,10 @@ function isWorkspace(host: LaunchHost): host is ViewWorkspace {
   return "prepare" in host;
 }
 
-export function createMcpAppServer(selection: ServerSelection): McpServer {
+export function createMcpAppServer(
+  selection: ServerSelection,
+  pendingDocuments: DocumentClaims = new PendingClaimRegistry<DocumentPresentationPayload>(),
+): McpServer {
   const catalog = "catalog" in selection ? selection.catalog : undefined;
   const fixed = "catalog" in selection ? undefined : selection;
   const routes = new Map<string, LaunchHost>();
@@ -553,8 +562,6 @@ export function createMcpAppServer(selection: ServerSelection): McpServer {
     select,
     catalog ? workspaceSelectorSchema : undefined,
   );
-  const pendingDocuments =
-    new PendingClaimRegistry<DocumentPresentationPayload>();
   const pendingLaunches = new PendingLaunchRegistry();
   const navigations = new Map<string, Promise<ActiveViewNavigation>>();
   function navigate(
@@ -1210,6 +1217,7 @@ export function createMcpAppServer(selection: ServerSelection): McpServer {
 
 export async function startMcpStdioServer(
   workspace: ServerSelection,
+  documentClaims?: DocumentClaims,
 ): Promise<void> {
-  await createMcpAppServer(workspace).connect(new StdioServerTransport());
+  await createMcpAppServer(workspace, documentClaims).connect(new StdioServerTransport());
 }

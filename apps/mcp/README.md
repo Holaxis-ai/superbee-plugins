@@ -22,7 +22,9 @@ Both previews are built from source. The npm pair contains the plugin and the ma
 
 1. Open `superbee-experimental.mcpb` from the extracted **superbee-desktop-preview** download in Claude Desktop. Review the unsigned extension and install it if your Desktop policy allows it.
 2. Choose the folder containing your Superbee bundle, or enable **Use the workspace catalog** to choose a workspace per tool call. Enter the actor to record for confirmed edits, such as `human:editor`.
-3. Start a new chat and follow [Verify in your client](#verify-in-your-client). To remove it, open **Settings → Extensions**, remove **Superbee (experimental)**, and start a new chat.
+3. Click **Save**. In **Settings → Extensions → Superbee (experimental)**, switch **Disabled** to **Enabled**. Start a new chat and follow [Verify in your client](#verify-in-your-client). To remove it, open **Settings → Extensions**, remove **Superbee (experimental)**, and start a new chat.
+
+The macOS CI check installs the finished extension archive and starts separate servers for the tool call and the reader. It verifies the original revision after a document edit, concurrent redemption, and refusal from a different actor, workspace or installation. Check the title and body in a signed-in Desktop chat to verify the host itself.
 
 The extension includes both screens and the compatible workspace library. Its manifest accepts Node 22.14+ in the 22 series, 24.x, or 26.x. Choose one Desktop installation method per workspace to avoid duplicate tools.
 

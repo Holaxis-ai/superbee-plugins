@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
+  cp,
   mkdtemp,
   mkdir,
   readFile,
@@ -116,14 +117,44 @@ try {
   const claim = shown.content[0].text.match(
     /\[agentstate-claim:v1:([\w-]+)\]/,
   )[1];
-  const resolved = await client.callTool({
-    name: "resolve_document",
-    arguments: { claim },
-  });
-  assert.match(
-    resolved.structuredContent.document.html,
-    /Visible in <strong>Superbee<\/strong>/,
-  );
+  // Desktop can route the model invocation and the iframe's tool call to separate processes.
+  // Retain the exact shown revision even if the document changes before its reader appears.
+  const changed = document.replace("Visible in **Superbee**.", "Edited after the receipt.");
+  await writeFile(path.join(workspace, "tasks/sample.md"), changed);
+  async function readOn(installation, folder, actor) {
+    const reader = new Client({ name: "desktop-reader-test", version: "1" });
+    try {
+      await reader.connect(new StdioClientTransport({
+        command: process.execPath,
+        args: [path.join(installation, manifest.server.entry_point), folder, actor, "false"],
+        cwd: installation,
+        env: { HOME: home, USERPROFILE: home, PATH: path.dirname(process.execPath) },
+      }));
+      return await reader.callTool({ name: "resolve_document", arguments: { claim } });
+    } finally {
+      await reader.close();
+    }
+  }
+  const secondFolder = path.join(scratch, "Other workspace");
+  const secondInstall = path.join(scratch, "Other install");
+  await cp(workspace, secondFolder, { recursive: true });
+  await cp(extensionPath, secondInstall, { recursive: true });
+  for (const [install, folder, actor] of [
+    [extensionPath, workspace, "human:another-person"],
+    [extensionPath, secondFolder, "human:desktop-test"],
+    [secondInstall, workspace, "human:desktop-test"],
+  ]) {
+    const refused = await readOn(install, folder, actor);
+    assert.equal(refused.isError, true);
+    assert.match(refused.content[0].text, /Unknown, expired, or already-redeemed/);
+  }
+  const read = () => readOn(extensionPath, workspace, "human:desktop-test");
+  const results = await Promise.all([read(), read()]);
+  assert.equal(results.filter(result => result.isError).length, 1);
+  const resolved = results.find(result => !result.isError);
+  assert.match(resolved.structuredContent.document.html, /Visible in <strong>Superbee<\/strong>/);
+  assert.ok(shown.content[0].text.includes(resolved.structuredContent.document.version));
+  assert.equal((await read()).isError, true);
   await client.close();
   const catalogConfig = await resolve({
     actor: "human:desktop-test",
@@ -152,10 +183,10 @@ try {
   await rm(extensionPath, { recursive: true });
   assert.equal(
     await readFile(path.join(workspace, "tasks/sample.md"), "utf8"),
-    document,
+    changed,
   );
   console.log(
-    "The packaged extension opened the selected document over stdio.",
+    "The packaged Desktop extension displayed the selected revision across stdio processes.",
   );
 } finally {
   await client.close();
