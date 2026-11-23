@@ -74,7 +74,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: Holaxis-ai/superbee
-          ref: 051a0b4204799c6fc2fbb7eefc067ab2f7c91fa2
+          ref: f68f62c533261467fb7c029fdc20283e3ef690ed
           path: .view-workspace-producer
           persist-credentials: false
       - name: Build the public CLI tarball

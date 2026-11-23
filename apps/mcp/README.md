@@ -36,7 +36,7 @@ and a stdio client. Live Desktop acceptance also requires opening the file in th
 
 ## Build the compatible pair
 
-Use a clean OSS checkout at `051a0b4204799c6fc2fbb7eefc067ab2f7c91fa2` and this plugin checkout.
+Use a clean OSS checkout at `f68f62c533261467fb7c029fdc20283e3ef690ed` and this plugin checkout.
 The published CLI library with the same prerelease number predates the required
 catalog and bundleless View exports in `@superbee/cli/view-workspace/v1`. Build the
 compatible CLI tarball from source.
@@ -47,7 +47,7 @@ oss=/absolute/path/to/superbee
 plugins=/absolute/path/to/superbee-plugins
 artifacts=$(mktemp -d)
 cd "$oss"
-git checkout --detach 051a0b4204799c6fc2fbb7eefc067ab2f7c91fa2
+git checkout --detach f68f62c533261467fb7c029fdc20283e3ef690ed
 npm ci
 npm run build
 npm pack -w @superbee/cli --ignore-scripts --pack-destination "$artifacts"
