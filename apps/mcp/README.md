@@ -14,9 +14,9 @@ The offline pair requires Node 24 and npm. Claude Desktop supplies its own Node 
 
 ## Get the preview
 
-Open a successful **CI** run for the revision you want. In the run summary, scroll to **Artifacts** and download **superbee-desktop-preview** for the Desktop extension or **superbee-mcp-offline-preview** for the two npm tarballs. Extract the downloaded ZIP. GitHub requires sign-in to download workflow artifacts and removes them when the run's retention expires. The source build below also works after an artifact expires. [CI runs](https://github.com/Holaxis-ai/superbee-plugins/actions/workflows/ci.yml) · [Preview pull request checks](https://github.com/Holaxis-ai/superbee-plugins/pull/58/checks)
+Open a successful **CI** run for the revision you want. In the run summary, scroll to **Artifacts** and download **superbee-desktop-preview** for the Desktop extension or **superbee-mcp-offline-preview** for the two npm tarballs. Extract the downloaded ZIP. GitHub requires sign-in to download workflow artifacts and removes them when the run's retention expires. The source build below also works after an artifact expires. [CI runs](https://github.com/Holaxis-ai/superbee-plugins/actions/workflows/ci.yml)
 
-Both previews are built from source. The npm pair contains the plugin and the matching CLI workspace library from the same CI run. Its `SOURCES` file records both Git commits. The public CLI prerelease with the same version number predates the required library exports.
+The offline download contains the plugin built by CI and the published workspace library it uses. Its `SOURCES` file records the plugin commit and the library version.
 
 ## Claude Desktop on macOS
 
@@ -24,7 +24,7 @@ Both previews are built from source. The npm pair contains the plugin and the ma
 2. Choose the folder containing your Superbee bundle, or enable **Use the workspace catalog** to choose a workspace per tool call. Enter the actor to record for confirmed edits, such as `human:editor`.
 3. Click **Save**. In **Settings → Extensions → Superbee (experimental)**, switch **Disabled** to **Enabled**. Start a new chat and follow [Verify in your client](#verify-in-your-client). To remove it, open **Settings → Extensions**, remove **Superbee (experimental)**, and start a new chat.
 
-The macOS CI check extracts the finished extension archive and starts separate servers for the tool call and the reader. It verifies the original revision after a document edit, concurrent redemption, and refusal from a different actor, workspace or installation. It also fills one workspace’s receipt allowance while a reader in another workspace is waiting. A separate signed-in test in standard Claude Chat displayed the document body and the contents of a registered read-only View after approval. Uninstalling the extension left the existing Superbee server running.
+The macOS CI check extracts the finished extension archive and starts separate servers for the tool call and the reader. It verifies the original revision after a document edit, concurrent redemption, and refusal from a different actor, workspace or installation. It also fills one workspace’s receipt allowance while a reader in another workspace is waiting. The signed-in macOS test used the source-built extension from [revision `930e576`](https://github.com/Holaxis-ai/superbee-plugins/commit/930e576b884a819a22be9d2a4f2e4fb90475bbf2). Its unpacked files match the [download for revision `ebf1dcc`](https://github.com/Holaxis-ai/superbee-plugins/actions/runs/45241812570/artifacts/14851393409). In standard Claude Chat with a fixed local bundle, the reader displayed the document body and the registered read-only View displayed its content after approval. Uninstalling that extension left the existing Superbee server running.
 
 The Desktop reader keeps up to 16 pending document receipts per installation, workspace setting and actor. Each receipt expires after ten minutes. The encrypted snapshot lives in a private temporary folder for your OS account and profile. Redemption removes the snapshot. Creating a receipt also removes expired snapshots across settings, including settings you have stopped using. The empty folder is removed after its last snapshot is gone.
 
@@ -97,36 +97,21 @@ Check for `"state":"absent"`. For a manually duplicated or customized entry, rem
 
 ## Build from source
 
-Use Git, Node 24 and npm in a new directory. These commands fetch the preview PR explicitly and the pinned compatible OSS commit, including on a checkout made before the plugin PR merges.
+Use Git, Node 24 and npm. From a checkout of the plugin revision you want to try, run:
 
 ```sh
-work=$(mktemp -d)
-artifacts="$work/artifacts"
-mkdir "$artifacts"
-git clone --no-checkout https://github.com/Holaxis-ai/superbee.git "$work/superbee"
-git -C "$work/superbee" fetch origin refs/pull/767/head
-git -C "$work/superbee" checkout --detach f68f62c533261467fb7c029fdc20283e3ef690ed
-git clone --no-checkout https://github.com/Holaxis-ai/superbee-plugins.git "$work/superbee-plugins"
-git -C "$work/superbee-plugins" fetch origin refs/pull/58/head
-git -C "$work/superbee-plugins" checkout --detach FETCH_HEAD
-
-cd "$work/superbee"
+cd apps/mcp
+artifacts=$(mktemp -d)
 npm ci
-npm run build
-npm pack -w @superbee/cli --ignore-scripts --pack-destination "$artifacts"
-
-cd "$work/superbee-plugins/apps/mcp"
-npm ci
-npm install --no-save --package-lock=false --ignore-scripts "$artifacts"/superbee-cli-*.tgz
 npm run build
 npm run typecheck
 npm pack --ignore-scripts --pack-destination "$artifacts"
+npm pack --offline "$(node -p "require('./package-lock.json').packages['node_modules/@superbee/cli'].resolved")" --ignore-scripts --pack-destination "$artifacts"
 node test/acceptance.mjs "$artifacts"/superbee-cli-*.tgz
-cd "$artifacts"
 ```
 
-Continue at **Install the offline pair**, starting with the `prefix` assignment. The checksum manifest is provided with the CI download. To reproduce a particular download, check out the two revisions recorded in its `SOURCES` before building.
+To register the locally built preview, open the artifacts folder and follow **Install the offline pair**, starting at the `prefix` assignment. CI supplies the checksum manifest for its downloads.
 
-For the Desktop extension, run `npm run desktop:pack` then `node test/desktop.mjs` from the plugin's `apps/mcp` directory. Open the resulting `out/superbee-experimental.mcpb` in Desktop. CI exercises the extracted extension on macOS with the official MCPB resolver and a stdio client. Live Desktop acceptance requires opening the file in the app.
+For Claude Desktop, run `npm run desktop:pack`, then `node test/desktop.mjs`. Open `out/superbee-experimental.mcpb` in Claude Desktop to try the signed-in flow.
 
-Maintainers can run the packaged browser test with `node test/acceptance.mjs "$artifacts"/superbee-cli-*.tgz --browser` after installing Playwright Chromium. To compare the packed plugin's fixed and catalog modes with the bundled CLI, run `node test/catalog-parity.mjs "$artifacts"/superbee-cli-*.tgz "$work/superbee/packages/superbee/dist/superbee.mjs"` in the same directory. These tests use synthetic workspaces and a local hosted-service fixture.
+For browser checks, install Playwright Chromium and pass `--browser` to the acceptance command. For catalog and fixed-workspace parity, run `node test/catalog-parity.mjs "$artifacts"/superbee-cli-*.tgz "$PWD/node_modules/superbee/dist/superbee.mjs"` from the app directory.
