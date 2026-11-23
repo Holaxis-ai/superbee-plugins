@@ -62,7 +62,9 @@ $mcp = Join-Path $prefix 'node_modules/.bin/superbee-mcp.cmd'
 & $mcp status --host codex
 ```
 
-Use `--workspace <label>` for a registered workspace or omit both selectors to choose from the catalog per call. Run `superbee catalog add <label> --dir <bundle>` with a CLI release that supports the Windows catalog to add a local workspace. Restart Codex and follow [Verify in your client](#verify-in-your-client). To roll back, run `& $mcp uninstall --host codex` and restart Codex again.
+To use the catalog, install `superbee@0.4.8-pre.2` or a newer release with native Windows catalog support. Run `superbee catalog add <label> --dir <bundle>` to add a local workspace. Use `--workspace <label>` in place of `--dir` to open that workspace, or omit both selectors to choose from the catalog per call.
+
+Restart Codex and follow [Verify in your client](#verify-in-your-client). To roll back, run `& $mcp uninstall --host codex` and restart Codex again.
 
 ## Install the offline pair
 
