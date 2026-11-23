@@ -160,10 +160,11 @@ jobs:
         with:
           name: superbee-mcp-offline-preview
           path: ${{ runner.temp }}/offline-pair
-      - name: Install the pinned native Codex host
+      - name: Install the pinned native Codex host and Superbee executable
         run: |
           $tools = Join-Path $env:RUNNER_TEMP 'Codex tools'
-          npm install --prefix $tools --no-package-lock --ignore-scripts --no-audit --no-fund '@openai/codex@0.149.0'
+          $cliVersion = node -p "require('./apps/mcp/package.json').devDependencies.superbee"
+          npm install --prefix $tools --no-package-lock --ignore-scripts --no-audit --no-fund '@openai/codex@0.149.0' "superbee@$cliVersion"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Join-Path $tools 'node_modules/.bin' | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: Install the download offline and open a document and a View in Codex
@@ -182,4 +183,5 @@ jobs:
           & (Join-Path $prefix 'node_modules/.bin/superbee-mcp.cmd') --help
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $codex = Join-Path $env:RUNNER_TEMP "Codex tools/node_modules/@openai/codex/bin/codex.js"
-          node apps/mcp/test/codex-host.mjs $prefix $codex
+          $superbee = Join-Path $env:RUNNER_TEMP "Codex tools/node_modules/superbee/dist/superbee.mjs"
+          node apps/mcp/test/codex-host.mjs $prefix $codex $superbee

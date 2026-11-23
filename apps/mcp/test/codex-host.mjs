@@ -6,7 +6,7 @@ import path from "node:path";
 import { once } from "node:events";
 import { createInterface } from "node:readline";
 
-const [prefix, codexScript] = process.argv.slice(2);
+const [prefix, codexScript, superbeeScript] = process.argv.slice(2);
 assert.ok(prefix, "Pass the prefix containing the installed offline pair.");
 const bin = path.resolve(
   prefix,
@@ -22,6 +22,16 @@ const env = {
 };
 for (const name of ["OPENAI_API_KEY", "CODEX_API_KEY", "OPENAI_BASE_URL"])
   delete env[name];
+if (superbeeScript) {
+  assert.equal(
+    process.platform,
+    "win32",
+    "Use an isolated Windows catalog for this proof.",
+  );
+  env.USERPROFILE = path.join(scratch, "Windows profile");
+  env.LOCALAPPDATA = path.join(env.USERPROFILE, "AppData", "Local");
+  env.APPDATA = path.join(env.USERPROFILE, "AppData", "Roaming");
+}
 
 const command = codexScript ? process.execPath : "codex";
 const codexArgs = codexScript ? [path.resolve(codexScript)] : [];
@@ -35,7 +45,12 @@ const plugin = (operation, ...args) =>
       { env, encoding: "utf8" },
     ),
   );
-const selector = ["--dir", bundle, "--actor", "process:codex-host-test"];
+const catalogLabel = "codex-orchard-proof";
+const selector = [
+  ...(superbeeScript ? ["--workspace", catalogLabel] : ["--dir", bundle]),
+  "--actor",
+  "process:codex-host-test",
+];
 const preview = "superbee-experimental";
 const existing = "superbee";
 
@@ -143,6 +158,23 @@ try {
     path.join(bundle, "views/lanterns.html"),
     "<!doctype html><title>Lantern count</title><p>Six copper lanterns are ready.</p>\n",
   );
+  if (superbeeScript) {
+    await mkdir(env.LOCALAPPDATA, { recursive: true });
+    await mkdir(env.APPDATA, { recursive: true });
+    execFileSync(
+      process.execPath,
+      [
+        path.resolve(superbeeScript),
+        "catalog",
+        "add",
+        catalogLabel,
+        "--dir",
+        bundle,
+        "--json",
+      ],
+      { env, stdio: "pipe" },
+    );
+  }
   const baseline = path.join(scratch, "Pre-existing MCP server.mjs");
   await writeFile(
     baseline,
