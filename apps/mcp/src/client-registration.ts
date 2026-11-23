@@ -348,7 +348,7 @@ export async function configure(
   const host: Host = requestedHost;
   if (
     !executable.endsWith(
-      "/node_modules/@superbee/experimental-mcp/dist/superbee-mcp.mjs",
+      path.join(path.sep, "node_modules/@superbee/experimental-mcp/dist/superbee-mcp.mjs"),
     ) ||
     executable.split(path.sep).includes("_npx")
   )
