@@ -9,6 +9,27 @@ This source installation supports macOS and Linux with Node 24 and npm. Each reg
 selects a directory or an existing catalog ID or label. The catalog-wide discovery and
 hosted-operation tools on the unbound bundled server remain part of the migration work.
 
+## Claude Desktop on macOS
+
+Open the preview `.mcpb` file with Claude Desktop. Review the extension, choose the local
+Superbee bundle folder and enter the actor for confirmed edits, such as `human:editor`.
+The extension includes the compatible workspace library and runs with Desktop’s Node runtime.
+The manifest requires Node 22.14+ in the 22 series, 24.x or 26.x. This is an unsigned local
+preview. Installation depends on the extension policy for your Desktop installation.
+
+In a new chat, ask Claude to use **Superbee (experimental)** to show an existing document by
+its bundle-relative ID (for example, `tasks/first-task`). Check that the document renders.
+Remove **Superbee (experimental)** under **Settings → Extensions**, then start a new chat
+and confirm another configured server is usable. The Desktop extension and the manual
+`superbee-mcp install` below have separate registrations. Use one for each workspace in
+Desktop to avoid showing duplicate tools.
+
+Maintainers can build the file after installing the compatible CLI tarball from the next
+section. From `apps/mcp`, run `npm run desktop:pack`, then `node test/desktop.mjs`. The
+output is `out/superbee-experimental.mcpb`. Pull request CI provides the same file inside
+the `superbee-desktop-preview` artifact and exercises it on macOS with the MCPB resolver
+and a stdio client. Live Desktop acceptance also requires opening the file in the app.
+
 ## Build the compatible pair
 
 Use a clean OSS checkout at `73acbce045d17c3fc97296901518c1b4ed2ae2f6` and this plugin checkout.

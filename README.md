@@ -13,7 +13,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution boundary.
 
 ## Experimental MCP app
 
-The [standalone MCP app](apps/mcp/README.md) can be built and installed separately for a selected Superbee workspace. It ships the document and View screens and uses an installed CLI library for workspace reads and confirmed edits.
+The [standalone MCP app](apps/mcp/README.md) can be built and installed separately for a selected Superbee workspace. Claude Desktop on macOS can install the [self-contained preview extension](apps/mcp/README.md#claude-desktop-on-macos). It ships the document and View screens and uses an installed CLI library for workspace reads and confirmed edits.
 
 ## Resource pointers
 

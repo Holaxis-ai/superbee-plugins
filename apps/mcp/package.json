@@ -16,12 +16,14 @@
   ],
   "scripts": {
     "build": "node build.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "desktop:pack": "npm run build && node desktop/pack.mjs"
   },
   "peerDependencies": {
     "@superbee/cli": "0.1.0-pre.1"
   },
   "devDependencies": {
+    "@anthropic-ai/mcpb": "2.1.2",
     "@modelcontextprotocol/client": "2.4.0",
     "@modelcontextprotocol/ext-apps": "2.0.4",
     "@modelcontextprotocol/server": "2.4.0",
