@@ -204,6 +204,21 @@ function hostEntry(host: Host, keys: string[], launch: Launch) {
           enabled: true,
         };
   if (host === "claude-code") return { type: "stdio", ...launch, env: {} };
+  const shape =
+    host === "claude-code" &&
+    command !== node &&
+    Object.keys(entry).length === 2
+      ? launch
+      : hostEntry(host, target.keys, launch);
+  if (
+    Object.keys(shape).length !== Object.keys(entry).length ||
+    !Object.entries(shape).every(([key, v]) =>
+      key === "env"
+        ? record(entry.env) && Object.keys(entry.env).length === 0
+        : isDeepStrictEqual(entry[key], v),
+    )
+  )
+    return;
   return launch;
 }
 
@@ -226,16 +241,6 @@ function owned(host: Host, target: Target): Launch | undefined {
   )
     return;
   const launch = { command, args: args as string[] };
-  const shape = hostEntry(host, target.keys, launch);
-  if (
-    Object.keys(shape).length !== Object.keys(entry).length ||
-    !Object.entries(shape).every(([key, v]) =>
-      key === "env"
-        ? record(entry.env) && Object.keys(entry.env).length === 0
-        : isDeepStrictEqual(entry[key], v),
-    )
-  )
-    return;
   let flags = launch.args;
   if (command === node && flags[0] === executable) flags = flags.slice(1);
   else {

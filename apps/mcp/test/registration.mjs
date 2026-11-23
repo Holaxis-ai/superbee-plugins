@@ -214,6 +214,20 @@ if(op==="add"){
     /v1 cannot load a v2/,
   );
   assert.equal(await readFile(override, "utf8"), v2Source);
+  const manualClaude = { command: bin, args: selector };
+  const writeClaude = (entry) =>
+    writeFile(
+      claudeFile,
+      JSON.stringify({ mcpServers: { superbee: foreign, [name]: entry } }),
+    );
+  await writeClaude({ ...manualClaude, custom: true });
+  run(["uninstall", "--host", "claude-code"], {}, /different launcher/);
+  await writeClaude(manualClaude);
+  assert.equal(run(["status", "--host", "claude-code"]).state, "installed");
+  assert.equal(run(["uninstall", "--host", "claude-code"]).changed, true);
+  assert.deepEqual(JSON.parse(await readFile(claudeFile, "utf8")).mcpServers, {
+    superbee: foreign,
+  });
   // Preserve a manually installed entry from the documented initial preview.
   const legacyFile = path.join(standard, "opencode.jsonc");
   await writeFile(
