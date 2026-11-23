@@ -6,7 +6,7 @@ import path from "node:path";
 import { once } from "node:events";
 import { createInterface } from "node:readline";
 
-const [prefix] = process.argv.slice(2);
+const [prefix, codexScript] = process.argv.slice(2);
 assert.ok(prefix, "Pass the prefix containing the installed offline pair.");
 const bin = path.resolve(
   prefix,
@@ -23,7 +23,10 @@ const env = {
 for (const name of ["OPENAI_API_KEY", "CODEX_API_KEY", "OPENAI_BASE_URL"])
   delete env[name];
 
-const codex = (args) => execFileSync("codex", args, { env, encoding: "utf8" });
+const command = codexScript ? process.execPath : "codex";
+const codexArgs = codexScript ? [path.resolve(codexScript)] : [];
+const codex = (args) =>
+  execFileSync(command, [...codexArgs, ...args], { env, encoding: "utf8" });
 const plugin = (operation, ...args) =>
   JSON.parse(
     execFileSync(
@@ -38,8 +41,9 @@ const existing = "superbee";
 
 async function session(server, expectedTool, exercise) {
   const child = spawn(
-    "codex",
+    command,
     [
+      ...codexArgs,
       "app-server",
       "--stdio",
       "--disable",

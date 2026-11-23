@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, realpathSync, rmdirSync } from "node:fs";
+import { existsSync, mkdirSync, realpathSync, rmdirSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,9 +25,27 @@ type Launch = { command: string; args: string[] };
 const executable = fileURLToPath(import.meta.url);
 const node = process.execPath;
 
+function codexLaunch(): Launch {
+  if (process.platform !== "win32") return { command: "codex", args: [] };
+  for (const directory of (process.env.PATH ?? "").split(path.delimiter)) {
+    if (!path.isAbsolute(directory)) continue;
+    const native = path.join(directory, "codex.exe");
+    if (existsSync(native)) return { command: native, args: [] };
+    if (!existsSync(path.join(directory, "codex.cmd"))) continue;
+    // npm places the global shim at the prefix and the local shim under node_modules/.bin.
+    const modules = path.basename(directory).toLowerCase() === ".bin"
+      ? path.dirname(directory)
+      : path.join(directory, "node_modules");
+    const launcher = path.join(modules, "@openai", "codex", "bin", "codex.js");
+    if (existsSync(launcher)) return { command: node, args: [launcher] };
+  }
+  return { command: "codex.exe", args: [] };
+}
+
 function native(command: string, args: string[]) {
+  const launch = command === "codex" ? codexLaunch() : { command, args: [] };
   try {
-    return execFileSync(command, args, {
+    return execFileSync(launch.command, [...launch.args, ...args], {
       cwd: homedir(),
       encoding: "utf8",
       timeout: 10000,
