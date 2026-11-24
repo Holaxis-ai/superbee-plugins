@@ -20,7 +20,7 @@
     "desktop:pack": "npm run build && node desktop/pack.mjs"
   },
   "peerDependencies": {
-    "@superbee/cli": "0.1.0-pre.3"
+    "@superbee/cli": "0.1.0-pre.4"
   },
   "devDependencies": {
     "@anthropic-ai/mcpb": "2.1.2",
@@ -34,7 +34,7 @@
     "jsonc-parser": "3.3.1",
     "playwright": "1.61.1",
     "smol-toml": "1.6.0",
-    "superbee": "0.4.8-pre.2",
+    "superbee": "0.4.8",
     "typescript": "5.9.3",
     "zod": "4.6.7"
   }
