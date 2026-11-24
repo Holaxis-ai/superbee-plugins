@@ -6,7 +6,7 @@ import {
 } from "@superbee/cli/view-workspace/v1";
 import { desktopClaims } from "./desktop-claims.js";
 import { parseDocumentPresentationPayload } from "./document-contract.js";
-import { parseRegisteredViewReceipt } from "./registered-view-receipt.js";
+import { parseRegisteredViewHandoff } from "./registered-view-receipt.js";
 import { startMcpStdioServer } from "./server.js";
 
 // Existing Desktop installs keep their selected folder. Catalog access is an explicit setting.
@@ -18,14 +18,16 @@ async function main() {
     await startMcpStdioServer({
       catalog: createViewWorkspaceCatalog({ actor }),
       bundleless: createBundlelessViewHost(),
-    }, await desktopClaims(null, actor, "document", parseDocumentPresentationPayload));
+    },
+    await desktopClaims(null, actor, "document", parseDocumentPresentationPayload),
+    await desktopClaims(null, actor, "registered-view", parseRegisteredViewHandoff));
     return;
   }
   if (!directory || !isAbsolute(directory))
     throw new Error(
       "Select a Superbee bundle directory and enter an actor in the extension settings.",
     );
-  const registeredViews = await desktopClaims(directory, actor, "registered-view", parseRegisteredViewReceipt);
+  const registeredViews = await desktopClaims(directory, actor, "registered-view", parseRegisteredViewHandoff);
   const workspace = await openViewWorkspace("directory", directory, { actor });
   await startMcpStdioServer(
     workspace,

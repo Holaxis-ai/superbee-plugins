@@ -28,9 +28,9 @@ The macOS CI check extracts the finished extension archive and starts separate s
 
 The Desktop reader keeps up to 16 pending document receipts per installation, workspace setting and actor. Each receipt expires after ten minutes. The encrypted snapshot lives in a private temporary folder for your OS account and profile. Redemption removes the snapshot. Creating a receipt also removes expired snapshots across settings, including settings you have stopped using. The empty folder is removed after its last snapshot is gone.
 
-For a registered View in Claude Desktop, choose the bundle folder containing its root `index.md`. The model identifies the registration and entry revision. The panel opens those exact bytes on its own connection and shows **Trust and run** when approval is required. If the registration, HTML or access changes, reopen the View. A View with edit access still requires a separate confirmation for each proposed change. The packaged two-process check exercises stale registration and HTML, trust, reads, cancellation and confirmed edits.
+For a registered View in Claude Desktop, choose a bundle folder or explicitly select a catalog workspace. The panel reopens the exact registration and HTML in the original working copy and shows **Trust and run** when approval is required. If that working copy, registration, HTML or access changes, reopen the View. A View with edit access still requires individual confirmation for proposed changes.
 
-Catalog-mode Views and temporary Views currently require a client that routes the tool call and panel actions to the same server process. Use the fixed-folder extension mode for registered Views in Claude Desktop. Catalog document reads continue to use the Desktop reader.
+The packaged two-process check covers trust, reads, cancellation and confirmed edits for a fixed folder. It also opens the same registered View from two catalog workspaces and verifies that a catalog entry relocation invalidates a pending handoff. The signed-in catalog journey still needs verification. Temporary Views require a client that routes both tool calls and panel actions to the same server process.
 
 The extension includes both screens and the compatible workspace library. Its manifest accepts Node 22.14+ in the 22 series, 24.x, or 26.x. Choose one Desktop installation method per workspace to avoid duplicate tools.
 

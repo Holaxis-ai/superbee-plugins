@@ -27,14 +27,6 @@ export async function desktopClaims<T>(
   const build = await stat(entry, { bigint: true });
   const home = await identity(homedir());
   const selection = directory === null ? ["catalog"] : ["directory", ...await identity(directory)];
-  // The public provider pins a selected working copy but does not export its physical path.
-  // For executable View handoff prove that this configured directory itself is the bundle;
-  // project shorthand and catalog labels could otherwise resolve to another working copy.
-  const registeredRoot = purpose === "registered-view" ? directory : null;
-  const isIndexed = async (root: string) => lstat(path.join(root, "index.md")).then(
-    info => info.isFile(), () => false,
-  );
-  const directAtStart = registeredRoot !== null && await isIndexed(registeredRoot);
   const scope = digest(JSON.stringify([
     await identity(entry), String(build.size), String(build.mtimeNs), home, selection, actor, purpose,
   ]));
@@ -45,10 +37,6 @@ export async function desktopClaims<T>(
   const filename = (claim: string) => prefix + digest(claim);
 
   async function locked<T>(fn: () => Promise<T>): Promise<T> {
-    if (registeredRoot !== null && (!directAtStart || !await isIndexed(registeredRoot) ||
-        JSON.stringify(["directory", ...await identity(registeredRoot)]) !== JSON.stringify(selection))) {
-      throw new Error("Choose the indexed bundle folder itself in the Desktop extension settings and reopen the registered View.");
-    }
     return withFilesystemMutationLock(root, async () => {
       await mkdir(root, { mode: 0o700 }).catch((error: NodeJS.ErrnoException) => {
         if (error.code !== "EEXIST") throw error;

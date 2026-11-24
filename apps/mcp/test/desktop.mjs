@@ -8,6 +8,7 @@ import {
   mkdir,
   readFile,
   readdir,
+  rename,
   rm,
   writeFile,
 } from "node:fs/promises";
@@ -226,7 +227,7 @@ async function proveCatalogView(model, panel, first, second) {
       env: { HOME: home, USERPROFILE: home, PATH: path.dirname(process.execPath) },
       encoding: "utf8",
     });
-    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.status, 0, result.stderr || result.stdout);
   };
   configure(["add", "first", "--dir", first]);
   configure(["add", "second", "--dir", second]);
@@ -250,6 +251,7 @@ async function proveCatalogView(model, panel, first, second) {
   assert.match(await bridge(firstId), /Edited after the receipt/);
   const switched = await redeemView(await start("show_view", { workspace: "second", viewId }));
   assert.ok(!switched.isError);
+  assert.equal(switched.structuredContent.source.html, shown.structuredContent.source.html);
   const secondId = switched.structuredContent.launch.launchId;
   assert.ok(!(await approveView(secondId)).isError);
   assert.match(await bridge(secondId), /Other workspace/);
@@ -257,8 +259,16 @@ async function proveCatalogView(model, panel, first, second) {
 
   const beforeRelocate = await start("show_view", { workspace: "first", viewId });
   configure(["remove", "second"]);
-  configure(["relocate", "first", "--dir", second]);
-  assert.equal((await redeemView(beforeRelocate)).isError, true);
+  const moved = first + " moved";
+  await rename(first, moved);
+  try {
+    configure(["relocate", "first", "--dir", second]);
+    const refused = await redeemView(beforeRelocate);
+    assert.equal(refused.isError, true);
+    assert.match(refused.content[0].text, /working copy changed/);
+  } finally {
+    await rename(moved, first);
+  }
 }
 
 async function proveRegisteredView(folder, model, panel, resolveAsOtherActor) {

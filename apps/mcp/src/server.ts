@@ -34,7 +34,7 @@ import {
   PendingLaunchRegistry,
 } from "./pending-launches.js";
 import { McpServer } from "@modelcontextprotocol/server";
-import { captureRegisteredView, openCapturedView, type RegisteredViewReceipt } from "./registered-view-receipt.js";
+import type { RegisteredViewHandoff } from "./registered-view-receipt.js";
 import { registerCatalogTools, workspaceSelectorSchema } from "./catalog.js";
 import { registerSearchTool } from "./search.js";
 const resourceDigest = (html: string) =>
@@ -509,7 +509,7 @@ function isWorkspace(host: LaunchHost): host is ViewWorkspace {
 export function createMcpAppServer(
   selection: ServerSelection,
   pendingDocuments: DocumentClaims = new PendingClaimRegistry<DocumentPresentationPayload>(),
-  registeredViews?: ClaimStore<RegisteredViewReceipt>,
+  registeredViews?: ClaimStore<RegisteredViewHandoff>,
 ): McpServer {
   const catalog = "catalog" in selection ? selection.catalog : undefined;
   const fixed = "catalog" in selection ? undefined : selection;
@@ -667,11 +667,11 @@ export function createMcpAppServer(
         const { workspace: selector, view } = catalog
           ? parseWorkspaceShowViewInput(input)
           : { workspace: undefined, view: parseShowViewInput(input) };
-        if (registeredViews && fixed && "viewId" in view) {
+        if (registeredViews && "viewId" in view) {
           // The iframe must redeem on its own connection before it can receive a live launch.
-          const receipt = await captureRegisteredView(fixed, view.viewId);
+          const receipt = await (await select(selector)).captureRegisteredView(view.viewId);
           const claim = mintClaimId();
-          await registeredViews.record(claim, receipt);
+          await registeredViews.record(claim, { workspace: selector, view: receipt });
           return {
             content: [{ type: "text", text: `Selected registered Superbee View "${receipt.title}" (${view.viewId}) at ${receipt.contentVersion}.\n${formatClaimMarker("registered_" + claim)}` }],
           };
@@ -1174,7 +1174,7 @@ export function createMcpAppServer(
     {
       title: "Resolve undelivered Superbee View launch",
       description:
-        "Redeem the exact one-shot marker from show_view on the panel connection. Fixed-folder Desktop reopens the selected registered revision. Unknown, changed or reused claims cannot launch a View.",
+        "Redeem the exact one-shot marker from show_view on the panel connection. Desktop reopens the selected registered revision in its original working copy. Unknown, changed or reused claims cannot launch a View.",
       inputSchema: z.object({ claim: z.string().min(8).max(256) }),
       annotations: {
         readOnlyHint: true,
@@ -1185,10 +1185,11 @@ export function createMcpAppServer(
       _meta: { ui: { visibility: ["app"] } },
     },
     async ({ claim }): Promise<CallToolResult> => {
-      if (claim.startsWith("registered_") && registeredViews && fixed) {
+      if (claim.startsWith("registered_") && registeredViews) {
         const entry = await registeredViews.consume(claim.slice("registered_".length));
         if (!entry) throw new Error("The registered View receipt is unknown, expired or already redeemed. Reopen the View.");
-        const payload = bind(fixed, await openCapturedView(fixed, entry.payload));
+        const host = await select(entry.payload.workspace);
+        const payload = bind(host, await host.reopenRegisteredView(entry.payload.view));
         return { content: [{ type: "text", text: fallbackText(payload) }], structuredContent: { ...payload } };
       }
       const entry = pendingLaunches.consume(claim);
@@ -1231,7 +1232,7 @@ export function createMcpAppServer(
 export async function startMcpStdioServer(
   workspace: ServerSelection,
   documentClaims?: DocumentClaims,
-  registeredViews?: ClaimStore<RegisteredViewReceipt>,
+  registeredViews?: ClaimStore<RegisteredViewHandoff>,
 ): Promise<void> {
   await createMcpAppServer(workspace, documentClaims, registeredViews).connect(new StdioServerTransport());
 }
