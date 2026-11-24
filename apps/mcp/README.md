@@ -62,7 +62,7 @@ $mcp = Join-Path $prefix 'node_modules/.bin/superbee-mcp.cmd'
 & $mcp status --host codex
 ```
 
-To use the catalog, install `superbee@0.4.8-pre.2` or a newer release with native Windows catalog support. Run `superbee catalog add <label> --dir <bundle>` to add a local workspace. Use `--workspace <label>` in place of `--dir` to open that workspace, or omit both selectors to choose from the catalog per call.
+To use the catalog on Windows, install the standard Superbee CLI (`npm install -g superbee`). Use version `0.4.8` or later. Run `superbee catalog add <label> --dir <bundle>` to add a local workspace. Use `--workspace <label>` in place of `--dir` to open that workspace, or omit both selectors to choose from the catalog per call.
 
 Restart Codex and follow [Verify in your client](#verify-in-your-client). To roll back, run `& $mcp uninstall --host codex` and restart Codex again.
 
