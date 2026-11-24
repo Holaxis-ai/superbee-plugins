@@ -12,15 +12,15 @@ Install this optional, experimental MCP app to open a Superbee document in chat,
 
 The offline pair requires Node 24 and npm. Claude Desktop supplies its own Node runtime for the extension. Clients with MCP Apps support can display the document and View screens. A client that exposes tools only can verify the connection with `list_views`.
 
-## Get the preview
+## Download and install
 
-Open a successful **CI** run for the revision you want. In the run summary, scroll to **Artifacts** and download **superbee-desktop-preview** for the Desktop extension or **superbee-mcp-offline-preview** for the two npm tarballs. Extract the downloaded ZIP. GitHub requires sign-in to download workflow artifacts and removes them when the run's retention expires. The source build below also works after an artifact expires. [CI runs](https://github.com/Holaxis-ai/superbee-plugins/actions/workflows/ci.yml)
+Get the files from the [MCP app release](https://github.com/Holaxis-ai/superbee-plugins/releases/tag/mcp-app-v0.1.0-experimental.3). Download `superbee-experimental.mcpb` for Claude Desktop on macOS, or extract `superbee-mcp-offline.zip` for the standalone installer. Verify the download with the release checksums.
 
-The offline download contains the plugin built by CI and the published workspace library it uses. Its `SOURCES` file records the plugin commit and the library version.
+The offline download contains the plugin and its compatible workspace library. The included `SOURCES` file records their exact versions. Install the app explicitly in the client you want to use.
 
 ## Claude Desktop on macOS
 
-1. Open `superbee-experimental.mcpb` from the extracted **superbee-desktop-preview** download in Claude Desktop. Review the unsigned extension and install it if your Desktop policy allows it.
+1. Open `superbee-experimental.mcpb` from the release in Claude Desktop. Review the unsigned extension and install it if your Desktop policy allows it.
 2. Choose the folder containing your Superbee bundle, or enable **Use the workspace catalog** to choose a workspace per tool call. Enter the actor to record for confirmed edits, such as `human:editor`.
 3. Click **Save**. In **Settings → Extensions → Superbee (experimental)**, switch **Disabled** to **Enabled**. Start a new chat and follow [Verify in your client](#verify-in-your-client). To remove it, open **Settings → Extensions**, remove **Superbee (experimental)**, and start a new chat.
 
@@ -68,7 +68,7 @@ Restart Codex and follow [Verify in your client](#verify-in-your-client). To rol
 
 ## Install the offline pair
 
-Open a terminal **inside the extracted superbee-mcp-offline-preview folder** and verify the download.
+Open a terminal **inside the extracted offline download** and verify the download.
 
 ```sh
 shasum -a 256 -c SHA256SUMS
@@ -102,13 +102,13 @@ actor=human:editor
 
 ## Move from an existing `superbee mcp` entry
 
-Keep the existing `superbee` entry while you try the preview. In the client's server settings, check its complete launch command, working directory, arguments, environment and tool permissions. Read the existing `--actor` there, or the client's `SUPERBEE_ACTOR` if it supplies attribution through the environment.
+Install and verify the app before upgrading from the bundled CLI server. Keep the existing `superbee` entry during that check. In the client's server settings, check its complete launch command, working directory, arguments, environment and tool permissions. Read the existing `--actor` there, or the client's `SUPERBEE_ACTOR` if it supplies attribution through the environment.
 
 - For an ordinary `superbee mcp --dir … --actor …` entry, run the new registration command above with the same folder and actor. Resolve any relative folder against the old launch's working directory.
 - For an ordinary `superbee mcp --actor …` entry, use `"$mcp" install --host "$host" --actor "$actor"`. This preserves selection from the catalog. If the original entry inherits its actor or uses the default, keep that behavior with the manual route below.
 - For a customized entry, make a **second** user-level registration in the client's settings named `superbee-experimental`. Duplicate the old entry's environment, working directory, approvals and restrictions. Change the server executable to the absolute installed `superbee-mcp` path. For a normal direct `superbee mcp` launch remove only the `mcp` subcommand and retain its remaining arguments exactly. If a wrapper launches the CLI, keep its setup and replace the wrapped server invocation in the duplicate. Keep inherited attribution inherited. Use the same restrictions for any client permission rules keyed by server name.
 
-After restarting the client, select the experimental server explicitly and verify it below. If you prefer one set of tools, disable the old registration in the client after verifying the new one. Keep its settings so you can re-enable it.
+After restarting the client, select the experimental server explicitly and verify it below. If you prefer one set of tools, disable the old registration in the client after verifying the new one. Keep its settings so you can re-enable it. A bundled registration needs a CLI that still includes the server, such as `superbee@0.4.8`. If you already upgraded and need to roll back, install that CLI version into a separate prefix and point the old entry to its absolute executable path.
 
 ## Verify in your client
 
