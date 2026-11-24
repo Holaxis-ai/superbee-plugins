@@ -2,7 +2,7 @@
 type: Recipe
 id: review-workflow
 title: Review Workflow
-offer: Collect human review requests and see their evidence and decisions in a live View.
+offer: Collect human review requests and track their questions and status in a live View.
 version: "1"
 summary: Durable human review requests with a live, generic evidence View.
 content_policy: definitions-only

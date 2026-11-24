@@ -204,7 +204,7 @@
       "designation": "supported",
       "maintainer": "Holaxis-ai",
       "source_digest": "sha256:34cdabe7a8dc965122396f8a6d66f6c36750baa136213a93e00eb680bbc42e48",
-      "files_digest": "sha256:bf6c914c1111e2be0d37623c888291eb8faaecbdcc20ac43857357a4c04f63f5",
+      "files_digest": "sha256:e8f9db2f32577e7ea585cf79261d0b0acfd230163a0dee53a64d37ddbcf41c44",
       "root": "recipes/review-workflow",
       "files": [
         "conventions/review-request.md",
