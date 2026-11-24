@@ -39,6 +39,9 @@ current version of each listed recipe, pinned by two digests, and two cookbooks:
 (qualified Deep Research, an experimental prerelease). A cookbook is a named group; every recipe in it stays
 individually installable. Other folders under `recipes/` are unlisted and stay installable by path.
 
+[Claims](recipes/claims/recipe.md) adds an evidence-backed Claim Kind. [Review Workflow](recipes/review-workflow/recipe.md)
+adds a Review Request Kind and a View that reads the bundle's review requests.
+
 The digests are the integrity guarantee. `designation`, `maintainer`, every cookbook field and each
 entry's `discovery` (offer, keywords, categories, audience) are the publisher's statement for
 discovery: they are not a security property and imply no service level. An id plus

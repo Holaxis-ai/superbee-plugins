@@ -4,6 +4,25 @@
   "title": "Superbee plugin recipes",
   "recipes": [
     {
+      "id": "claims",
+      "version": "1.0.0",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:8c5d29cb35858d4fb9cdf13bdcc69e6b199cbbe4822d1ea731021c47515da345",
+      "files_digest": "sha256:95645e02090fabea66c339ae1fa4a88f33ff608ad845419ba8e5461a6f8df2f1",
+      "root": "recipes/claims",
+      "files": [
+        "conventions/claim.md",
+        "recipe.md"
+      ],
+      "discovery": {
+        "categories": [
+          "research"
+        ],
+        "audience": "both"
+      }
+    },
+    {
       "id": "holaxis-decision",
       "version": "0.1.2",
       "designation": "supported",
@@ -175,6 +194,29 @@
         ],
         "categories": [
           "research"
+        ],
+        "audience": "both"
+      }
+    },
+    {
+      "id": "review-workflow",
+      "version": "1",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "source_digest": "sha256:34cdabe7a8dc965122396f8a6d66f6c36750baa136213a93e00eb680bbc42e48",
+      "files_digest": "sha256:e8f9db2f32577e7ea585cf79261d0b0acfd230163a0dee53a64d37ddbcf41c44",
+      "root": "recipes/review-workflow",
+      "files": [
+        "conventions/review-request.md",
+        "conventions/view.md",
+        "recipe.md",
+        "references/view-authoring-v0.md",
+        "views-registry/review-workflow-reviews.md",
+        "views/review-workflow/reviews.html"
+      ],
+      "discovery": {
+        "categories": [
+          "productivity"
         ],
         "audience": "both"
       }

@@ -108,6 +108,24 @@
         ],
         "audience": "both"
       }
+    },
+    {
+      "id": "claims",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "discovery": {
+        "categories": ["research"],
+        "audience": "both"
+      }
+    },
+    {
+      "id": "review-workflow",
+      "designation": "supported",
+      "maintainer": "Holaxis-ai",
+      "discovery": {
+        "categories": ["productivity"],
+        "audience": "both"
+      }
     }
   ],
   "cookbooks": [

@@ -386,7 +386,8 @@ test('the committed index is current and Core accepts it', async () => {
   assert.equal(parsed.ok, true, JSON.stringify(parsed.error));
   assert.deepEqual((await buildRecipeIndex(repo)).bytes, bytes);
   assert.deepEqual(parsed.index.recipes.map(entry => entry.id), [
-    'holaxis-decision', 'holaxis-deep-research', 'my-home', 'my-home-costs', 'my-home-maintenance', 'resource',
+    'claims', 'holaxis-decision', 'holaxis-deep-research', 'my-home', 'my-home-costs', 'my-home-maintenance',
+    'resource', 'review-workflow',
   ]);
   assert.deepEqual(parsed.index.cookbooks.map(entry => [entry.id, entry.recipes]), [
     ['my-home', ['my-home', 'my-home-maintenance', 'my-home-costs']],
@@ -430,10 +431,11 @@ test('cookbooks and standalone recipes resolve through a reader over this checko
       assert.equal(entry.source_digest, index.recipes.find(candidate => candidate.id === entry.recipe.id).source_digest);
     }
   }
-  for (const id of ['holaxis-decision', 'resource']) {
+  const cookbookMembers = new Set(index.cookbooks.flatMap(cookbook => cookbook.recipes));
+  for (const {id, source_digest} of index.recipes.filter(entry => !cookbookMembers.has(entry.id))) {
     const result = await resolveIndexRecipe(index, id, read);
     assert.equal(result.ok, true, JSON.stringify(result.error));
-    assert.equal(result.verified.source_digest, index.recipes.find(entry => entry.id === id).source_digest);
+    assert.equal(result.verified.source_digest, source_digest);
   }
   const listed = index.recipes.flatMap(entry => entry.files.map(file => `${entry.root}/${file}`));
   assert.deepEqual(seen.sort(), listed.sort());
