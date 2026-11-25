@@ -552,7 +552,7 @@ export function createMcpAppServer(
 
   const server = new McpServer({
     name: "Superbee Conversational Views",
-    version: "0.1.0-experimental.3",
+    version: "0.1.0-experimental.4",
   });
   if (catalog) registerCatalogTools(server, catalog);
   registerSearchTool(

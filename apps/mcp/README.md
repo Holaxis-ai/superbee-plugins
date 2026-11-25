@@ -14,7 +14,7 @@ The offline pair requires Node 24 and npm. Claude Desktop supplies its own Node 
 
 ## Download and install
 
-Get the files from the [MCP app release](https://github.com/Holaxis-ai/superbee-plugins/releases/tag/mcp-app-v0.1.0-experimental.3). Download `superbee-experimental.mcpb` for Claude Desktop on macOS, or extract `superbee-mcp-offline.zip` for the standalone installer. Verify the download with the release checksums.
+Choose the newest Superbee MCP app prerelease from [Superbee Plugins releases](https://github.com/Holaxis-ai/superbee-plugins/releases). Download `superbee-experimental.mcpb` for Claude Desktop on macOS, or extract `superbee-mcp-offline.zip` for the standalone installer. Verify the download with the release checksums.
 
 The offline download contains the plugin and its compatible workspace library. The included `SOURCES` file records their exact versions. Install the app explicitly in the client you want to use.
 
@@ -28,7 +28,7 @@ The macOS CI check extracts the finished extension archive and starts separate s
 
 The Desktop reader keeps up to 16 pending document receipts per installation, workspace setting and actor. Each receipt expires after ten minutes. The encrypted snapshot lives in a private temporary folder for your OS account and profile. Redemption removes the snapshot. Creating a receipt also removes expired snapshots across settings, including settings you have stopped using. The empty folder is removed after its last snapshot is gone.
 
-For a registered View in Claude Desktop, choose a bundle folder or explicitly select a catalog workspace. The panel reopens the exact registration and HTML in the original working copy and shows **Trust and run** when approval is required. If that working copy, registration, HTML or access changes, reopen the View. If you replaced a directly configured folder, restart the extension first. A View with edit access still requires individual confirmation for proposed changes.
+In version `0.1.0-experimental.4` or later, choose a bundle folder or explicitly select a catalog workspace to open a registered View in Claude Desktop. The panel reopens the exact registration and HTML in the original working copy and shows **Trust and run** when approval is required. If that working copy, registration, HTML or access changes, reopen the View. If you replaced a directly configured folder, restart the extension first. A View with edit access still requires individual confirmation for proposed changes.
 
 The packaged two-process check covers trust, reads, cancellation and confirmed edits for a fixed folder. It also opens the same registered View from two catalog workspaces and verifies that a catalog entry relocation invalidates a pending handoff. The signed-in catalog journey still needs verification. Temporary Views require a client that routes both tool calls and panel actions to the same server process.
 
