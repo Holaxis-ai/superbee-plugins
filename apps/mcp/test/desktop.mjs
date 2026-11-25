@@ -8,6 +8,7 @@ import {
   mkdir,
   readFile,
   readdir,
+  rename,
   rm,
   writeFile,
 } from "node:fs/promises";
@@ -179,21 +180,23 @@ try {
     name: "desktop-catalog-test",
     version: "1",
   });
+  const catalogPanel = new Client({ name: "desktop-catalog-panel-test", version: "1" });
+  const openCatalog = target => target.connect(new StdioClientTransport({
+    ...catalogConfig,
+    cwd: extensionPath,
+    env: { HOME: home, USERPROFILE: home, PATH: path.dirname(process.execPath) },
+  }));
   try {
-    await catalogClient.connect(
-      new StdioClientTransport({
-        ...catalogConfig,
-        cwd: extensionPath,
-        env: { HOME: home, PATH: path.dirname(process.execPath) },
-      }),
-    );
+    await openCatalog(catalogClient);
     const listed = await catalogClient.callTool({
       name: "list_workspaces",
       arguments: {},
     });
     assert.deepEqual(listed.structuredContent.workspaces, []);
+    await openCatalog(catalogPanel);
+    await proveCatalogView(catalogClient, catalogPanel, workspace, secondFolder);
   } finally {
-    await catalogClient.close();
+    await Promise.all([catalogClient.close(), catalogPanel.close()]);
   }
   await rm(extensionPath, { recursive: true });
   assert.equal(
@@ -206,6 +209,66 @@ try {
 } finally {
   await client.close();
   await rm(scratch, { recursive: true, force: true });
+}
+
+async function proveCatalogView(model, panel, first, second) {
+  const viewId = "views-registry/desktop";
+  const entry = "views/desktop.html";
+  await mkdir(path.join(second, "views-registry"), { recursive: true });
+  await mkdir(path.join(second, "views"), { recursive: true });
+  await cp(path.join(first, viewId + ".md"), path.join(second, viewId + ".md"));
+  await cp(path.join(first, entry), path.join(second, entry));
+  await writeFile(path.join(second, "tasks/sample.md"), document.replace("Visible in **Superbee**.", "Other workspace."));
+  const configure = args => {
+    const result = spawnSync(process.execPath, [
+      path.resolve("node_modules/superbee/dist/superbee.mjs"), "catalog", ...args,
+    ], {
+      cwd: scratch,
+      env: { HOME: home, USERPROFILE: home, PATH: path.dirname(process.execPath) },
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+  };
+  configure(["add", "first", "--dir", first]);
+  configure(["add", "second", "--dir", second]);
+  const start = async (name, args) => {
+    const result = await model.callTool({ name, arguments: args });
+    assert.ok(!result.isError, JSON.stringify(result.content));
+    return result.content[0].text.match(/\[agentstate-claim:v1:([\w-]+)\]/)[1];
+  };
+  const redeemView = claim => panel.callTool({ name: "resolve_launch", arguments: { claim } });
+  const approveView = launchId => panel.callTool({ name: "authorize_durable_view", arguments: { launchId } });
+  const bridge = async launchId => (await panel.callTool({
+    name: "durable_view_bridge",
+    arguments: { launchId, request: { bridge: "v0", type: "render-document", id: "read", docId: "tasks/sample" } },
+  })).structuredContent.outcome.reply.result.html;
+
+  const registration = await start("show_view", { workspace: "first", viewId });
+  const shown = await redeemView(registration);
+  assert.ok(!shown.isError, "registered View from the model process: " + JSON.stringify(shown.content));
+  const firstId = shown.structuredContent.launch.launchId;
+  assert.ok(!(await approveView(firstId)).isError);
+  assert.match(await bridge(firstId), /Edited after the receipt/);
+  const switched = await redeemView(await start("show_view", { workspace: "second", viewId }));
+  assert.ok(!switched.isError);
+  assert.equal(switched.structuredContent.source.html, shown.structuredContent.source.html);
+  const secondId = switched.structuredContent.launch.launchId;
+  assert.ok(!(await approveView(secondId)).isError);
+  assert.match(await bridge(secondId), /Other workspace/);
+  assert.match(await bridge(firstId), /Edited after the receipt/);
+
+  const beforeRelocate = await start("show_view", { workspace: "first", viewId });
+  configure(["remove", "second"]);
+  const moved = first + " moved";
+  await rename(first, moved);
+  try {
+    configure(["relocate", "first", "--dir", second]);
+    const refused = await redeemView(beforeRelocate);
+    assert.equal(refused.isError, true);
+    assert.match(refused.content[0].text, /working copy changed/);
+  } finally {
+    await rename(moved, first);
+  }
 }
 
 async function proveRegisteredView(folder, model, panel, resolveAsOtherActor) {

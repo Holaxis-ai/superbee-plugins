@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "superbee-desktop-preview",
   "display_name": "Superbee (experimental)",
-  "version": "0.1.0-experimental.3",
+  "version": "0.1.0-experimental.4",
   "description": "Open documents and interactive Views in a selected bundle or choose a workspace from your Superbee catalog. Confirm edits before they are written.",
   "author": {
     "name": "Holaxis"

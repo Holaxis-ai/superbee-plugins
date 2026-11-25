@@ -1,6 +1,6 @@
 {
   "name": "@superbee/experimental-mcp",
-  "version": "0.1.0-experimental.3",
+  "version": "0.1.0-experimental.4",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
@@ -20,14 +20,14 @@
     "desktop:pack": "npm run build && node desktop/pack.mjs"
   },
   "peerDependencies": {
-    "@superbee/cli": "0.1.0-pre.4"
+    "@superbee/cli": "0.1.0-pre.6"
   },
   "devDependencies": {
     "@anthropic-ai/mcpb": "2.1.2",
     "@modelcontextprotocol/client": "2.4.0",
     "@modelcontextprotocol/ext-apps": "2.0.4",
     "@modelcontextprotocol/server": "2.4.0",
-    "@superbee/core": "0.2.0-pre.48",
+    "@superbee/core": "0.2.0-pre.50",
     "@superbee/view-host": "0.1.0",
     "@types/node": "22.20.0",
     "esbuild": "0.25.12",
